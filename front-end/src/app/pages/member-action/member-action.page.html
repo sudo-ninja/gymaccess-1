@@ -1,0 +1,63 @@
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title> My Gym </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">Here My Report and My Detail Link, Logout</ion-content>
+</ion-menu>
+
+<div class="ion-page" id="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title>Welcome to Gym </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+
+    <ion-card class="ion-text-center">
+      <ion-card-content>
+        <ion-datetime-button datetime="datetime" displayFormat="MMM DD, YYYY HH:mm" ></ion-datetime-button>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime id="datetime"></ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </ion-card-content>
+    </ion-card>
+
+
+
+    <ion-card class="ion-text-center">
+      <ion-card-content>
+        Scan the QR code to access Gym
+      </ion-card-content>
+  
+  <ion-card-header>            
+    <ion-card-title>
+      <ion-button
+      expand="block"
+      class="ion-margin"
+      (click)="startScan()"
+      >Tap to Scan </ion-button>
+    </ion-card-title>
+    </ion-card-header>
+  </ion-card>
+
+
+  <ion-item>
+
+  <!-- <ion-label class="ion-text-wrap"> Scanned Result:{{scannedResult}} -->
+
+  </ion-item>
+
+
+   
+
+
+  </ion-content>
+</div>

@@ -1,0 +1,92 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Update Gym Informationon-title</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="isLoadingResults">
+    <ion-spinner *ngIf="isLoadingResults" ></ion-spinner>
+  </div>
+
+  <form 
+  [formGroup]="gymForm" 
+  (ngSubmit)="onSubmit()">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-label position="floating">Gym Name </ion-label>
+        <ion-input 
+           formControlName="m_name"      
+            type="text" required>
+        </ion-input>
+        <div
+              class="invalid-feedback"
+              *ngIf="submitted && myForm['m_name'].errors?.['required']"
+            >
+              Name is required.
+            </div>
+       </ion-card-title>
+
+      <ion-card-subtitle><ion-label position="floating">Gym Mobile </ion-label>
+        <ion-input 
+           formControlName="mobile"     
+            type="text" required>
+        </ion-input>
+            <div
+              class="invalid-feedback"
+              *ngIf="submitted && myForm['mobile'].errors?.['required']"
+            >
+              Mobile Number is required.
+            </div>
+          </ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <dl>
+        <dt>Emergency Mobile:</dt>
+        <dd><ion-input 
+          formControlName="Emergency_mobile"     
+           type="text" required>
+       </ion-input>
+           <div
+             class="invalid-feedback"
+             *ngIf="submitted && myForm['Emergency_mobile'].errors?.['required']"
+           >
+             Emergency Mobile Number is required.
+           </div></dd>
+
+        <dt>GSTIN (Optional):</dt>
+        <dd><ion-input 
+          formControlName="gym_gstin"     
+           type="text" required>
+       </ion-input>
+          </dd>
+
+        <dt>gym_lat:</dt>
+        <dd><ion-input 
+          formControlName="gym_lat"     
+           type="text" required>
+       </ion-input></dd>
+
+        <dt>gym_long:</dt>
+        <dd><ion-input 
+          formControlName="gym_long"     
+           type="text" required>
+       </ion-input></dd>
+
+         </dl>
+    </ion-card-content>
+
+    <div class="form-group">
+      <ion-button class="btn btn-success btn-lg btn-block" type="submit">
+        Update
+      </ion-button>
+    </div>
+         
+  
+   </ion-card>
+
+   </form>
+
+</ion-content>

@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>member-details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="isLoadingResults">
+    <ion-spinner *ngIf="isLoadingResults" ></ion-spinner>
+  </div>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title><h2>{{member.m_name}}</h2></ion-card-title>
+      <ion-card-subtitle>Aadhar no.- {{member.aadhar}}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <dl>
+        <dt>Mobile:</dt>
+        <dd>{{member.mobile}}</dd>
+
+        <dt>Emergency Mobile:</dt>
+        <dd>{{member.Emergency_mobile}}</dd>
+
+        <dt>Email:</dt>
+        <dd>{{member.email}}</dd>
+
+        <dt>Join Date:</dt>
+        <dd>{{member.m_joindate}}</dd>
+
+        <dt>Access Type Paid/Free:</dt>
+        <dd>{{member.m_accesstype}}</dd>
+
+        <dt>Member Type Member/Staff:</dt>
+        <dd>{{member.memberType}}</dd>
+         </dl>
+    </ion-card-content>
+
+    <ion-button (click)="BacktoList()">
+      <ion-icon slot="icon-only" name="arrow-back"></ion-icon> BACK
+    </ion-button>
+         
+      <ion-button (click)="editMember(member._id)">
+        <ion-icon slot="icon-only" name="create"></ion-icon> EDIT
+      </ion-button>
+
+      <ion-button (click)="deleteMember(member._id)">
+        <ion-icon slot="icon-only" name="remove-circle"></ion-icon> DELETE
+      </ion-button>
+
+      <ion-button (click)="AddMore()">
+        <ion-icon slot ="end" name="arrow-forward"></ion-icon> ADD..
+      </ion-button>
+
+   </ion-card>
+
+</ion-content>

@@ -1,0 +1,56 @@
+
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  
+  <form>
+  <div> 
+  <ion-item>
+    <ion-label position="floating">e-mail</ion-label>
+    <!-- <ion-input type="email" required placeholder="Enter Valid Email Address"></ion-input> --> 
+    <ion-input [(ngModel)]="email" type="email" name="email" placeholder="email" ></ion-input>
+		<!-- <ion-note slot="error" *ngIf="(email.dirty || email.touched) && email.errors">Email is invalid</ion-note> -->
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Password</ion-label>
+    <!-- <ion-input type="Password" required placeholder="Enter Password"> </ion-input> -->
+    <ion-input [(ngModel)]="password" type="password" name="password" placeholder="Password" ></ion-input>
+			<!-- <ion-note slot="error" *ngIf="(password.dirty || password.touched) && password.errors">Password needs to be 6 characters</ion-note> -->
+  </ion-item>
+</div>
+
+  <!-- <ion-button expand="block" class="ion-padding" color="primary">Login </ion-button>
+
+  <ion-button 
+  expand="block" 
+  class="ion-padding" 
+  color="light" 
+  [routerLink]="['/register']">
+  Register 
+  </ion-button> -->
+<div>
+  <ion-button type="submit" expand="block" color ="primary" (click)="login()">Log in</ion-button>
+		<!-- <ion-button type="button" expand="block" color="secondary" (click)="register">Create account</ion-button> -->
+		<!-- <ion-button type="button" expand="block" color="secondary" (click)="forgetpassword">Forget Password</ion-button> -->
+  </div>
+</form>
+<p class="ion-text-right"> Don't have an account?<strong routerLink="/register"> Register</strong></p>
+<p class="ion-text-left"><strong> Forgot Password </strong></p>
+<p class="ion-text-center" *ngIf="isLoading"> <ion-spinner></ion-spinner> </p>
+</ion-content>
+
+
+<!-- <ion-header>
+  <ion-toolbar>
+    <ion-title>login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+</ion-content> -->

@@ -1,0 +1,7 @@
+{
+  "name": "gym-access",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

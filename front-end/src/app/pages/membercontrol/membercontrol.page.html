@@ -1,0 +1,107 @@
+<ion-header>
+  <ion-toolbar class="ios hydrated">
+    <ion-title class="ios title-ios hydrated">Update Details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoadingResults">
+    <ion-spinner *ngIf="isLoadingResults"> </ion-spinner>
+  </div>
+  
+  <form [formGroup]="memberForm" (ngSubmit)="onFormSubmit()">
+    
+        
+      <!-- <ion-item button="true" id="open-date-input" >
+        <ion-label position="floating">Start Date</ion-label>
+        <ion-text *ngIf="dateValue" slot="end">
+          
+         {{ dateValue | date: 'MMM d, y'}} </ion-text>
+    <!-- {{ dateValue | date: 'h:mm a'}}
+            
+        <ion-popover 
+        [dismissOnSelect]="true" 
+        trigger="open-date-input" 
+        show-backdrop="false" 
+        side="end">
+        <ng-template>
+        <app-date-time-picker
+          [value]="dateValue"
+          type="date"
+          [date_format]="format"
+          (datePickerValue)="change($event)">
+        </app-date-time-picker>
+        </ng-template>
+      </ion-popover> -->
+
+      <ion-item>
+        <ion-label position="floating">Start Date</ion-label>
+      <ion-input 
+        formControlName="m_startdate" 
+        type="date" required 
+        [(ngModel)]="StartDate"
+         > 
+      </ion-input>  
+      <!-- <ion-datetime presentation="date" [preferWheel]="true" ></ion-datetime> -->
+      <!-- <ion-datetime [(ngModel)]="StartDate" [preferWheel]="true" ></ion-datetime>    -->
+
+      </ion-item>
+    
+
+      <ion-item>
+        <ion-label position="floating">End Date</ion-label>
+        <ion-input 
+        formControlName="m_enddate" 
+        [(ngModel)]="EndDate"
+        type="date" required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Valid Days</ion-label>
+        <ion-input 
+        formControlName="m_validdays" 
+        
+        ype="number" required>
+        </ion-input>
+        
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Time In</ion-label>
+        <ion-input 
+        formControlName="m_intime" 
+        [(ngModel)]="EntryTime"
+         type="Time" required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Out Time</ion-label>
+        <ion-input 
+        formControlName="m_outtime" 
+        [(ngModel)]="ExitTime"
+         type="Time" required>
+        </ion-input>
+      </ion-item>
+
+      
+
+      
+      
+     <div>
+        <ion-button 
+          type="submit" 
+          
+          color="primary" 
+          shape="full" 
+          expand="block"
+          >
+        Update
+        </ion-button>
+    </div>
+
+    </form> 
+  
+
+</ion-content>

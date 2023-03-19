@@ -1,0 +1,145 @@
+<ion-header>
+  <ion-toolbar class="ios hydrated">
+    <ion-title class="ios title-ios hydrated">Add Member Detail</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="memberForm" (ngSubmit)="onFormSubmit()">
+
+    <!-- <ion-item>
+      <ion-label position="floating">Gym ID </ion-label>
+      <ion-input 
+      formControlName="gym_id"       
+      type="text" required></ion-input>
+    </ion-item> -->
+      
+      <ion-item>
+        <ion-label position="floating">Name </ion-label>
+        <ion-input 
+        formControlName="m_name" 
+        
+        type="text" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Mobile</ion-label>
+        <ion-input 
+        formControlName="mobile" 
+       
+        type="text" required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Emergency Mobile</ion-label>
+        <ion-input 
+        formControlName="Emergency_mobile" 
+        
+        type="text" required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Aadhar</ion-label>
+        <ion-input 
+        formControlName="aadhar" 
+        
+         type="text" required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Location LAT</ion-label>
+        <ion-input 
+        formControlName="m_address_lat" 
+        
+         type="text" required="">
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating"> Location LONG</ion-label>
+        <ion-input 
+        formControlName="m_address_long"  
+        
+        type="text" required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">email</ion-label>
+        <ion-input 
+        formControlName="email"  
+       
+        type="text" required>
+        </ion-input>
+      </ion-item>
+
+      <!-- <ion-item>
+        <ion-label position="floating">join-date</ion-label>
+        <ion-input  
+        formControlName="m_joindate"        
+        type="text" required>
+        </ion-input>
+      </ion-item> -->
+
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-item>
+               <ion-list>
+                <ion-item>
+                  <ion-select
+                    placeholder="Access Type"
+                    (ionChange)="handleChange_AT($event)"
+                    formControlName="m_accesstype"
+                  >
+                    <ion-select-option value="free">Free</ion-select-option>
+                    <ion-select-option default="true" value="paid">Paid</ion-select-option>
+                    
+                  </ion-select>
+                </ion-item>
+              </ion-list>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+               <ion-list>
+                <ion-item>
+                  <ion-select
+                    placeholder="Member Type"
+                    (ionChange)="handleChange_MT($event)" 
+                    formControlName="memberType"                          
+                  >
+                  <!-- <ion-select-option *ngFor="let mt of MemberType" [value]="mt">{{ mt.name }}</ion-select-option> -->
+                    <ion-select-option default="true" value="member">Member</ion-select-option>
+                    <ion-select-option value="staff">Staff</ion-select-option>
+                    
+                  </ion-select>
+                </ion-item>
+              </ion-list>
+             </ion-item>
+          </ion-col>
+         </ion-row>
+      </ion-grid>
+
+     
+
+     
+
+     <div>
+        <ion-button 
+          type="submit" 
+          [disabled]="!memberForm.valid" 
+          color="primary" 
+          shape="full" 
+          expand="block">
+        Save 
+        </ion-button>
+    </div>
+
+    </form> 
+  
+
+</ion-content>

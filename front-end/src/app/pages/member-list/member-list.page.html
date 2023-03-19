@@ -1,0 +1,149 @@
+ <ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title> Main Menu </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">GYM INFO, Reports, Logout</ion-content>
+</ion-menu> 
+
+<div class="ion-page" id="main-content">
+  <ion-header>
+    <ion-toolbar>
+       <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>  
+      <ion-title>Members List</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+<ion-content class="ion-padding">
+       <ion-searchbar 
+        placeholder =' Search Member'
+        showCancelButton="focus"
+        animated>    
+      </ion-searchbar>
+  
+      <ion-card class="ion-margin" 
+      appSwipe
+      (swipe)="onSwipe($event)"
+      SWIPE GESTURE  
+      *ngFor="let m of members">
+              <ion-card-header>            
+                <ion-card-title>
+                  {{m.m_name}}
+                </ion-card-title>
+                <ion-card-subtitle>
+                  <ion-badge>{{m.memberType}}</ion-badge>                  
+                </ion-card-subtitle>
+              </ion-card-header>
+            
+              <ion-card-content>
+                 <p>Join Date {{m.m_joindate}} </p>
+                
+                 <ion-badge slot="start">balance :" {{m.m_validdays}} "Day(s)</ion-badge>
+                 <p>Mobile {{m.mobile}}</p> 
+
+                 <ion-badge slot="start">End Date:{{m.m_enddate}} </ion-badge>
+                 <!-- <p>unique ID {{m._id}} </p>  -->
+                 <p></p>
+
+                 <a [routerLink]="['/member/', m._id]">{{ m._id }}</a>
+
+              </ion-card-content>  
+              <ion-grid>
+                <ion-row>
+                  <ion-col><ion-button color="primary" expand="block" (click)="updateMemberControl(m._id)"><ion-icon name="create"></ion-icon>Update</ion-button>
+                  </ion-col>
+                  <ion-col><ion-button color="primary" expand="block" (click)="updateMember(m._id)"><ion-icon name="documents"></ion-icon>Detail</ion-button>
+                  </ion-col>
+                  <ion-col><ion-button color="primary" expand="block" (click)="inviteMember(m._id)"><ion-icon name="send"></ion-icon>Invite</ion-button></ion-col>
+                </ion-row>
+              </ion-grid>
+              
+                     
+    </ion-card>
+
+    <!-- <ion-button
+    class="ion-margin" 
+    expand="block"
+    appGesture
+    [gestureOpts]="[{name: 'tap'}]"
+    (tap)="onTap($event)">
+    TAP GESTURE
+  </ion-button>
+
+  <ion-button
+    class="ion-margin" 
+    expand="block"
+    appGesture
+    [gestureOpts]="[{name: 'doubleTap'}]"
+    (doubleTap)="onDoubleTap($event)">
+    DOUBLE TAP GESTURE
+  </ion-button>
+
+  <ion-button
+    class="ion-margin" 
+    expand="block"
+    appGesture
+    [gestureOpts]="[{name: 'press'}]"
+    (press)="onPress($event)">
+    LONG PRESS GESTURE
+  </ion-button>
+
+  <ion-button
+    class="ion-margin" 
+    expand="block"
+    appGesture
+    [gestureOpts]="[{name: 'swipe'}]"
+    (swipe)="onSwipe($event)">
+    SWIPE GESTURE
+  </ion-button> -->
+
+  <ion-button
+    class="ion-margin" 
+    expand="block"
+    appTap
+    (tap)="onTap($event)">
+    TAP GESTURE
+  </ion-button>
+
+  <ion-button
+    class="ion-margin" 
+    expand="block"
+    appTap
+    (doubleTap)="onDoubleTap($event)">
+    DOUBLE TAP GESTURE
+  </ion-button>
+
+  <ion-button
+    class="ion-margin" 
+    expand="block"
+    appPress
+    (press)="onPress($event)">
+    LONG PRESS GESTURE
+  </ion-button>
+
+  <ion-button
+    class="ion-margin" 
+    expand="block"
+    appSwipe
+    (swipe)="onSwipe($event)">
+    SWIPE GESTURE
+  </ion-button>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addProduct()" >
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>  
+
+    <!-- <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll> -->
+
+
+  </ion-content>
+
+</div>
+ 

@@ -1,0 +1,47 @@
+<ion-content>
+  <!-- if more than 1 gym addition is done then only search to appear on page other wise hide it use ngIf for this -->
+  <ion-searchbar 
+  placeholder =' Search Gym'
+  showCancelButton="focus"
+  animated >    
+  </ion-searchbar>
+  
+    <ion-card >
+      <ion-card-header>            
+        <ion-card-title>
+                 Click to Add button if you are gym owner
+        </ion-card-title>
+              <ion-card-subtitle>
+                <div>
+                  <ion-nav-link router-direction="forward" routerLink="/gym-list">
+                    <ion-button>add gym</ion-button>
+                  </ion-nav-link>
+                </div>
+              </ion-card-subtitle>
+      </ion-card-header>          
+      <ion-card-content>
+               <p> </p> 
+      </ion-card-content>             
+    </ion-card>
+
+    <ion-card >
+      <ion-card-header>            
+        <ion-card-title>
+                 Click to Join button if you are gym member
+        </ion-card-title>
+              <ion-card-subtitle>
+                <div>
+                  <ion-nav-link router-direction="forward" routerLink="/join-gym">
+                    <ion-button>Join Gym</ion-button>
+                  </ion-nav-link>
+                </div>
+                
+              </ion-card-subtitle>
+      </ion-card-header>          
+      <ion-card-content>
+               <p> </p> 
+      </ion-card-content>             
+    </ion-card>
+
+
+</ion-content>

@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-button slot="end" (click)="locationfixed()">set</ion-button>
+    <ion-title>gmap</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+<div class="maps">
+    <capacitor-google-map #map></capacitor-google-map>
+  </div>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+      <ion-button expand="block" (click)="locate()">Locate Me</ion-button>
+  </ion-toolbar>
+</ion-footer>

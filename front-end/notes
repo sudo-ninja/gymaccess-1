@@ -1,0 +1,15 @@
+for ionic capacitor google map 
+npm install @capacitor/google-maps
+https://www.youtube.com/watch?v=1mRSuR6d_L0&t=479s
+follow this vide0 for google map
+
+there is mistake at ioni google map page for spelling of google maps.. use "map"
+implement custom schema in module.ts page also
+
+
+for geolocation 
+npm install @capacitor/geolocation
+
+to convert location into address for that location use native geocoader plug in 
+npm install cordova-plugin-nativegeocoder 
+npm install @awesome-cordova-plugins/native-geocoder 

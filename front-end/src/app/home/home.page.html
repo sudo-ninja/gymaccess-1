@@ -1,0 +1,45 @@
+<ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>
+        Welcome to My GYM {{username}}!
+        
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content>
+
+    <div clas="ion-padding">
+      <ion-list>
+        <ion-item>
+          <ion-select
+            placeholder="My Gym.."
+            (ionChange)="handleChange($event)"
+            (ionCancel)="pushLog('ionCancel fired')"
+            (ionDismiss)="pushLog('ionDismiss fired')"
+          >
+            <ion-select-option value="add">Add Gym</ion-select-option>
+            <ion-select-option value="join">Join Gym</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+      <!-- <div class="ion-padding">
+        <p *ngFor="let log of logs">{{ log }}</p>
+      </div> -->
+    </div>
+    <div class="map" #map></div>
+    <!-- <ion-list>
+      <ion-item *ngFor="let provider of serviceProviders">
+        <ion-label>
+            {{provider.email}}
+        </ion-label>
+      </ion-item>
+    </ion-list> -->
+  
+    <!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button>
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab> -->
+  
+  </ion-content>

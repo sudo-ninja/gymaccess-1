@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar class="ios hydrated">
+    <ion-title class="ios title-ios hydrated">Add Gym Information</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <app-gmap></app-gmap>
+     <form [formGroup] = "gymForm" (ngSubmit)="onSubmit()">
+      
+      <ion-item>
+        <ion-label position="floating">Gym Name </ion-label>
+        <ion-input formControlName="gym_name" type="text" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Gym Mobile</ion-label>
+        <ion-input formControlName="gym_mobile" type="text" required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Gym Emergency Mobile</ion-label>
+        <ion-input formControlName="gym_emergency" type="text" required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Gym GSTIN (optional)</ion-label>
+        <ion-input formControlName="gym_gstin"  type="text">
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+          <ion-label>Location on Map</ion-label>
+          <ion-button slot="end" (click)="getLocation()">Set </ion-button>
+      </ion-item>
+
+      <!-- <ion-item>
+        <ion-label position="floating">Gym Location LAT</ion-label>
+        <ion-input formControlName="gym_lat"  type="text">
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Gym Location LONG</ion-label>
+        <ion-input formControlName="gym_long"  type="text">
+        </ion-input>
+      </ion-item> -->
+
+      <div>
+          <ion-button 
+          type="submit" 
+          [disabled]="!gymForm.valid"
+          color="primary" 
+          shape="full" 
+          expand="block">Save</ion-button>
+      </div>
+    </form> 
+
+   </ion-content>
