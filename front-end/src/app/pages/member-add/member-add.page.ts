@@ -4,6 +4,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import {MemberserviceService} from 'src/app/services/memberservice.service';
 import { AlertController, ModalController } from '@ionic/angular';
+import { parseISO } from 'date-fns';
+
+
 
 // import { ErrorStateMatcher } from '@angular/material/core';
 
@@ -76,31 +79,37 @@ export class MemberAddPage implements OnInit {
         'gym_id' : [localStorage.getItem('gymID'), Validators.required],
         'm_name' : [null, [
           Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(30)]],
+          // Validators.minLength(3),
+          // Validators.maxLength(30)
+        ]],
         'Emergency_mobile': [null, [
           Validators.required,
-          Validators.minLength(10),
-          Validators.maxLength(13),
-          Validators.pattern('^[0-9]*$')]],
+          // Validators.minLength(10),
+          // Validators.maxLength(13),
+          // Validators.pattern('^[0-9]*$')
+        ]],
         'mobile': [null, [
           Validators.required,
-          Validators.minLength(10),
-          Validators.maxLength(13),
-          Validators.pattern('^[0-9]*$')]],
+          // Validators.minLength(10),
+          // Validators.maxLength(13),
+          // Validators.pattern('^[0-9]*$')
+        ]
+        ],
         'aadhar':[null, Validators.required],
         'email':[null, [
           Validators.required,
-          Validators.minLength(5),
-          Validators.maxLength(80),
-          Validators.pattern("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")
+          // Validators.minLength(5),
+          // Validators.maxLength(80),
+          // Validators.pattern("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")
         ]],
-        'm_address_lat': [null, Validators.required],
-        'm_address_long': [null, Validators.required],
         'memberType': ['member',Validators.required],
-        'm_joindate': [new Date(), Validators.required],
+        'm_joindate': [Date.now(), Validators.required],
         'm_accesstype': ['paid',Validators.required],
-          'm_startdate':[new Date()],
+
+        'm_address_lat': ['0'],
+        'm_address_long': ['0'],
+
+          'm_startdate':[Date.now()],
           'm_enddate':[Date.now()],
           'm_validdays':['0'],
           'm_intime':['05:20'],
@@ -124,6 +133,7 @@ export class MemberAddPage implements OnInit {
 
         onFormSubmit() {
           this.isLoadingResults = true;
+          console.log(this.memberForm.value);
           this.memberApi.addMember(this.memberForm.value)
             .subscribe((res: any) => {
                 const id = res._id;

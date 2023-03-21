@@ -8,6 +8,9 @@ import {MemberserviceService}  from 'src/app/services/memberservice.service';
 import { MemberUpdatePage } from '../member-update/member-update.page';
 import { MembercontrolPage } from '../membercontrol/membercontrol.page';
 
+import{McontrolService} from 'src/app/services/mcontrol.service' // to control invite code 
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 @Component({
   selector: 'app-member-list',
   templateUrl: './member-list.page.html',
@@ -18,6 +21,15 @@ export class MemberListPage implements OnInit {
 
   members: Member[] = [];
   _id :string; // This is an observable
+  _email:any;
+  _memberid:any;
+  _mobile:any;
+  _duration:any;
+  _invitationcode:any;
+
+  inviteControlForm!: FormGroup;
+  isLoadingResults = false;
+  member: Member;
 
   constructor(
     private gestureCtrl: GestureController,
@@ -29,15 +41,33 @@ export class MemberListPage implements OnInit {
     private alertCtrl: AlertController, 
     private modalCtrl: ModalController,
 
+    private formBuilder: FormBuilder,
+    private inviteControlApi:McontrolService
+
   ) { 
-    
+    this.inviteControl();
   }
 
   ngOnInit() {
     this.getMembers();
-    
-  }
+   }
 
+
+async inviteControl(){
+  this.inviteControlForm = this.formBuilder.group({
+    'member_id' : [this._memberid, Validators.required],
+    'email' : [this._email, Validators.required],
+    'mobile': [this._mobile, [
+      Validators.required,
+      // Validators.minLength(10),
+      // Validators.maxLength(13),
+      // Validators.pattern('^[0-9]*$')
+    ]
+    ],
+    'inviteCode':[this._invitationcode, Validators.required],
+    'duration':[this._duration,Validators.required],
+    }); 
+}  
 
 async getMembers(){
   const loading = await this.loadingController.create({
@@ -92,12 +122,44 @@ async getMembers(){
    console.log(uid);
     var iCode = Math.floor(1000000*Math.random());
       console.log(iCode);
+      this._invitationcode = iCode;
       const alert = await this.alertCtrl.create({
         header: 'Invitation Code',
         subHeader: iCode.toString(),
         message: 'Please ask member to enter this code in "JOIN GYM", ***Valid For 1 Hours***',
-        buttons: ['OK'],
-      });  
+        buttons: [
+          {
+          text: 'OK',
+          role: 'confirm',
+          handler: () => {
+            this.memberApi.getMember(uid).subscribe(res=>{this.member=res;
+              console.log(this.member);
+              this._email=this.member.email;
+              this._mobile=this.member.mobile;
+              this._memberid=this.member._id;
+              this._duration=Date.now()+(2*60*60*1000);
+              console.log('in handelr = ',this._email,this._duration,this._invitationcode,this._memberid,this._mobile)
+              }),err=>{
+            console.log(err);   
+            }
+
+            this.inviteControlApi.addMcontrol (this.inviteControlForm.value)
+            .subscribe((res: any) => {
+                const id = res._id;
+                console.log('Added invitation code');
+              }, (err: any) => {
+                console.log(err)
+              });
+
+             
+          },
+        }
+        ],
+        
+      });      
+      
+     
+      
       await alert.present();
 
       // here need to save this generated number and pass to DB using formbuilder

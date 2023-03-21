@@ -1,7 +1,8 @@
 export class Mcontrol {
     _id?:any;
     member_id?:string;
-    start_date?:string;
-    valid_days?:string;
-    end_date?:string;
+    email?:string;
+    mobile?:string;
+    inviteCode?:string;
+    duration?:string;
     }

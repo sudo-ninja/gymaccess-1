@@ -4,7 +4,7 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 
 import {Mcontrol} from '../models/mcontrol';
 
-const baseUrl = 'http://localhost:3000/mcontrol';
+const baseUrl = 'http://localhost:3000/membercontrols';
 const searchUrl = 'http://localhost:3000/mcontrol/search/';
 
 
@@ -32,7 +32,7 @@ export class McontrolService {
 
   addMcontrol(data: any): Observable<any> {
     console.log("i m in add member loop");
-    let url = `${this.baseUri}/members`;
+    let url = `${this.baseUri}/membercontrols`;
     return this.http.post(url, data).pipe(tap((dat:any)=>console.log(`Added with ID =${dat.id}`)),
     catchError(this.errorMgmt));
   }
