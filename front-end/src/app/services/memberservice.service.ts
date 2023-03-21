@@ -38,7 +38,7 @@ export class MemberserviceService {
   addMember(data: any): Observable<any> {
     console.log("i m in add member loop");
     let url = `${this.baseUri}/members`;
-    return this.http.post(url, data).pipe(tap((dat:any)=>console.log(`Added with ID =${dat.id}`)),
+    return this.http.post(url, data).pipe(tap((dat:any)=>console.log(`Added with ID =${dat._id}`)),
     catchError(this.errorMgmt));
   }
 

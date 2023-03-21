@@ -139,9 +139,6 @@ async getMembers(){
             this.inviteControl();
             this.memberApi.getMember(uid).subscribe(res=>{this.member=res;
               console.log(this.member);
-              // this._email=this.member.email;
-              // this._mobile=this.member.mobile;
-              // this._memberid=this.member._id;
               this._duration=Date.now()+(2*60*60*1000);
               console.log('in handelr = ',this._email,this._duration,this._invitationcode,this._memberid,this._mobile)
               this.inviteControlForm.setValue({
@@ -159,8 +156,7 @@ async getMembers(){
                 }, (err: any) => {
                   console.log(err)
                 });
-
-
+                
               }),err=>{
             console.log(err);   
              }

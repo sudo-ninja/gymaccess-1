@@ -7,6 +7,9 @@ import { HttpClient } from '@angular/common/http';
 import { UserService } from 'src/app/services/user.service';
 import { GmapPage } from '../gmap/gmap.page';
 
+// to set login user as admin if he added gym
+import {MemberserviceService} from 'src/app/services/memberservice.service';
+
 
 // https://www.positronx.io/mean-stack-tutorial-angular-crud-bootstrap/
 
@@ -16,11 +19,18 @@ import { GmapPage } from '../gmap/gmap.page';
   styleUrls: ['./gym-add.page.scss'],
 })
 export class GymAddPage implements OnInit {
+
+  adminForm!: FormGroup;
   gymForm!: FormGroup;
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
   usersUrl:string='http://localhost:3000/users';// URL at postman from where all user are fetched
   _id :string; // This is an observable
   loggedUserId:any;
+  loggedUserName:any;
+  loggedUserEmail:any;
+
+
+   
 
   @ViewChild(GmapPage, {static : true}) gmap : GmapPage;
 
@@ -29,6 +39,7 @@ export class GymAddPage implements OnInit {
     private router: Router,
     public fb: FormBuilder,
     private apiService: GymService,
+    public memberApi:MemberserviceService,
     private http:HttpClient,
     private _user:UserService,
     
@@ -46,14 +57,16 @@ export class GymAddPage implements OnInit {
     // this.addName(user);
     console.log(user); // here user info is being display after login successfull
     this.loggeduser=user;
-    console.log(this.loggeduser);
+    console.log(this.loggeduser.name);
     if(user==null){
       this.router.navigateByUrl('/login',{replaceUrl:true}) // here URL by replace so that user can not back and go to come again here without login
     }else{
       console.log(JSON.parse(user!)); // convert back user info into object so that we can use this info
       this.loggeduser=JSON.parse(user!);
-      console.log(this.loggeduser._id); // convert back user info into object so that we can use this info
+      console.log('Ng On IT consol', this.loggeduser._id , this.loggeduser.username , this.loggeduser.email , this.loggeduser.mobile); // convert back user info into object so that we can use this info
       this.loggedUserId=this.loggeduser._id;
+      this.loggedUserName = this.loggeduser.name;
+      this.loggedUserEmail = this.loggeduser.email;
       this.http.get(this.usersUrl).subscribe(res=>{
         console.log(res)
         // this.serviceProviders=res;
@@ -82,7 +95,7 @@ export class GymAddPage implements OnInit {
     return this.gymForm.controls;  }
 
     getLocation(){
-      this.router.navigate(['/gmap']);
+      this.router.navigateByUrl("/gmap",{replaceUrl:true});
       this.gmap.locate();
     }
 
@@ -96,19 +109,94 @@ export class GymAddPage implements OnInit {
         // localStorage.setItem('ID',JSON.stringify(id));
         // this.isLoadingResults = false;
       localStorage.setItem('GYM',JSON.stringify(res)) // trick use to transfer added gym info gym list page
+      // logic added if any login user add GYM it means he is admin for that gym 
+      // if gym successfully added with gym ID then user detail to be added in members
+      //as Admin with Free access and with gym ID , so first member to
+      // any gym is Admin him self  
+      this.adminAdd();
+      console.log('in respose  = ',res._id,this.loggeduser.username,this.loggeduser.email)
 
-        this.router.navigate(['/gym-list']);
+      this.adminForm.patchValue({
+        gym_id :res._id,
+        m_name : this.loggeduser.username ,
+        Emergency_mobile : res.gym_emergency,
+        mobile : this.loggeduser.mobile,
+        aadhar: '0000000000000000',
+        email: this.loggeduser.email,
+        m_address_lat : res.gym_address_lat,
+        m_address_long: res.gym_address_long,
+        memberType :'Admin',
+        m_joindate: Date.now(),
+        m_accesstype: 'Free',
+        isInviteAccepted : true,
+        m_startdate: Date.now(),
+        m_enddate: Date.now(),
+        m_validdays:'',
+        m_intime:'00:01',
+        m_outtime:'23:59',
+      });
+      this.memberApi.addMember (this.adminForm.value).subscribe((res: any) => {
+                  const id = res._id;
+                  console.log('Added as Admin ');
+                }, (err: any) => {
+                  console.log(err)
+                });  
+
+    this.router.navigateByUrl("/gym-list",{replaceUrl:true});
+             
         },(err: any) => {
           console.log(err);
           // this.isLoadingResults = false;
         });
     }
+  } 
+
+  async adminAdd(){
+          this.adminForm = this.fb.group({
+        'gym_id' : ['', Validators.required],
+        'm_name' : ['', [Validators.required]],
+        'Emergency_mobile': [null, [
+          Validators.required,
+          // Validators.minLength(10),
+          // Validators.maxLength(13),
+          // Validators.pattern('^[0-9]*$')
+        ]],
+        'mobile': ['', [
+          Validators.required,
+          // Validators.minLength(10),
+          // Validators.maxLength(13),
+          // Validators.pattern('^[0-9]*$')
+        ]
+        ],
+        'aadhar':['', Validators.required],
+        'email':['', [
+          Validators.required,
+          // Validators.minLength(5),
+          // Validators.maxLength(80),
+          // Validators.pattern("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")
+        ]],
+        'memberType': ['',Validators.required],
+        'm_joindate': ['', Validators.required],
+        'm_accesstype': ['',Validators.required],
+
+        'm_address_lat': [''],
+        'm_address_long': [''],
+
+          'm_startdate':[''],
+          'm_enddate':[''],
+          'm_validdays':[''],
+          'm_intime':[''],
+          'm_outtime':[''],
+
+          })
+      }
 
 
 
+async LoggedUserInfo(){
 
-    
-  }
+}      
+}
   // formSubmit() {
 
   //   if (!this.gymForm.valid){
@@ -123,5 +211,3 @@ export class GymAddPage implements OnInit {
 
    
   // }
-
-}

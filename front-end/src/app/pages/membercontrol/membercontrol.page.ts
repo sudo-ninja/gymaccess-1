@@ -49,27 +49,6 @@ export class MembercontrolPage implements OnInit {
 
   members: Member[] = [];
 
-  // member:Member={
-  //   _id:'',
-  //   m_name:'',
-  //   gym_id:'',
-  //   email: '',
-  //   aadhar:'',
-  //   mobile:'',
-  //   Emergency_mobile:'',
-  //   m_address_lat:'',
-  //   m_address_long:'',
-  //   memberType:'',
-  //   m_joindate:'',
-  //   m_accesstype:'',
-  //   isInviteAccepted:false,
-  //   m_startdate:'',
-  //   m_enddate:'',
-  //   m_validdays:'',
-  //   m_intime:'',
-  //   m_outtime:'',
-  //   }
-
   memberForm!: FormGroup;
   memberForm2!: FormGroup;
    isLoadingResults = false;

@@ -82,7 +82,7 @@ locationfixed(){
 
   localStorage.setItem('gymLat',this.gymlat);
   localStorage.setItem('gymLng',this.gymlng);
-  this.router.navigate(['/gym-add']);
+  this.router.navigateByUrl("/gym-add",{replaceUrl:true});
 }
 
   ngOnInit() {

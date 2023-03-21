@@ -137,11 +137,19 @@ logs: string[] = [];
                 {
                   text: 'Ok',
                   handler: (alertData) => { //takes the data 
-                      const var_code= alertData.name1;
+                      const var_code= alertData.code_entered;
                       console.log(var_code);
+                      // call mcontrol service 
+                      //find by email id 
+                      //if email match then 
+                      // check time if time valid or not 
+                      // if time is valid 
+                      //then get code from DB 
+                      // pass that code in comparision 
+                      // if match then navigate 
+                      // or else shown error "contact to gym owner"
                       if(var_code =="123456"){
-                        this.router.navigate(['/member-action'],{replaceUrl:true});
-                  
+                        this.router.navigate(['/member-action'],{replaceUrl:true});                  
                       }
 
                   }
@@ -160,7 +168,7 @@ logs: string[] = [];
             ],
       inputs: [
         {
-          name:'name1',
+          name:'code_entered',
           placeholder: 'Verificaion Code',
           attributes: {
                         maxlength: 6,
