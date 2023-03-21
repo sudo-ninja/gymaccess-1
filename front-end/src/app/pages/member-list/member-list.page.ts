@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Share } from '@capacitor/share';
 import { AlertController, GestureController, LoadingController, ModalController } from '@ionic/angular';
 import { Member } from 'src/app/models/member.model';
+import {Mcontrol} from 'src/app/models/mcontrol'
 
 import {MemberserviceService}  from 'src/app/services/memberservice.service';
 import { MemberUpdatePage } from '../member-update/member-update.page';
@@ -20,6 +21,7 @@ export class MemberListPage implements OnInit {
   // @ViewChildren(IonCard,{read:ElementRef})
 
   members: Member[] = [];
+  mcontrols: Mcontrol[] =[];
   _id :string; // This is an observable
   _email:any;
   _memberid:any;
@@ -30,6 +32,7 @@ export class MemberListPage implements OnInit {
   inviteControlForm!: FormGroup;
   isLoadingResults = false;
   member: Member;
+  mcontrol : Mcontrol;
 
   constructor(
     private gestureCtrl: GestureController,
@@ -45,27 +48,28 @@ export class MemberListPage implements OnInit {
     private inviteControlApi:McontrolService
 
   ) { 
-    this.inviteControl();
+    
   }
 
   ngOnInit() {
     this.getMembers();
+    
    }
 
 
 async inviteControl(){
   this.inviteControlForm = this.formBuilder.group({
-    'member_id' : [this._memberid, Validators.required],
-    'email' : [this._email, Validators.required],
-    'mobile': [this._mobile, [
+    'member_id' : ['', Validators.required],
+    'email' : ['', Validators.required],
+    'mobile': ['', [
       Validators.required,
       // Validators.minLength(10),
       // Validators.maxLength(13),
       // Validators.pattern('^[0-9]*$')
     ]
     ],
-    'inviteCode':[this._invitationcode, Validators.required],
-    'duration':[this._duration,Validators.required],
+    'inviteCode':['', Validators.required],
+    'duration':['',Validators.required],
     }); 
 }  
 
@@ -132,46 +136,43 @@ async getMembers(){
           text: 'OK',
           role: 'confirm',
           handler: () => {
+            this.inviteControl();
             this.memberApi.getMember(uid).subscribe(res=>{this.member=res;
               console.log(this.member);
-              this._email=this.member.email;
-              this._mobile=this.member.mobile;
-              this._memberid=this.member._id;
+              // this._email=this.member.email;
+              // this._mobile=this.member.mobile;
+              // this._memberid=this.member._id;
               this._duration=Date.now()+(2*60*60*1000);
               console.log('in handelr = ',this._email,this._duration,this._invitationcode,this._memberid,this._mobile)
+              this.inviteControlForm.setValue({
+                member_id : this.member._id,
+                email : this.member.email,
+                mobile: this.member.mobile,
+                inviteCode:this._invitationcode,
+                duration:this._duration,
+              }); 
+
+              this.inviteControlApi.addMcontrol (this.inviteControlForm.value)
+              .subscribe((res: any) => {
+                  const id = res._id;
+                  console.log('Added invitation code');
+                }, (err: any) => {
+                  console.log(err)
+                });
+
+
               }),err=>{
             console.log(err);   
-            }
+             }
 
-            this.inviteControlApi.addMcontrol (this.inviteControlForm.value)
-            .subscribe((res: any) => {
-                const id = res._id;
-                console.log('Added invitation code');
-              }, (err: any) => {
-                console.log(err)
-              });
-
-             
           },
         }
         ],
         
       });      
-      
-     
-      
+   
       await alert.present();
 
-      // here need to save this generated number and pass to DB using formbuilder
-      /* say Icode = iCode
-             Duration = 1 Hr
-             generated = date().now()
-             email = uid.email
-             mobile = uid.mobile
-             accepted = false
-             gymID= gymid; 
-
-      */
   }
 
  
