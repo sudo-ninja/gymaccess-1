@@ -127,14 +127,14 @@ onFormSubmit() {
   let idux = this.id||this.route.snapshot.paramMap.get('id')||this.idun;
   console.log(idux , this.id, this.idun);
   this.memberApi.update(idux, this.memberForm.value).subscribe((res: any) => {
-    console.log(res._id);
-    console.log(this.idu);
-    console.log(this.idun);      
+    // console.log(res._id);
+    // console.log(this.idu);
+    // console.log(this.idun);      
       this.idu = res._id;
       // localStorage.setItem('ID', JSON.stringify(this.id));
       this.isLoadingResults = false;
-      console.log(idux);
-      this.router.navigate(['/member-list']);
+      // console.log(idux);
+      this.router.navigateByUrl('/member-list',{replaceUrl:true});
       this.modalCtrl.dismiss();
     }, (err: any) => {
       console.log(err);

@@ -9,6 +9,11 @@ import { ActionSheetController, AlertController } from '@ionic/angular';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { GmapsService } from '../services/gmaps/gmaps.service';
 
+// for invitaion accept check call m control service
+import{McontrolService} from '../services/mcontrol.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
+
+//to make member as admin or member by setting isMembertype as True from false;
 
 
 @Component({
@@ -38,6 +43,12 @@ export class HomePage implements OnInit{
   var_code:any;
   _id :string; // This is an observable
 
+  //logged user email and get invitaion code
+  loggeduserEmail:any;
+  invitationCode:any;
+  loggeduserId:any;
+
+  userForm!: FormGroup;
 
   constructor(
     private router:Router,
@@ -46,14 +57,16 @@ export class HomePage implements OnInit{
     private alertController: AlertController,
     /////google map///
     private gmaps: GmapsService,
+    private mcontrol_s: McontrolService,
     private renderer: Renderer2,
-    private actionSheetCtrl: ActionSheetController
+    private actionSheetCtrl: ActionSheetController,
+    private formBuilder: FormBuilder,
 
   ) {
     this._user.user().subscribe(
       res=>{
         this.addName(res),
-        console.log(res)
+        console.log(res);
       },
       error=>{
         // this.router.navigate(['/login'])
@@ -91,8 +104,9 @@ logs: string[] = [];
   ngOnInit(): void {
   //  to make sure only user can see this page by login so this is done 
     const user = localStorage.getItem('User')
-    this.addName(user);
-    console.log(user); // here user info is being display after login successfull
+    this.getUsercontrol();
+    // this.addName(user);
+    // console.log(user); // here user info is being display after login successfull
     this.loggeduser=user;
     console.log(this._id);
     if(user==null){
@@ -100,9 +114,23 @@ logs: string[] = [];
     }else{
       console.log(JSON.parse(user!)); // convert back user info into object so that we can use this info
       this.loggeduser=JSON.parse(user!);
-      console.log(this.loggeduser._id); // convert back user info into object so that we can use this info
-       this.username=this.loggeduser.name;
-       console.warn(this.username);
+      //here we get email of logged user , we will use this email to check if its same as invitaion was sent
+      console.log(this.loggeduser.email); // convert back user info into object so that we can use this info
+      this.loggeduserEmail=this.loggeduser.email;
+      this.loggeduserId=this.loggeduser._id;
+      //here check if logged user is member then switch direct to member action page 
+      // if logged user is not member then direct to gym list page .
+      if(this.loggeduser.isMembertype===true){
+        this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
+        localStorage.setItem('User',JSON.stringify(this.loggeduser))
+      }
+
+
+      //once member leave gym he has to again enter invitaion code as his status for member will be false, 
+      //if admin leave the gym then check if there is any other admin or not , if admin is there then only allow 
+      // to leave him gym 
+      this.username=this.loggeduser.username;
+       console.warn(this.loggeduserEmail);
       this.http.get(this.usersUrl).subscribe(res=>{
         console.log(res)
         this.serviceProviders=res;
@@ -140,6 +168,28 @@ logs: string[] = [];
                       const var_code= alertData.code_entered;
                       console.log(var_code);
                       // call mcontrol service 
+                       this.mcontrol_s.getMcontrolEmail(this.loggeduserEmail).subscribe((data)=>{
+                        this.invitationCode = data.inviteCode;
+                        if(var_code === this.invitationCode){
+                          console.log("code matched");
+                          // this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
+                          console.log(this.loggeduserId);
+                          this._user.update(this.loggeduserId,this.userForm.value).subscribe((res:any)=>{
+                           //
+                           // problem might be in this service , check at postman
+
+                           //
+                            console.log(" in update ",res._id);
+                          },
+                          (err: any) => {
+                            console.log(err);
+                          });
+                          
+                        this.userForm = this.formBuilder.group({   
+                          'isMember': true,    
+                        });
+                        }
+                       });
                       //find by email id 
                       //if email match then 
                       // check time if time valid or not 
@@ -148,9 +198,7 @@ logs: string[] = [];
                       // pass that code in comparision 
                       // if match then navigate 
                       // or else shown error "contact to gym owner"
-                      if(var_code =="123456"){
-                        this.router.navigate(['/member-action'],{replaceUrl:true});                  
-                      }
+                      // console.log('entered code', var_code);                
 
                   }
               },
@@ -181,6 +229,13 @@ logs: string[] = [];
   }
 
 
+  getUsercontrol() {
+    this._user.user().subscribe((data: any) => {
+        this.userForm.patchValue({
+          isMember:true,
+      });
+    });
+  };
 
   addListeners = async () => {
     await PushNotifications.addListener('registration', token => {

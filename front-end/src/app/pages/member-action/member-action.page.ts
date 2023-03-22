@@ -33,7 +33,7 @@ export class MemberActionPage implements OnInit {
     this._user.user().subscribe(
       res=>{
         this.addName(res),
-        console.log(res)
+        console.log(res);
       },
       error=>{
         // this.router.navigate(['/login'])

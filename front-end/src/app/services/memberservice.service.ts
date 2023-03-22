@@ -35,6 +35,11 @@ export class MemberserviceService {
     return this.http.get(`${baseUrl}/${id}`);
   }
 
+  getMemberByEmail(email: any): Observable<Member> {
+    console.log("i m in get member by email search ");
+    return this.http.get(`${baseUrl}/search/${email}`);
+  }
+
   addMember(data: any): Observable<any> {
     console.log("i m in add member loop");
     let url = `${this.baseUri}/members`;

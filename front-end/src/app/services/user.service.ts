@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 // import{Users} from '../models/user.model'
 
 @Injectable({
@@ -19,6 +20,11 @@ constructor(private _http:HttpClient,
     });
   }
 
+  update(Id:any, data: any): Observable<any> {
+    return this._http.put(`this.url/register/'${Id}`,data).pipe(tap((dat:any)=>console.log(`updated with ID =${Id}`)),
+    catchError(this.errorMgmt));
+  }
+  
   login(body:any){
     return this._http.post('url/users/login',body,{
       observe:'body',
@@ -41,5 +47,21 @@ constructor(private _http:HttpClient,
       withCredentials:true,
       headers:new HttpHeaders().append('Content-Type','application/json')
     })
+  }
+
+  // Error handling
+  errorMgmt(error: HttpErrorResponse) {
+    let errorMessage = '';
+    if (error.error instanceof ErrorEvent) {
+      // Get client-side error
+      errorMessage = error.error.message;
+    } else {
+      // Get server-side error
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    console.log(errorMessage);
+    return throwError(() => {
+      return errorMessage;
+    });
   }
 }
