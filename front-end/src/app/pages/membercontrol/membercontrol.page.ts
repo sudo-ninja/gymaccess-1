@@ -111,9 +111,9 @@ export class MembercontrolPage implements OnInit {
       });
     });
 
-    this.memberApi.getMember(id).subscribe((data: any) => {
-      console.log(data);
-        });
+    // this.memberApi.getMember(id).subscribe((data: any) => {
+    //   console.log(data);
+        // });
 }
 
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
-// import{Users} from '../models/user.model'
+import{Users} from '../models/user.model'
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,7 @@ constructor(private _http:HttpClient,
   }
 
   update(Id:any, data: any): Observable<any> {
-    return this._http.put(`this.url/register/'${Id}`,data).pipe(tap((dat:any)=>console.log(`updated with ID =${Id}`)),
+    return this._http.put(`http://localhost:3000/users/register/${Id}`,data).pipe(tap((dat:any)=>console.log(`updated with ID =${Id}`)),
     catchError(this.errorMgmt));
   }
   
@@ -39,6 +39,11 @@ constructor(private _http:HttpClient,
       withCredentials:true,
       headers:new HttpHeaders().append('Content-Type','application/json')
     })
+  }
+
+  getUserbyEmail(_Email:any): Observable<Users> {
+    console.log("i m in get  by emailloop");
+    return this._http.get(`http://localhost:3000/users/user/email/${_Email}`);
   }
 
   logout(){

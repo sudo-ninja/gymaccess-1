@@ -12,6 +12,7 @@ import { GmapsService } from '../services/gmaps/gmaps.service';
 // for invitaion accept check call m control service
 import{McontrolService} from '../services/mcontrol.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { JsonPipe } from '@angular/common';
 
 //to make member as admin or member by setting isMembertype as True from false;
 
@@ -73,6 +74,11 @@ export class HomePage implements OnInit{
         console.log(error)
       }
      )
+     const user = localStorage.getItem('User')
+      if(JSON.parse(user!).isMember){     
+      this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
+      localStorage.setItem('User',JSON.stringify(user));
+    };
   }
 
     addName(data:any){
@@ -93,7 +99,7 @@ logs: string[] = [];
       console.log(e.detail.value); 
       localStorage.setItem('loggedUserId',this.loggeduser._id);
       console.log(this.loggeduser._id);
-      this.router.navigate(['/gym-add'],{replaceUrl:true});
+      this.router.navigate(['/gym-list'],{replaceUrl:true});
 
     }else if (e.detail.value=="join") {
       console.log(e.detail.value) ;
@@ -104,11 +110,10 @@ logs: string[] = [];
   ngOnInit(): void {
   //  to make sure only user can see this page by login so this is done 
     const user = localStorage.getItem('User')
-    this.getUsercontrol();
-    // this.addName(user);
+   // this.addName(user);
     // console.log(user); // here user info is being display after login successfull
     this.loggeduser=user;
-    console.log(this._id);
+    // console.log(this._id);
     if(user==null){
       this.router.navigateByUrl('/login',{replaceUrl:true}) // here URL by replace so that user can not back and go to come again here without login
     }else{
@@ -117,12 +122,13 @@ logs: string[] = [];
       //here we get email of logged user , we will use this email to check if its same as invitaion was sent
       console.log(this.loggeduser.email); // convert back user info into object so that we can use this info
       this.loggeduserEmail=this.loggeduser.email;
+      // this.getUsercontrol(this.loggeduser.email);
       this.loggeduserId=this.loggeduser._id;
       //here check if logged user is member then switch direct to member action page 
       // if logged user is not member then direct to gym list page .
       if(this.loggeduser.isMembertype===true){
         this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
-        localStorage.setItem('User',JSON.stringify(this.loggeduser))
+        localStorage.setItem('User',JSON.stringify(this.loggeduser));
       }
 
 
@@ -168,26 +174,25 @@ logs: string[] = [];
                       const var_code= alertData.code_entered;
                       console.log(var_code);
                       // call mcontrol service 
+                      console.log(this.loggeduserEmail);
                        this.mcontrol_s.getMcontrolEmail(this.loggeduserEmail).subscribe((data)=>{
                         this.invitationCode = data.inviteCode;
                         if(var_code === this.invitationCode){
                           console.log("code matched");
-                          // this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
-                          console.log(this.loggeduserId);
-                          this._user.update(this.loggeduserId,this.userForm.value).subscribe((res:any)=>{
-                           //
-                           // problem might be in this service , check at postman
-
-                           //
+                          this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
+                          this._user.getUserbyEmail(this.loggeduserEmail).subscribe((res:any)=>{
+                            try {
+                              console.log(res);
+                            } catch (error) {
+                              console.log(error);                              
+                            }
+                          });
+                          this._user.update(this.loggeduserId,{"isMember":true}).subscribe((res:any)=>{
                             console.log(" in update ",res._id);
                           },
                           (err: any) => {
                             console.log(err);
                           });
-                          
-                        this.userForm = this.formBuilder.group({   
-                          'isMember': true,    
-                        });
                         }
                        });
                       //find by email id 
@@ -229,12 +234,13 @@ logs: string[] = [];
   }
 
 
-  getUsercontrol() {
-    this._user.user().subscribe((data: any) => {
-        this.userForm.patchValue({
-          isMember:true,
-      });
-    });
+  getUsercontrol(_Email:any) {
+  //   this._user.getUserbyEmail(_Email).subscribe((data: any) => {
+  //      console.log('Ismember=',data);
+  //       this.userForm.patchValue({
+  //         isMember:data.isMember,
+  //     });
+  //   });
   };
 
   addListeners = async () => {
