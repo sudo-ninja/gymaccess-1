@@ -102,9 +102,9 @@ export class MemberAddPage implements OnInit {
           // Validators.maxLength(80),
           // Validators.pattern("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")
         ]],
-        'memberType': ['member',Validators.required],
+        'memberType': ['Member',Validators.required],
         'm_joindate': [Date.now(), Validators.required],
-        'm_accesstype': ['paid',Validators.required],
+        'm_accesstype': ['Paid',Validators.required],
 
         'm_address_lat': ['0'],
         'm_address_long': ['0'],
@@ -138,6 +138,7 @@ export class MemberAddPage implements OnInit {
             .subscribe((res: any) => {
                 const id = res._id;
                 localStorage.setItem('ID',JSON.stringify(id));
+                localStorage.setItem('GYM_ID',JSON.stringify(res.gym_id));
                 this.isLoadingResults = false;
                 this.router.navigate(['/member/', id],{replaceUrl:true});
               }, (err: any) => {
@@ -150,7 +151,7 @@ export class MemberAddPage implements OnInit {
                 // this.memberForm.patchValue({
                 //   memberType:"this.memberType",
                 // });
-
+             
         }
 
           handleChange_AT(e) {

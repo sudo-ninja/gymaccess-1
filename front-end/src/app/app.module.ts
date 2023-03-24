@@ -13,6 +13,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import {MemberserviceService} from './services/memberservice.service';
 
 // import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@awesome-cordova-plugins/native-geocoder/ngx';
+// import both main and modal page here 
 
 
 @NgModule({

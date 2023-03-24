@@ -5,9 +5,12 @@ import { environment } from 'src/environments/environment';
 
 import { Geolocation } from '@capacitor/geolocation';
 import { Router } from '@angular/router';
+import { IonModal } from '@ionic/angular';
 
 // import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@awesome-cordova-plugins/native-geocoder/ngx';
-
+// for modal controller
+import { OverlayEventDetail } from '@ionic/core/components';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-gmap',
@@ -19,6 +22,7 @@ export class GmapPage implements OnInit {
 
 
   @ViewChild('map') mapRef: ElementRef<HTMLElement>;
+  @ViewChild(IonModal) modal: IonModal; // to make this page modal
   newMap: GoogleMap;
   center: any = {
     lat: 28.6468935,
@@ -37,11 +41,29 @@ export class GmapPage implements OnInit {
   gymlat:any
   gymlng:any
 
+  name: string; // used for modal
+
   constructor(
     //  nativeGeocoder: NativeGeocoder
     private router: Router,
+    private modalCtrl: ModalController
      ) {}
- 
+
+     // model confirm button
+     confirm() {
+      return this.modalCtrl.dismiss(this.name, 'confirm');
+    }
+
+    cancel() {
+      return this.modalCtrl.dismiss(null, 'cancel');
+    }
+
+    onWillDismiss(event: Event) {
+      const ev = event as CustomEvent<OverlayEventDetail<string>>;
+      if (ev.detail.role === 'confirm') {
+        // this.message = `Hello, ${ev.detail.data}!`;
+      }
+    }
 
 //   options: NativeGeocoderOptions = {
 //     useLocale: true,
@@ -82,7 +104,8 @@ locationfixed(){
 
   localStorage.setItem('gymLat',this.gymlat);
   localStorage.setItem('gymLng',this.gymlng);
-  this.router.navigateByUrl("/gym-add",{replaceUrl:true});
+  // this.router.navigateByUrl("/gym-add");
+  return this.modalCtrl.dismiss(this.name, 'confirm');
 }
 
   ngOnInit() {

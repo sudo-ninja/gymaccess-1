@@ -33,6 +33,8 @@ export class MemberListPage implements OnInit {
   isLoadingResults = false;
   member: Member;
   mcontrol : Mcontrol;
+  _gym_id:any;
+  _notAdmin: boolean = true;
 
   constructor(
     private gestureCtrl: GestureController,
@@ -48,10 +50,14 @@ export class MemberListPage implements OnInit {
     private inviteControlApi:McontrolService
 
   ) { 
-    
+    const GYM_ID = localStorage.getItem('GYM_ID');
+    this._gym_id=GYM_ID;
+    console.log(this._gym_id);
   }
 
   ngOnInit() {
+    
+    // get member associated with this gym only
     this.getMembers();
     
    }
@@ -78,7 +84,8 @@ async getMembers(){
     message: 'Loading....'
   });
   await loading.present();
-  await this.memberApi.getAll()
+  console.log(this._gym_id);
+  await this.memberApi.wildSearch(this._gym_id)
   .subscribe(res=>{
     this.members=res;
     console.log(this.members);
@@ -88,6 +95,7 @@ async getMembers(){
     console.log(err);
     loading.dismiss();
     }
+    
   }
 
   // drop(event:CdkDragDrop<string[]>){

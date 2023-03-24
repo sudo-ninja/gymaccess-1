@@ -105,7 +105,9 @@ export class MembercontrolPage implements OnInit {
         // isInviteAccepted: data.isInviteAccepted,
         m_startdate:data.m_startdate,
         m_enddate:data.m_enddate,
-        m_validdays:data.m_validdays,
+        m_validdays:this.BalanceDays,
+
+        // m_validdays:data.m_validdays,
         m_intime:data.m_intime,
         m_outtime:data.m_outtime,
       });

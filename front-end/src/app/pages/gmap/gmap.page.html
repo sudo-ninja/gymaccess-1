@@ -1,11 +1,21 @@
 <ion-header>
   <ion-toolbar>
-    <ion-button slot="end" (click)="locationfixed()">set</ion-button>
-    <ion-title>gmap</ion-title>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+
+    <ion-title >Set Location </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="locationfixed()"> SET </ion-button>
+    </ion-buttons>
+
+   
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+
 
 <div class="maps">
     <capacitor-google-map #map></capacitor-google-map>

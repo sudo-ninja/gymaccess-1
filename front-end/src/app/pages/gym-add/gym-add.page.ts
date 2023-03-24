@@ -9,6 +9,7 @@ import { GmapPage } from '../gmap/gmap.page';
 
 // to set login user as admin if he added gym
 import {MemberserviceService} from 'src/app/services/memberservice.service';
+import { AlertController, ModalController } from '@ionic/angular';
 
 
 // https://www.positronx.io/mean-stack-tutorial-angular-crud-bootstrap/
@@ -42,16 +43,19 @@ export class GymAddPage implements OnInit {
     public memberApi:MemberserviceService,
     private http:HttpClient,
     private _user:UserService,
+    private alertCtrl: AlertController, 
+    private modalCtrl: ModalController,
+
     
   ) { 
     const user = localStorage.getItem('User');
-    this.loggeduser=user;
+    this.loggeduser=JSON.parse(user!);
     console.log(this.loggeduser._id);
-    this.mainForm();
+    // this.mainForm();
   }
 
   ngOnInit() {
-    // this.mainForm();
+    this.mainForm();
     //  to make sure only user can see this page by login so this is done 
     const user = localStorage.getItem('User')
     // this.addName(user);
@@ -67,6 +71,7 @@ export class GymAddPage implements OnInit {
       this.loggedUserId=this.loggeduser._id;
       this.loggedUserName = this.loggeduser.name;
       this.loggedUserEmail = this.loggeduser.email;
+      // this.mainForm();
       this.http.get(this.usersUrl).subscribe(res=>{
         console.log(res)
         // this.serviceProviders=res;
@@ -86,21 +91,40 @@ export class GymAddPage implements OnInit {
       gym_mobile: [''],
       gym_gstin: [''],
       gym_address_lat: [localStorage.getItem('gymLat'), Validators.required],
-      gym_address_long: [localStorage.getItem('gymLng'), Validators.required],
+      gym_address_long: [localStorage.getItem('gymLng'), Validators.required],      
     })
+    console.log(localStorage.getItem('gymLat'),localStorage.getItem('gymLng'));
   }
 
    // Getter to access form control
    get myForm() {
     return this.gymForm.controls;  }
 
-    getLocation(){
-      this.router.navigateByUrl("/gmap",{replaceUrl:true});
-      this.gmap.locate();
+    async getLocation()
+      // this.router.navigateByUrl("/gmap",{replaceUrl:true});
+
+      // this.gmap.locate();
+      {
+        const modal = await this.modalCtrl.create({
+        component: GmapPage,
+        // componentProps:{id:uid},
+        // breakpoints: [0, 0.5, 0.8],
+        // initialBreakpoint: 0.8,      
+      });
+      await modal.present();
+      const { data, role } = await modal.onWillDismiss();
+
+    if (role === 'confirm') {
+      // this.message = `Hello, ${data}!`;
     }
+
+    }
+    
 
   onSubmit() {
     // this.submitted = true;
+    
+
     if (!this.gymForm.valid) {
       return false;
     } else {
@@ -113,15 +137,16 @@ export class GymAddPage implements OnInit {
       // if gym successfully added with gym ID then user detail to be added in members
       //as Admin with Free access and with gym ID , so first member to
       // any gym is Admin him self  
-      this.adminAdd();
-      console.log('in respose  = ',res._id,this.loggeduser.username,this.loggeduser.email)
 
+      if(!this.memberApi.getMemberByEmail(this.loggeduser.email)){
+      this.adminAdd();
+     
       this.adminForm.patchValue({
         gym_id :res._id,
         m_name : this.loggeduser.username ,
         Emergency_mobile : res.gym_emergency,
         mobile : this.loggeduser.mobile,
-        aadhar: '0000000000000000',
+        aadhar: '0000.0000.0000.0000',
         email: this.loggeduser.email,
         m_address_lat : res.gym_address_lat,
         m_address_long: res.gym_address_long,
@@ -137,14 +162,15 @@ export class GymAddPage implements OnInit {
       });
       this.memberApi.addMember (this.adminForm.value).subscribe((res: any) => {
                   const id = res._id;
-                  console.log('Added as Admin ');
+                  console.log('Added as Admin member Type=',res.memberType);
                 }, (err: any) => {
                   console.log(err)
-                });  
-
-    this.router.navigateByUrl("/gym-list",{replaceUrl:true});
-             
-        },(err: any) => {
+                });
+      this.router.navigateByUrl("/gym-list",{replaceUrl:true});  
+      }else{
+        this.router.navigateByUrl("/gym-list",{replaceUrl:true}); 
+      }
+       },(err: any) => {
           console.log(err);
           // this.isLoadingResults = false;
         });

@@ -20,7 +20,7 @@ export class GymListPage implements OnInit {
   public qrCodeDownloadLink: SafeUrl = "";
 
   gyms:Gym[]=[];
-  _id :string; // This is an observable
+  _id :string; // This is an gym ID 
 
   // Used to store the retrieved documents from the 
   // MongoDB database

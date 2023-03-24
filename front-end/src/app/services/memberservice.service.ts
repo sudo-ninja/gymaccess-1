@@ -67,9 +67,9 @@ export class MemberserviceService {
     return this.http.delete(baseUrl).pipe(catchError(this.errorMgmt));
   }
 
-  wildSearch(mobile: any): Observable<Member[]> {
+  wildSearch(searchstring: any): Observable<Member[]> {
     console.log("i m in wild search loop");
-    return this.http.get<Member[]>(`${searchUrl}=${mobile}`).pipe(catchError(this.errorMgmt));
+    return this.http.get<Member[]>(`${baseUrl}/search/${searchstring}`).pipe(catchError(this.errorMgmt));
   }
 
 

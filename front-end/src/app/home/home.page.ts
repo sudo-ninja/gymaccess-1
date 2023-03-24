@@ -99,7 +99,7 @@ logs: string[] = [];
       console.log(e.detail.value); 
       localStorage.setItem('loggedUserId',this.loggeduser._id);
       console.log(this.loggeduser._id);
-      this.router.navigate(['/gym-list'],{replaceUrl:true});
+      this.router.navigate(['/gym-add'],{replaceUrl:true});
 
     }else if (e.detail.value=="join") {
       console.log(e.detail.value) ;
