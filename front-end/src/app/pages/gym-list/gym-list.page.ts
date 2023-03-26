@@ -22,6 +22,8 @@ export class GymListPage implements OnInit {
   gyms:Gym[]=[];
   _id :string; // This is an gym ID 
 
+  searchTerm: string; // for search filter on page
+
   // Used to store the retrieved documents from the 
   // MongoDB database
 //   public items : Array<any>;
@@ -132,6 +134,13 @@ export class GymListPage implements OnInit {
     // await modal.present();
   }
 
+
+  handleRefresh(event) {
+    setTimeout(() => {
+      this.getGyms();
+      event.target.complete();
+    }, 2000);
+  };
 
 }
 // ****************************************************

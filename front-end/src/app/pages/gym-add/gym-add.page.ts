@@ -61,7 +61,7 @@ export class GymAddPage implements OnInit {
     // this.addName(user);
     console.log(user); // here user info is being display after login successfull
     this.loggeduser=user;
-    console.log(this.loggeduser.name);
+    console.log(this.loggeduser.username);
     if(user==null){
       this.router.navigateByUrl('/login',{replaceUrl:true}) // here URL by replace so that user can not back and go to come again here without login
     }else{
@@ -69,7 +69,7 @@ export class GymAddPage implements OnInit {
       this.loggeduser=JSON.parse(user!);
       console.log('Ng On IT consol', this.loggeduser._id , this.loggeduser.username , this.loggeduser.email , this.loggeduser.mobile); // convert back user info into object so that we can use this info
       this.loggedUserId=this.loggeduser._id;
-      this.loggedUserName = this.loggeduser.name;
+      this.loggedUserName = this.loggeduser.username;
       this.loggedUserEmail = this.loggeduser.email;
       // this.mainForm();
       this.http.get(this.usersUrl).subscribe(res=>{
@@ -91,7 +91,8 @@ export class GymAddPage implements OnInit {
       gym_mobile: [''],
       gym_gstin: [''],
       gym_address_lat: [localStorage.getItem('gymLat'), Validators.required],
-      gym_address_long: [localStorage.getItem('gymLng'), Validators.required],      
+      gym_address_long: [localStorage.getItem('gymLng'), Validators.required],
+      gym_lockId:[''],      
     })
     console.log(localStorage.getItem('gymLat'),localStorage.getItem('gymLng'));
   }

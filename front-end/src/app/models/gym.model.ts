@@ -7,4 +7,5 @@ export class Gym {
     gym_mobile?:string;
     gym_emergency?:string;
     gym_gstin?:string;
+    gym_lockId?:string;
 }

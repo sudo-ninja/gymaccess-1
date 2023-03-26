@@ -36,7 +36,7 @@ export class MemberUpdatePage implements OnInit {
     memberType:'',
     m_joindate:'',
     m_accesstype:'',
-    isInviteAccepted:false,
+    isInviteAccepted:'',
     }
 
   memberForm!: FormGroup;
@@ -51,7 +51,7 @@ export class MemberUpdatePage implements OnInit {
     memberType='';
     m_joindate='';
     m_accesstype='';
-    isInviteAccepted=false;
+    isInviteAccepted='';
 
     isLoadingResults = false;
     // matcher = new MyErrorStateMatcher();
@@ -95,7 +95,7 @@ export class MemberUpdatePage implements OnInit {
       'memberType':['', Validators.required],
       'm_joindate': ['', Validators.required],
       'm_accesstype':['', Validators.required],
-      'isInviteAccepted': false,
+      'isInviteAccepted': ['', Validators.required],
     });
   }
 
@@ -114,7 +114,7 @@ export class MemberUpdatePage implements OnInit {
         memberType: data.memberType,
         m_joindate: data.m_joindate,
         m_accesstype: data.m_accesstype,
-        isInviteAccepted: false,
+        isInviteAccepted: data.m.isInviteAccepted,
       });
     });
   }

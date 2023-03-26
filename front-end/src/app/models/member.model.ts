@@ -11,7 +11,7 @@ m_address_long?:string;
 memberType?:string;
 m_joindate?:string;
 m_accesstype?:string;
-isInviteAccepted?:Boolean;
+isInviteAccepted?:string;
 m_startdate?:string;
 m_enddate?:string;
 m_validdays?:string;

@@ -13,22 +13,51 @@
        <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>  
-      <ion-title>Members List</ion-title>
+
+      <ion-grid>
+        <ion-row>
+          <ion-col><ion-title>Members List</ion-title></ion-col>
+          <ion-col><ion-item>
+            <ion-list>
+              <ion-item>
+                <ion-select>
+                <!-- <ion-select-option *ngFor="let mt of MemberType" [value]="mt">{{ mt.name }}</ion-select-option> -->
+                  <ion-select-option default="true" value="Gym1">Gym Name</ion-select-option>
+                  <ion-select-option value="Gym 2">Gym Name 2</ion-select-option>
+                  
+                </ion-select>
+              </ion-item>
+            </ion-list>
+          </ion-item></ion-col>
+       </ion-row>
+      </ion-grid>
+      
+
     </ion-toolbar>
   </ion-header>
 
 <ion-content class="ion-padding">
        <ion-searchbar 
-        placeholder =' Search Member'
+        placeholder ='Search Member'
+        [(ngModel)]="searchTerm"
         showCancelButton="focus"
-        animated>    
+        animated   
+        >    
       </ion-searchbar>
+
+      <!-- debounce="100"
+        (ionChange)="handleChange($event)" -->
+
+        <!-- to refresh page on pull down  -->
+        <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+          <ion-refresher-content></ion-refresher-content>
+        </ion-refresher>
   
       <ion-card class="ion-margin" 
       appSwipe
       (swipe)="onSwipe($event)"
       SWIPE GESTURE  
-      *ngFor="let m of members">
+      *ngFor="let m of members | filter:searchTerm">
               <ion-card-header>            
                 <ion-card-title>
                   {{m.m_name}}

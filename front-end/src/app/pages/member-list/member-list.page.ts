@@ -10,7 +10,10 @@ import { MemberUpdatePage } from '../member-update/member-update.page';
 import { MembercontrolPage } from '../membercontrol/membercontrol.page';
 
 import{McontrolService} from 'src/app/services/mcontrol.service' // to control invite code 
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+
+import { Observable } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-member-list',
@@ -29,38 +32,74 @@ export class MemberListPage implements OnInit {
   _duration:any;
   _invitationcode:any;
 
+  searchField: FormControl;
+  
+
+
   inviteControlForm!: FormGroup;
+  memberControlForm!:FormGroup;
   isLoadingResults = false;
   member: Member;
   mcontrol : Mcontrol;
   _gym_id:any;
   _notAdmin: boolean = true;
 
+  inviteMemberMail:any;
+  inviteContolAlertMessage:any;
+
+  inviteContolAlertSubHeaderMessage:any;
+  inviteControlHeaderMessage:any;
+  invitaionCodeGenerated:Boolean = false;
+  invitaionAccepted:any;
+
+  loggeduserEmail:any;
+
+  searchTerm: string;
+
+  
+
+  public results = [...this.members];
+
+
   constructor(
     private gestureCtrl: GestureController,
     public loadingController:LoadingController,
     public router :Router,
     public route :ActivatedRoute,
-    public memberApi:MemberserviceService,
+    
     private cd: ChangeDetectorRef, 
     private alertCtrl: AlertController, 
     private modalCtrl: ModalController,
 
     private formBuilder: FormBuilder,
-    private inviteControlApi:McontrolService
+    private inviteControlApi:McontrolService,
+    private mcontrol_s: McontrolService,
+    public memberApi:MemberserviceService,
 
   ) { 
     const GYM_ID = localStorage.getItem('GYM_ID');
     this._gym_id=GYM_ID;
     console.log(this._gym_id);
+    this.searchField = new FormControl('');
   }
 
   ngOnInit() {
     
     // get member associated with this gym only
     this.getMembers();
+    // const searchTerm = this.searchField.valueChanges.pipe(
+    //   startWith(this.searchField.value));
+    // console.log(searchTerm);
+
+    
     
    }
+
+   handleChange(event) {
+    const query = event.target.value.toLowerCase();
+    console.log(query);
+    // this.results = this.members.filter(d => d.indexOf(query) > -1);
+  }
 
 
 async inviteControl(){
@@ -77,7 +116,13 @@ async inviteControl(){
     'inviteCode':['', Validators.required],
     'duration':['',Validators.required],
     }); 
-}  
+} 
+
+async memberControl(){
+    this.memberControlForm=this.formBuilder.group({
+      /// was planning to get three state varibale .. like invite accepted , true , false , pending..
+    });
+}
 
 async getMembers(){
   const loading = await this.loadingController.create({
@@ -126,62 +171,110 @@ async getMembers(){
     initialBreakpoint: 0.8,      
   });
   console.log(res => {
-    this.memberApi.getMember(res.id);});
+    this.memberApi.getMember(res.id);
+  });
   await modal.present();
 }
 
   async inviteMember(uid:string){
    console.log(uid);
-    var iCode = Math.floor(1000000*Math.random());
-      console.log(iCode);
-      this._invitationcode = iCode;
-      const alert = await this.alertCtrl.create({
-        header: 'Invitation Code',
-        subHeader: iCode.toString(),
-        message: 'Please ask member to enter this code in "JOIN GYM", ***Valid For 1 Hours***',
-        buttons: [
-          {
-          text: 'OK',
-          role: 'confirm',
-          handler: () => {
-            this.inviteControl();
-            this.memberApi.getMember(uid).subscribe(res=>{this.member=res;
-              console.log(this.member);
-              this._duration=Date.now()+(2*60*60*1000);
-              console.log('in handelr = ',this._email,this._duration,this._invitationcode,this._memberid,this._mobile)
-              this.inviteControlForm.setValue({
-                member_id : this.member._id,
-                email : this.member.email,
-                mobile: this.member.mobile,
-                inviteCode:this._invitationcode,
-                duration:this._duration,
-              }); 
-
-              this.inviteControlApi.addMcontrol (this.inviteControlForm.value)
-              .subscribe((res: any) => {
-                  const id = res._id;
-                  console.log('Added invitation code');
-                }, (err: any) => {
-                  console.log(err)
-                });
-                
-              }),err=>{
-            console.log(err);   
-             }
-
-          },
-        }
-        ],
-        
-      });      
-   
-      await alert.present();
+   this.memberApi.getMember(uid).subscribe((data)=>{
+    try {
+      console.log(data);
+      console.log(data.isInviteAccepted);
+      this.invitaionAccepted = data.isInviteAccepted;
+      } catch (error) {
+      throw error;
+    }    
+   });
+   if(this.invitaionAccepted=="Yes"){
+      this.presentAlert('Invitaion Accepted','Already Member','');
+   }else{
+    this.CodeAlert(uid,'Invitaion Code','Please Ask Member to Enter this code in JOIN GYM input *** Code Valid for 3 Days *** ');
+   };
+   if(this.mcontrol_s.getMcontrolEmail(this.inviteMemberMail)){
+    
+    this.inviteContolAlertSubHeaderMessage = "iCode";
+    this.inviteControlHeaderMessage = "Invitaion Code";
+    this.inviteContolAlertMessage = 'Please ask member to enter this code in "JOIN GYM", ***Valid For 1 Hours***';
+   }else{
+    this.inviteControlHeaderMessage = "Invitaion Acceptance Pending !";
+    this.inviteContolAlertSubHeaderMessage = 'Already Invitaion Code Generted';
+    this.inviteContolAlertMessage = "Please Ask Member to Enter Code after Clicking in JOIN GYM";
+    this.invitaionCodeGenerated = true;
+   }
+    if(this.invitaionCodeGenerated){
+      console.log("in 164 loop");
+    }
+      
 
   }
 
- 
 
+
+  async presentAlert(header:string,subheader:string, message:string) {
+    const alert = await this.alertCtrl.create({
+      header:header,
+      subHeader: subheader,
+      message:message,
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
+
+  async CodeAlert(uid:any,header:string,message:string){
+
+    var iCode = Math.floor(1000000*Math.random());
+    console.log(iCode);
+    this._invitationcode = iCode;
+    const alert = await this.alertCtrl.create({
+      header: header,
+      subHeader: this._invitationcode.toString(),
+      message: message,
+      buttons: [
+        {
+        text: 'OK',
+        role: 'confirm',
+        handler: () => {
+          this.inviteControl();
+          this.memberApi.getMember(uid).subscribe(res=>{this.member=res;
+            console.log(this.member);
+            this._duration=Date.now()+(2*60*60*1000);
+            console.log('in handelr = ',this._email,this._duration,this._invitationcode,this._memberid,this._mobile)
+            this.inviteControlForm.patchValue({
+              member_id : this.member._id,
+              email : this.member.email,
+              mobile: this.member.mobile,
+              inviteCode:this._invitationcode,
+              duration:this._duration,
+            }); 
+
+            this.inviteControlApi.addMcontrol (this.inviteControlForm.value)
+            .subscribe((res: any) => {
+                const id = res._id;
+                console.log('Added invitation code');
+              }, (err: any) => {
+                console.log(err)
+              });
+              
+            }),err=>{
+          console.log(err);   
+           } },
+      }
+      ],
+      
+    });    
  
+    await alert.present();
+
+  }
+ 
+  handleRefresh(event) {
+    setTimeout(() => {
+      this.getMembers();
+      event.target.complete();
+    }, 2000);
+  };
 
   async basicShare(){
     await Share.share({

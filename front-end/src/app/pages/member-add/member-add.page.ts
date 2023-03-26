@@ -35,10 +35,10 @@ export class MemberAddPage implements OnInit {
     email='';
     m_address_lat= '';
     m_address_long= '';
-    memberType='';
+    memberType='Member';
     m_joindate='';
-    m_accesstype='';
-    isInviteAccepted=false;
+    m_accesstype='Paid';
+    isInviteAccepted='';
     m_startdate='';
     m_enddate='';
     m_validdays='';

@@ -36,6 +36,7 @@ export class GymDetailsPage implements OnInit {
       gym_gstin:['', Validators.required],
       gym_address_lat:['', Validators.required],
       gym_address_long: ['', Validators.required],
+      gym_lockId: ['', Validators.required],
       //   email: [
       //   '',
       //   [
@@ -60,7 +61,8 @@ export class GymDetailsPage implements OnInit {
       gym_mobile: data.gym_mobile,
       gym_gstin: data.gym_gstin,
       gym_address_lat: data.gym_address_lat,
-      gym_address_long: data.gym_address_long
+      gym_address_long: data.gym_address_long,
+      gym_lockId: data.gym_lockId
       });
     });
   }
@@ -74,7 +76,8 @@ export class GymDetailsPage implements OnInit {
       gym_mobile: ['',[Validators.required, Validators.pattern('^[0-9]+$')]],
       gym_gstin: [''],
       gym_address_lat: [''],
-      gym_address_long: ['']
+      gym_address_long: [''],
+      gym_lockId: ['',[Validators.required]]
     });
   }
  

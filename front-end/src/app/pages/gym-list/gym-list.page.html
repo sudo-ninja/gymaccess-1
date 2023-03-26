@@ -6,16 +6,22 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-      <ion-searchbar 
-      placeholder =' Search Location'
-      showCancelButton="focus"
-      animated >    
-      </ion-searchbar>
+<ion-content class="ion-padding">
+  <ion-searchbar 
+  placeholder ='Search Member'
+  [(ngModel)]="searchTerm"
+  showCancelButton="focus"
+  animated   
+  >    
+</ion-searchbar>
+<!-- to refresh page on pull down  -->
+<ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+  <ion-refresher-content></ion-refresher-content>
+</ion-refresher>
 
   <ion-list>
     <div>
-    <ion-card *ngFor="let item of gyms" class="ion-padding">
+    <ion-card *ngFor="let item of gyms | filter:searchTerm" class="ion-padding">
             <ion-card-header>            
               <ion-card-title>
                 Gym Name: {{item.gym_name}}

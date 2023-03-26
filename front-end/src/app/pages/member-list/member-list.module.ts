@@ -13,6 +13,9 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
+import { ReactiveFormsModule } from '@angular/forms';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
+
 // import{ScrollingModule} from '@angular/cdk/scrolling';
 // import{DragDropModule} from '@angular/cdk/drag-drop';
 
@@ -22,7 +25,9 @@ import { RouterModule } from '@angular/router';
     FormsModule,
     IonicModule,
     DirectivesModule,
+    Ng2SearchPipeModule,
     RouterModule,
+    ReactiveFormsModule,
     MemberListPageRoutingModule,
     QRCodeModule
   ],

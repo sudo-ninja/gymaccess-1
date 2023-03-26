@@ -29,7 +29,7 @@ m_address_long:'',
 memberType:'',
 m_joindate:'',
 m_accesstype:'',
-isInviteAccepted:false,
+isInviteAccepted:'',
 }
 
 isLoadingResults = false;
