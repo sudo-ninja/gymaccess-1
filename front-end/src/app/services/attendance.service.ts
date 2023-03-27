@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rxjs';
-
-import{ Attendance } from '../models/attendance';
+import{ Attendance_ } from '../models/attendance.model';
 
 const baseUrl = 'http://localhost:3000/attendance';
 const searchUrl = 'http://localhost:3000/attendance/search/';
@@ -11,29 +11,30 @@ const searchUrl = 'http://localhost:3000/attendance/search/';
 @Injectable({
   providedIn: 'root'
 })
+
 export class AttendanceService {
   baseUri :string = 'http://localhost:3000';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
 
   constructor(private http: HttpClient) { }
-  selectedMember:Attendance;
-  members:Attendance[];
+  selectedMember:Attendance_;
+  attendances:Attendance_[];
 
-  getAll(): Observable<Attendance[]> {
+  getAll(): Observable<Attendance_[]> {
     console.log("i m in get all loop");
-    return this.http.get<Attendance[]>(baseUrl);
+    return this.http.get<Attendance_[]>(baseUrl);
   }
 
-  getAttendance(id: any): Observable<Attendance> {
+  getAttendance(id: any): Observable<Attendance_> {
     console.log("i m in get  by ID loop");
     return this.http.get(`${baseUrl}/${id}`);
   }
 
   addAttendance(data: any): Observable<any> {
     console.log("i m in add member loop");
-    let url = `${this.baseUri}/members`;
-    return this.http.post(url, data).pipe(tap((dat:any)=>console.log(`Added with ID =${dat.id}`)),
+    let url = `${this.baseUri}/attendances`;
+    return this.http.post(url, data).pipe(tap((dat:any)=>console.log(`Added with ID =${dat._id}`)),
     catchError(this.errorMgmt));
   }
 
@@ -50,9 +51,9 @@ export class AttendanceService {
     return this.http.delete(baseUrl).pipe(catchError(this.errorMgmt));
   }
 
-  wildSearch(mobile: any): Observable<Attendance[]> {
+  wildSearch(mobile: any): Observable<Attendance_[]> {
     console.log("i m in wild search loop");
-    return this.http.get<Attendance[]>(`${searchUrl}=${mobile}`).pipe(catchError(this.errorMgmt));
+    return this.http.get<Attendance_[]>(`${searchUrl}=${mobile}`).pipe(catchError(this.errorMgmt));
   }
 
   // Error handling
@@ -70,6 +71,6 @@ export class AttendanceService {
       return errorMessage;
     });
   }
-
-
 }
+
+

@@ -1,4 +1,4 @@
-export class Attendance {
+export class Attendance_ {
     _id?:any;
     member_id?:string;
     checkin_date?:string;

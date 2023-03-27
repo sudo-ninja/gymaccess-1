@@ -64,9 +64,6 @@ export class MemberAddPage implements OnInit {
     // public fb: FormBuilder,
     private formBuilder: FormBuilder,
     public memberApi:MemberserviceService,
-    private cd: ChangeDetectorRef, 
-    private alertCtrl: AlertController, 
-    private modalCtrl: ModalController,
    
   ) {   
   }
