@@ -5,7 +5,7 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 import{Gym} from '../models/gym.model';
 
 const baseUrl = 'http://localhost:3000/gyms';
-const searchUrl = 'http://localhost:3000/gyms/search/';
+const searchUrl = 'http://localhost:3000/gyms/search';
 
 
 @Injectable({
@@ -39,7 +39,7 @@ export class GymService {
 
   update(id: any, data: any): Observable<any> {
     console.log("i m in Update by ID oop");
-    return this.http.put(`${baseUrl}/${id}`, data).pipe(catchError(this.errorMgmt));
+    return this.http.put(`${baseUrl}${id}`, data).pipe(catchError(this.errorMgmt));
   }
 
   delete(id: any): Observable<any> {
@@ -52,7 +52,7 @@ export class GymService {
 
   wildSearch(mobile: any): Observable<Gym[]> {
     console.log("i m in wild search loop");
-    return this.http.get<Gym[]>(`${searchUrl}=${mobile}`).pipe(catchError(this.errorMgmt));
+    return this.http.get<Gym[]>(`${searchUrl}/${mobile}`).pipe(catchError(this.errorMgmt));
   }
 
   // Error handling

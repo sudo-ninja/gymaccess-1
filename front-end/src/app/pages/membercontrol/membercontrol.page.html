@@ -11,60 +11,113 @@
   
   <form [formGroup]="memberForm" (ngSubmit)="onFormSubmit()">
     
-        
-      <!-- <ion-item button="true" id="open-date-input" >
-        <ion-label position="floating">Start Date</ion-label>
-        <ion-text *ngIf="dateValue" slot="end">
-          
-         {{ dateValue | date: 'MMM d, y'}} </ion-text>
-    <!-- {{ dateValue | date: 'h:mm a'}}
-            
-        <ion-popover 
-        [dismissOnSelect]="true" 
-        trigger="open-date-input" 
-        show-backdrop="false" 
-        side="end">
-        <ng-template>
-        <app-date-time-picker
-          [value]="dateValue"
-          type="date"
-          [date_format]="format"
-          (datePickerValue)="change($event)">
-        </app-date-time-picker>
-        </ng-template>
-      </ion-popover> -->
-
-      <ion-item>
-        <ion-label position="floating">Start Date</ion-label>
-      <ion-input 
-        formControlName="m_startdate" 
-        type="date" required 
-        [(ngModel)]="StartDate"
-         > 
-      </ion-input>  
-      <!-- <ion-datetime presentation="date" [preferWheel]="true" ></ion-datetime> -->
-      <!-- <ion-datetime [(ngModel)]="StartDate" [preferWheel]="true" ></ion-datetime>    -->
-
+      <ion-item
+            button="true" 
+            id= "open-date-input">
+              <ion-label>Start Date</ion-label>
+        <!-- <ion-text slot="end">{{startDateValue}}</ion-text> -->
+        <ion-input 
+            formControlName="m_startdate"             
+            [(ngModel)]="startDateValue"
+              >
+          <ion-popover 
+              [dismissOnSelect]="true" 
+              trigger="open-date-input" 
+              show-backdrop="false" 
+              side="end">   
+                <ng-template>        
+                      <app-date-time-picker
+                      #datetime
+                      [value]="startDateValue"
+                      type="date"
+                      [date_format]="format"
+                      (datePickerValue)="change($event)"
+                      >
+                      </app-date-time-picker>
+                </ng-template>
+           </ion-popover>
+        </ion-input>
       </ion-item>
     
+<!-- <ion-item>
+  <ion-label>End Date </ion-label>
+  <ion-input 
+        formControlName="m_enddate" 
+        [(ngModel)]="EndDate"
+        type="date" required>
+        <ion-modal trigger="open-modal">
+          <ng-template>
+            <ion-content>
+              <ion-datetime 
+                #datetime
+                [value]="endDateValue"
+                (ionChange)="EndDatechange(datetime.value)"
+                showDefaultButtons="true"
+                
+                [min]="startDateValue"
+                  >
+                </ion-datetime>
+            </ion-content>
+          </ng-template>
+        </ion-modal> 
+              <!-- [dismissOnSelect]="true" 
+              trigger="open-date-input" 
+              show-backdrop="false" 
+              side="end"> 
+                <ion-datetime 
+                displayFormat="DD/MM/YYYY" 
+                [min]="startDateValue" >
+                </ion-datetime>
+        </ion-popover> 
+  </ion-input>
+</ion-item> -->
 
-      <ion-item>
-        <ion-label position="floating">End Date</ion-label>
+
+      <!-- <ion-item>
+        
         <ion-input 
         formControlName="m_enddate" 
         [(ngModel)]="EndDate"
         type="date" required>
         </ion-input>
+      </ion-item> - -->
+
+      <ion-item
+        button="true" 
+        id= "open-date-input2">
+        <ion-label>End Date</ion-label>
+   <!-- <ion-text slot="end">{{startDateValue}}</ion-text> -->
+          <ion-input 
+              formControlName="m_enddate"               
+              [(ngModel)]="endDateValue"
+              >
+            <ion-popover 
+                [dismissOnSelect]="true" 
+                trigger="open-date-input2" 
+                show-backdrop="false" 
+                side="end">   
+                  <ng-template>        
+                        <app-date-time-picker
+                        [value]="endDateValue"
+                        type="date"
+                        [date_format]="format"
+                        (datePickerValue)="EndDatechange($event)"
+                        [min]="startDateValue"
+                        >
+                        </app-date-time-picker>
+                  </ng-template>
+            </ion-popover>
+          </ion-input>
+
       </ion-item>
 
       <ion-item>
-        <ion-label position="floating">Valid Days</ion-label>
+        <ion-label position="floating">Balance Days : </ion-label>        
         <ion-input 
-        formControlName="m_validdays" 
-        
-        ype="number" required>
-        </ion-input>
-        
+        formControlName="m_validdays"         
+        type="number" required>
+        {{BalanceDays}}
+        </ion-input>        
       </ion-item>
 
       <ion-item>

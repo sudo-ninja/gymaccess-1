@@ -15,6 +15,9 @@ import {MemberserviceService} from './services/memberservice.service';
 // import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@awesome-cordova-plugins/native-geocoder/ngx';
 // import both main and modal page here 
 
+// custom schema for swiper js
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -34,6 +37,6 @@ import {MemberserviceService} from './services/memberservice.service';
     }
     ],
   bootstrap: [AppComponent],
-  
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {}

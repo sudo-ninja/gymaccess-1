@@ -70,3 +70,5 @@ Thumbs.db
 # Id , Password 
 environments
 AndroidManiFest.xml
+environment.ts
+environment.prod.ts

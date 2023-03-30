@@ -12,8 +12,6 @@ import { MembercontrolPage } from '../membercontrol/membercontrol.page';
 import{McontrolService} from 'src/app/services/mcontrol.service' // to control invite code 
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { Observable } from 'rxjs';
-import { startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-member-list',
@@ -22,6 +20,7 @@ import { startWith } from 'rxjs/operators';
 })
 export class MemberListPage implements OnInit {
   // @ViewChildren(IonCard,{read:ElementRef})
+  BalanceDays_ = localStorage.getItem('balanceDays');
 
   members: Member[] = [];
   mcontrols: Mcontrol[] =[];

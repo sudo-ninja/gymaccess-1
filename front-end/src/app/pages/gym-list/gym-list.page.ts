@@ -8,6 +8,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {GymService} from './../../services/gym.service';
 import { Gym } from 'src/app/models/gym.model';
 import { GymDetailsPage } from '../gym-details/gym-details.page';
+import { UserService } from 'src/app/services/user.service';
 
 
 @Component({
@@ -23,6 +24,8 @@ export class GymListPage implements OnInit {
   _id :string; // This is an gym ID 
 
   searchTerm: string; // for search filter on page
+  loggeduser: any; // serviceprovider means admin as he is providing service to members.
+
 
   // Used to store the retrieved documents from the 
   // MongoDB database
@@ -40,10 +43,13 @@ export class GymListPage implements OnInit {
    public loadingController:LoadingController,
    private modalCtrl: ModalController,
    private cd: ChangeDetectorRef, 
+   private _user:UserService,
 
   ) { 
-    // this.qrcode_data = 'Your QR code data string';
-     }
+    const user = localStorage.getItem('User');
+    this.loggeduser=JSON.parse(user!);
+    console.log(this.loggeduser._id);
+    }
 
   
 
@@ -58,16 +64,26 @@ export class GymListPage implements OnInit {
     console.log(gym_added); // here user info is being display after login successfull
     console.log(this._id);
    //  this.retrieve();
-    this.getGyms();
+   const user = localStorage.getItem('User')
+   if(user==null){
+    this.router.navigateByUrl('/login',{replaceUrl:true}) // here URL by replace so that user can not back and go to come again here without login
+  }else{
+    console.log(JSON.parse(user!)); // convert back user info into object so that we can use this info
+    this.loggeduser=JSON.parse(user!);
+    console.log('Ng On IT consol', this.loggeduser._id , this.loggeduser.username , this.loggeduser.email , this.loggeduser.mobile); // convert back user info into object so that we can use this info
+    
+  }
+
+    this.getGyms(this.loggeduser._id);
 
   }
 
-  async getGyms(){
+  async getGyms(id:any){
    const loading = await this.loadingController.create({
      message: 'Loading....'
    });
    await loading.present();
-   await this.gymApi.getAll()
+   await this.gymApi.wildSearch(id)
    .subscribe(res=>{
      this.gyms=res;
      //  localStorage.setItem('thisGym',JSON.stringify(res));
@@ -137,7 +153,7 @@ export class GymListPage implements OnInit {
 
   handleRefresh(event) {
     setTimeout(() => {
-      this.getGyms();
+      this.getGyms(this.loggeduser._id);
       event.target.complete();
     }, 2000);
   };

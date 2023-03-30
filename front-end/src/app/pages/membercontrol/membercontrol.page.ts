@@ -13,6 +13,7 @@ import { ModalController } from '@ionic/angular';
 import * as moment from 'moment';
 
 import * as TimeUnit from 'timeunit';
+import { parse } from 'path';
 
 
 @Component({
@@ -23,9 +24,12 @@ import * as TimeUnit from 'timeunit';
 export class MembercontrolPage implements OnInit {
 
  value:any;
- dateValue = new Date(Date.now()).toISOString();
+ startDateValue = new Date(Date.now()).toISOString();
+ endDateValue= new Date().toString();
  format = 'yyyy-MM-dd';
 //  format = 'HH:mm';
+formatedStartDate:any
+formatedEndDate:any;
 
   id:any;
   idu:any;
@@ -72,8 +76,8 @@ export class MembercontrolPage implements OnInit {
     this.getMembercontrol(idu);
     localStorage.setItem('ID',this.idu);
     console.log(idu,this.id,this.idun);
-    // console.log(this.StartDate);
-
+    
+   
     // this.route.snapshot.params[this.id];
    
     this.memberForm = this.formBuilder.group({
@@ -91,31 +95,16 @@ export class MembercontrolPage implements OnInit {
     this.memberApi.getMember(id).subscribe((data: any) => {
       this.id = data.id;
       this.memberForm.patchValue({
-        // gym_id: data.gym_id,
-        // m_name: data.m_name,
-        // Emergency_mobile: data.Emergency_mobile,
-        // mobile: data.mobile,
-        // aadhar: data.aadhar,
-        // email: data.email,
-        // m_address_lat: data.m_address_lat,
-        // m_address_long: data.m_address_long,
-        // memberType: data.memberType,
-        // m_joindate: data.m_joindate,
-        // m_accesstype: data.m_accesstype,
-        // isInviteAccepted: data.isInviteAccepted,
+
         m_startdate:data.m_startdate,
         m_enddate:data.m_enddate,
         m_validdays:this.BalanceDays,
 
-        // m_validdays:data.m_validdays,
+
         m_intime:data.m_intime,
         m_outtime:data.m_outtime,
       });
     });
-
-    // this.memberApi.getMember(id).subscribe((data: any) => {
-    //   console.log(data);
-        // });
 }
 
 
@@ -123,19 +112,16 @@ export class MembercontrolPage implements OnInit {
 
 onFormSubmit() {
   this.isLoadingResults = true;
-  // const Id = localStorage.getItem('ID')    
-  console.log(this.idun);
-
+  // console.log(this.idun);
   let idux = this.id||this.route.snapshot.paramMap.get('id')||this.idun;
-  console.log(idux , this.id, this.idun);
+  // console.log(idux , this.id, this.idun);
+ 
   this.memberApi.update(idux, this.memberForm.value).subscribe((res: any) => {
-    // console.log(res._id);
-    // console.log(this.idu);
-    // console.log(this.idun);      
+   
       this.idu = res._id;
       // localStorage.setItem('ID', JSON.stringify(this.id));
       this.isLoadingResults = false;
-      // console.log(idux);
+      
       this.router.navigateByUrl('/member-list',{replaceUrl:true});
       this.modalCtrl.dismiss();
     }, (err: any) => {
@@ -143,24 +129,42 @@ onFormSubmit() {
       this.isLoadingResults = false;
     });
 
-    this.memberForm2 = this.formBuilder.group({   
-      'm_validdays': this.BalanceDays,    
-    });
+    // this.memberForm2 = this.formBuilder.group({   
+    //   'm_validdays': this.BalanceDays,    
+    // });
 
     
-    // console.log(this.StartDate);
+    console.log("146 line",this.StartDate);
     this.idu= this.idun;
     this.validDaysCalc();
 
 }
 
 change(event) {
-  console.log(event);
-  this.dateValue = event;
-  const new_date_value = this.formatDate(this.dateValue, this.format);
+  this.StartDate=event;
+  // this.m_startdate = event;
+  console.log((new Date(event)).getTime()); // to convert in millisecond time stamp as same will be used to compare
+  this.startDateValue = event;
+  // this.startDateValue = ((new Date(event)).getTime()).toString();
+  const new_date_value = this.formatDate(this.startDateValue, this.format);
   console.log(new_date_value);
   // this.StartDate=new_date_value;
-}  
+} 
+
+EndDatechange(event) {
+  this.EndDate=event;
+  // this.m_startdate = event;
+  console.log((new Date(event)).getTime());
+  this.endDateValue = event;
+  // this.endDateValue = ((new Date(event)).getTime()).toString();
+  // const new_date_value = this.formatDate(this.endDateValue, this.format); // this date is not in ISOstring so formate not needed
+  // console.log(new_date_value);
+  // this.StartDate=new_date_value;
+  // this.formatedEndDate=this.formatDate( format(event,'dd-MM-yyyy'), this.format);
+  // console.log(this.formatedEndDate);
+} 
+
+
 
 formatDate(value: string, date_format = 'MMM dd yyyy') {
   return format(parseISO(value), date_format);
@@ -178,9 +182,10 @@ async validDaysCalc(){
   var _EDModified = new Date(this.EndDate);
   
 
-  const Time = _EDModified.getTime()-_todayModified.getTime();
+  const Time = _EDModified.getTime()-_SDModified.getTime();
   this.BalanceDays = Math.floor(Time/(1000*3600*24))+1;
   console.log('Duration Balance Days:',this.BalanceDays);
+  localStorage.setItem('balanceDays',this.BalanceDays);
 
 
   // var duration = moment.duration(_EndDate.diff(_todayDate));
@@ -201,7 +206,9 @@ async validDaysCalc(){
 
 }
 
-
-
+// using get set method pass this balance days to member list page as .ts and from there use under {{}} at html page
+//here as of now leave valid days field hidden , later on may use for other purpose
+// also use date time picker componet with different id to time and time out setting also
+// after that correct memeber action page use same parsing methode for date time
 
 }

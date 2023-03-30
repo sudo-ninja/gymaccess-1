@@ -9,7 +9,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Geolocation } from '@capacitor/geolocation';
 
 //call service for attendance here
+import { Member } from 'src/app/models/member.model';
 import {MemberserviceService} from 'src/app/services/memberservice.service';
+
 import {AttendanceService} from 'src/app/services/attendance.service';
 import { AlertController, ModalController } from '@ionic/angular';
 
@@ -29,6 +31,7 @@ export class MemberActionPage implements OnInit {
   attendance_lat:any;
   attendance_lon:any;
 
+  userEndDate:any;
   username:String='';
 
   serviceProviders: any; // serviceprovider means admin as he is providing service to members.
@@ -42,11 +45,12 @@ export class MemberActionPage implements OnInit {
   constructor(
     private router:Router,
     private http:HttpClient,
-    private atten:AttendanceService,
+    private attenApi:AttendanceService,
     private formBuilder: FormBuilder,
     private alertCtrl: AlertController, 
     private modalCtrl: ModalController,
     private _user:UserService,
+    private memberApi:MemberserviceService,
 
   ) {
     this._user.user().subscribe(
@@ -145,8 +149,7 @@ export class MemberActionPage implements OnInit {
   }
 
   async attendance(){
-    console.log("res");
-    
+    console.log("res");    
     this.attendanceForm = this.formBuilder.group({
       'member_id' : this.loggeduser._id,
       'checkin_date' : new Date().toString(),
@@ -156,13 +159,14 @@ export class MemberActionPage implements OnInit {
       'att_long':[this.attendance_lon, [Validators.required ]] ,
     });
 
-    this.atten.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
-      console.log(res);
+    this.validAttendance(new Date(),new Date().toLocaleTimeString(),this.loggeduser.email);
+    // this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
+    //   console.log(res);
 
-    },(err: any) => {
-      console.log(err);
-      this.isLoadingResults = false;
-    });
+    // },(err: any) => {
+    //   console.log(err);
+    //   this.isLoadingResults = false;
+    // });
 
 
   }
@@ -187,25 +191,90 @@ async fetchLocation(){
     this.attendance_lon=coordinates.coords.longitude;
 }
 
-validAttendance(current_date:any,current_time:any,email:any){
+async validAttendance(current_date:any,current_time:any,email:any){
 
   // here we will first fetch member using email id , 
-  //member detail from DB , 
-  //and from member.start date , and member.end date
-  //compare that date and time to current date and time .. 
-  //if DB date time > than or equals to current date time 
-  // then only return True 
-  //that means valid attendance 
-  //and Open lock 
+  this.memberApi.getMemberByEmail(email).subscribe((res:any)=>{
+    console.log((new Date(res.m_enddate)).getTime());  
+    // as Saved date taken from MControl is not in same format.. first we need to use universal same format 
+    // that is new.Date()
+    // console.log(res);
+    // console.log(res.email);
+    this.userEndDate = (new Date(res.m_enddate)).getTime();  
+    console.log((new Date(current_date)).getTime());  
+    try {
+      if(((new Date(res.m_enddate)).getTime())>=((new Date(current_date)).getTime()))
+        {
+            console.log("DB out time :", res.m_outtime, "current time:",current_time);
+            if(res.m_outtime>=current_time){
+              console.log("valid attendance add to DB");
+              this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
+                this.openLock(); // iff attendance saved then only open the lock
+              console.log(res);      
+        },(err: any) => {
+            console.log(err);
+            this.isLoadingResults = false;
+          });
+        }else{
+          console.log("Not Allowed at this Time..Contact Admin");
+          this.presentAlert("Not Allowed","Contact Admin","Access in Allowed Time Only");
+        }
 
+      }else {
+        console.log("Time Expired Contact Admin to Increase Validity");
+        this.presentAlert("Validity Expired","Contact Admin","");
+        console.log("current date :", current_date, "DB End Date:",res.m_enddate);
+      };
+    } catch (error) {
+      throw error;
+    }
+  });
+   
 }
 
 openLock(){
+  console.log("Lock Open Comand Given");
+  console.log("Lock succesfull open");
+// need to pass unique Lock ID 
+// unique lock ID will be saved along with Gym Detail
+// unique lock ID will be topic for that lock 
   // if valid attendance 
   // then only open lock 
   // if not valid ..show alert control .. 
   //contact Gym Administrator    
 }
 
+// also get gym ID by QR scaner result and 
+// using that search gym 
+// cross verify if member have that gym id 
+//if yes then check 
+// gym location lat long and user him self lat long 
+// compare them ( use some java script formula)
+// set limit of verified location distance allowed
+
+// make one more page for settings 
+/*take following data from users
+1. allowed disatnce that will be used for GPS location ( minimum 100m)
+2. how many time user allowed to open lock in given time for paid memebr (minimum 6)
+3. allow your gym location to be seen to non members of your gym 
+4. allow your members location to be seen to other gyms
+5. set reminder for balance days ( Minimum days 5)*/
+
+/* menue page for admin 
+1. get member attendance motnhly 
+2. Print again QR code for gym 
+3. Edit Gym Info ..  
+4. logout 
+5. non clickable  page 
+5.1 Member Fees
+5.2 total amount receivable per month / year 
+5.3 amount received ?
+5.4 amount balance  ?
+6.0 set fees alert */
+
+/* menue for member
+1. My profile allowed chng name , mobile , locations,
+2. set alarm for gym time
+3. my performance (show attendance) */
 
 }

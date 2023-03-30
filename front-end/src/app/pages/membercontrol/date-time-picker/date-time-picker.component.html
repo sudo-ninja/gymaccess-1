@@ -1,9 +1,22 @@
 <ion-datetime 
   locale="en-IN"
-  #datetime
+  #datetime   
   [value]="value"
+  size="cover"
   (ionChange)="change(datetime.value)"
   [presentation]="type"  
   [min]="min"
-  [max]="max">
+  [max]="max"
+  hourCycle="h24"
+  >
 </ion-datetime>
+
+<!-- <ion-datetime 
+  locale="en-IN"
+  #datetime2   
+  [value]="value"
+  (ionChange)="change(datetime2.value)"
+  [presentation]="type"  
+  [min]="min"
+  [max]="max">
+</ion-datetime> -->

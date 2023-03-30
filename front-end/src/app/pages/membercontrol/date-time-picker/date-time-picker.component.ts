@@ -15,10 +15,13 @@ export class DateTimePickerComponent implements OnInit {
   @Input() min;
   @Input() max;
   @Input() date_format;
-  @Input() value = new Date(Date.now()).toISOString();
+  // @Input() value = new Date(Date.now()).toISOString();
+  @Input() value = Date.now().toString();
+  @Input() value2 = new Date(Date.now()).toISOString();
   @Output() datePickerValue: EventEmitter<any> = new EventEmitter<any>();
 
   dateValue = '';
+  dateValue2 = new Date('2022-03-15').toISOString();
 
   constructor() { }
 
