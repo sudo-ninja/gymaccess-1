@@ -88,7 +88,7 @@ export class MemberListPage implements OnInit {
     this.getMembers();
     // const searchTerm = this.searchField.valueChanges.pipe(
     //   startWith(this.searchField.value));
-    // console.log(searchTerm);
+    console.log(this.searchTerm);
 
     
     
