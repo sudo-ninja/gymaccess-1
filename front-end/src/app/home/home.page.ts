@@ -15,6 +15,9 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
 
 //to make member as admin or member by setting isMembertype as True from false;
+// To make sure if GYM already added by user then neviagte to gym list page
+import {GymService} from './../services/gym.service';
+
 
 
 @Component({
@@ -56,6 +59,7 @@ export class HomePage implements OnInit{
     private http:HttpClient,
     private _user:UserService,
     private alertController: AlertController,
+    public gymApi:GymService,
     /////google map///
     private gmaps: GmapsService,
     private mcontrol_s: McontrolService,
@@ -66,7 +70,7 @@ export class HomePage implements OnInit{
   ) {
     this._user.user().subscribe(
       res=>{
-        this.addName(res),
+        // this.addName(res),
         console.log(res);
       },
       error=>{
@@ -75,10 +79,31 @@ export class HomePage implements OnInit{
       }
      )
      const user = localStorage.getItem('User')
-      if(JSON.parse(user!).isMember){     
-      this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
-      localStorage.setItem('User',JSON.stringify(user));
-    };
+     console.log(JSON.parse(user!).isMember);
+     console.log(JSON.parse(user!)._id);
+      if(JSON.parse(user!).isMember)
+      {           
+      this.router.navigateByUrl('/member-action',{replaceUrl:true});    
+      }
+      else
+      {
+      this.gymApi.wildSearch(JSON.parse(user!)._id).subscribe((res:any)=>{
+        try {
+          console.log(res.length);
+          if(res.length<1)
+          {
+            console.log("No gym Add Gym Please")
+          }
+          else
+          {
+            this.router.navigateByUrl('/gym-list',{replaceUrl:true});
+          }
+        } catch (error) {
+          throw error;
+        }
+      });
+  }
+  
   }
 
     addName(data:any){
@@ -123,7 +148,10 @@ logs: string[] = [];
       console.log(this.loggeduser.email); // convert back user info into object so that we can use this info
       this.loggeduserEmail=this.loggeduser.email;
       // this.getUsercontrol(this.loggeduser.email);
+
       this.loggeduserId=this.loggeduser._id;
+      console.log(JSON.parse(user!)._id); // convert back user info into object so that we can use this info
+
       //here check if logged user is member then switch direct to member action page 
       // if logged user is not member then direct to gym list page .
       if(this.loggeduser.isMembertype===true){
@@ -131,6 +159,7 @@ logs: string[] = [];
         localStorage.setItem('User',JSON.stringify(this.loggeduser));
       }
 
+      
 
       //once member leave gym he has to again enter invitaion code as his status for member will be false, 
       //if admin leave the gym then check if there is any other admin or not , if admin is there then only allow 

@@ -56,6 +56,8 @@ export class MemberAddPage implements OnInit {
   MT:any;
   accesstype:'';
   membertype:'';
+    // used to conver input text value into lowercase
+  _textValue:string
 
 
 
@@ -95,6 +97,7 @@ export class MemberAddPage implements OnInit {
         'aadhar':[null, Validators.required],
         'email':[null, [
           Validators.required,
+          // Validators.toLowerCase(),
           // Validators.minLength(5),
           // Validators.maxLength(80),
           // Validators.pattern("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")
@@ -130,7 +133,7 @@ export class MemberAddPage implements OnInit {
 
         onFormSubmit() {
           this.isLoadingResults = true;
-          console.log(this.memberForm.value);
+          console.log(this.memberForm.controls['email'].value.toLowerCase());
           this.memberApi.addMember(this.memberForm.value)
             .subscribe((res: any) => {
                 const id = res._id;
@@ -164,6 +167,12 @@ export class MemberAddPage implements OnInit {
           // this.memberForm.get('memberType').setValue(e, {
           //   onlySelf: true,
           //   })
+        }
+
+        //to convert input data as lowercase 
+        ConvertToLower(evt)
+         {
+          this._textValue = evt.toLowerCase();
         }
        
         
