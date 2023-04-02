@@ -278,3 +278,5 @@ openLock(){
 3. my performance (show attendance) */
 
 }
+
+// add slide show on member action page under DiV 

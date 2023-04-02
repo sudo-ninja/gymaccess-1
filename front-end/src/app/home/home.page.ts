@@ -17,6 +17,7 @@ import { JsonPipe } from '@angular/common';
 //to make member as admin or member by setting isMembertype as True from false;
 // To make sure if GYM already added by user then neviagte to gym list page
 import {GymService} from './../services/gym.service';
+import { MemberserviceService } from '../services/memberservice.service';
 
 
 
@@ -57,8 +58,8 @@ export class HomePage implements OnInit{
   constructor(
     private router:Router,
     private http:HttpClient,
-    private _user:UserService,
-    private alertController: AlertController,
+    private userApi:UserService,
+    private alertCtrl: AlertController,
     public gymApi:GymService,
     /////google map///
     private gmaps: GmapsService,
@@ -66,9 +67,11 @@ export class HomePage implements OnInit{
     private renderer: Renderer2,
     private actionSheetCtrl: ActionSheetController,
     private formBuilder: FormBuilder,
+    public memberApi:MemberserviceService,
+    
 
   ) {
-    this._user.user().subscribe(
+    this.userApi.user().subscribe(
       res=>{
         // this.addName(res),
         console.log(res);
@@ -93,6 +96,7 @@ export class HomePage implements OnInit{
           if(res.length<1)
           {
             console.log("No gym Add Gym Please")
+            this.presentAlert("You Are Not Gym Owner!!","You Are not Member of Any Gym","If you Want to Add Gym then click on My GYM to Add Gym or Please Ask Gym Owner to Invite you to Join Gym")
           }
           else
           {
@@ -128,7 +132,8 @@ logs: string[] = [];
 
     }else if (e.detail.value=="join") {
       console.log(e.detail.value) ;
-      this.joinGymAlert();
+      this.checkIfInvited(this.loggeduserEmail);
+      // this.joinGymAlert();
      }
   }
   
@@ -178,7 +183,7 @@ logs: string[] = [];
     // 
     
     logout(){
-      this._user.logout()
+      this.userApi.logout()
       .subscribe(
         data=>{console.log(data);this.router.navigate(['/login'])},
         error=>console.error(error)
@@ -194,7 +199,7 @@ logs: string[] = [];
 
   // join gym alert to get verification code 
   async joinGymAlert() {
-    const alert = await this.alertController.create({
+    const alert = await this.alertCtrl.create({
       header: 'Please enter Verification Code',
       buttons: [
                 {
@@ -209,19 +214,21 @@ logs: string[] = [];
                         if(var_code === this.invitationCode){
                           console.log("code matched");
                           this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
-                          this._user.getUserbyEmail(this.loggeduserEmail).subscribe((res:any)=>{
-                            try {
-                              console.log(res);
-                            } catch (error) {
-                              console.log(error);                              
-                            }
-                          });
-                          this._user.update(this.loggeduserId,{"isMember":true}).subscribe((res:any)=>{
-                            console.log(" in update ",res._id);
-                          },
-                          (err: any) => {
-                            console.log(err);
-                          });
+                          this.updateUserToMember();
+                          this.updateMemberInvitedAccepted(this.loggeduserEmail,"Yes");
+                          // this.userApi.getUserbyEmail(this.loggeduserEmail).subscribe((res:any)=>{
+                          //   try {
+                          //     console.log(res);
+                          //   } catch (error) {
+                          //     console.log(error);                              
+                          //   }
+                          // });
+                          // this.userApi.update(this.loggeduserId,{"isMember":true}).subscribe((res:any)=>{
+                          //   console.log(" in update ",res._id);
+                          // },
+                          // (err: any) => {
+                          //   console.log(err);
+                          // });
                         }
                        });
                       //find by email id 
@@ -262,9 +269,75 @@ logs: string[] = [];
     await alert.present();
   }
 
+  checkIfInvited(email:any){
+    this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
+      console.log("in Check if Invited");
+      try {
+        if(data.isInviteAccepted=="Not")
+        {
+          console.log("Please ask respective gym owner to invite you to join gym"); 
+          this.presentAlert("Gym Not Joined","Please Ask Gym Admin to Invite to Join Gym","")
+        }
+        if(data.isInviteAccepted=="Pending")
+        {
+          console.log("Please Enter Invitaion Code"); 
+          this.joinGymAlert();
+        }
+        if(data.isInviteAccepted=="Yes")
+        {
+          this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
+         }
+
+      } catch (error) {
+        throw error;
+      }
+    });
+
+  }
+
+  updateUserToMember(){
+    this.userApi.getUserbyEmail(this.loggeduserEmail).subscribe((res:any)=>{
+      try {
+        console.log(res);
+      } catch (error) {
+        console.log(error);                              
+      }
+    });
+    this.userApi.update(this.loggeduserId,{"isMember":true}).subscribe((res:any)=>{
+      console.log(" in update ",res._id);
+    },
+    (err: any) => {
+      console.log(err);
+    });
+  }
+
+  updateMemberInvitedAccepted(email:any,Yes:any)
+  {
+    console.log("in invitaion code setup")
+    this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
+    this.memberApi.update(data._id,{
+      "isInviteAccepted":Yes // Status Change to Yes
+    }).subscribe((res: any) => {
+      const id = res._id;
+      console.log('invitaion type change to Yes');
+    }, (err: any) => {
+      console.log(err)
+    });
+      });    
+  }
+
+  async presentAlert(header:string,subheader:string, message:string) {
+    const alert = await this.alertCtrl.create({
+      header:header,
+      subHeader: subheader,
+      message:message,
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
 
   getUsercontrol(_Email:any) {
-  //   this._user.getUserbyEmail(_Email).subscribe((data: any) => {
+  //   this.userApi.getUserbyEmail(_Email).subscribe((data: any) => {
   //      console.log('Ismember=',data);
   //       this.userForm.patchValue({
   //         isMember:data.isMember,

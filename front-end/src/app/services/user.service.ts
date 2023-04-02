@@ -26,7 +26,7 @@ constructor(private _http:HttpClient,
   }
   
   login(body:any){
-    return this._http.post('url/users/login',body,{
+    return this._http.post('this.url/users/login',body,{
       observe:'body',
       withCredentials:true,
       headers:new HttpHeaders().append('Content-Type','application/json')
@@ -47,7 +47,7 @@ constructor(private _http:HttpClient,
   }
 
   logout(){
-    return this._http.get('url/users/logout',{
+    return this._http.get('/users/logout',{
       observe:'body',
       withCredentials:true,
       headers:new HttpHeaders().append('Content-Type','application/json')

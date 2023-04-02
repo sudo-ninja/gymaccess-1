@@ -36,7 +36,7 @@ export class MemberListPage implements OnInit {
 
 
   inviteControlForm!: FormGroup;
-  memberControlForm!:FormGroup;
+  memberForm!:FormGroup;
   isLoadingResults = false;
   member: Member;
   mcontrol : Mcontrol;
@@ -50,6 +50,7 @@ export class MemberListPage implements OnInit {
   inviteControlHeaderMessage:any;
   invitaionCodeGenerated:Boolean = false;
   invitaionAccepted:any;
+  invitaionButtonDisabled:Boolean = false;
 
   loggeduserEmail:any;
 
@@ -58,6 +59,7 @@ export class MemberListPage implements OnInit {
   tempid:any;
   tempDuration:any;
   tempEmail:any;
+  memberId:any;
 
   
 
@@ -93,6 +95,7 @@ export class MemberListPage implements OnInit {
     // const searchTerm = this.searchField.valueChanges.pipe(
     //   startWith(this.searchField.value));
     console.log(this.searchTerm);
+    this.memberControl(); // here its call so that patch value can work
 
     
     
@@ -122,7 +125,8 @@ async inviteControl(){
 } 
 
 async memberControl(){
-    this.memberControlForm=this.formBuilder.group({
+    this.memberForm=this.formBuilder.group({
+      'isInviteAccepted':[]
       /// was planning to get three state varibale .. like invite accepted , true , false , pending..
     });
 }
@@ -188,29 +192,24 @@ async getMembers(){
       console.log(data.email); // this email will search in member control DB if already this exist 
       // once invite accepted or time passed lets delet this from DB so one time only one code is there
       this.invitaionAccepted = data.isInviteAccepted;
+
+    if(this.invitaionAccepted==="Yes"){
+        this.presentAlert('Invitaion Accepted','Already Member','');
+        console.log("disable invitaion button");
+        this.invitaionButtonDisabled=true;
+     }else if(this.invitaionAccepted==="Pending")
+     {
+        console.log("call function to get alreay generated code");
+        this.CheckIfInvited(uid);
+     }
+     else{  
+          this.CodeAlert(uid,'Invitaion Code','Please Ask Member to Enter this code in JOIN GYM input *** Code Valid for 3 Days *** ');
+      };
       } catch (error) {
       throw error;
     }    
    });
-   if(this.invitaionAccepted=="Yes"){
-      this.presentAlert('Invitaion Accepted','Already Member','');
-      console.log("disable invitaion button");
-   }else{
-        this.CodeAlert(uid,'Invitaion Code','Please Ask Member to Enter this code in JOIN GYM input *** Code Valid for 3 Days *** ');
-        // to Solve problem of Code check 
-        // make one more field in member form . 
-        // is code generated ?
-        //as soon as code generated call member API 
-        // patch True code generted field
-        // now again check that field if code generted 
-        // by default keep that False,
-        // when delet code make that false again .
-        // always check if Invite accepted then ignore code generated or not 
-        // if invite not accepted then only check if code genrted tru or false.
-        // if false then generate code 
-        
-        // this.CheckIfInvited(uid);
-  };
+   
 
   //  if(this.mcontrol_s.getMcontrolEmail(this.inviteMemberMail)){
     
@@ -271,10 +270,16 @@ async getMembers(){
               duration:this._duration,
             }); 
 
+            // this.memberForm.patchValue({
+            //   isInviteAccepted:"Pending"
+            // });
+
             this.inviteControlApi.addMcontrol (this.inviteControlForm.value)
             .subscribe((res: any) => {
                 const id = res._id;
                 console.log('Added invitation code');
+                console.log(this.member.email);
+                this.setInvitaion(this.member.email,"Pending");
               }, (err: any) => {
                 console.log(err)
               });
@@ -298,6 +303,30 @@ async getMembers(){
     }, 2000);
   };
 
+  setInvitaion(email:any,pending:any){
+  
+    console.log("in invitaion code setup")
+    this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
+      this.memberId = data._id
+      // console.log(this.memberId);
+      this.memberForm.patchValue(
+        {
+          isInviteAccepted:pending // Status Change to Pending
+        });
+
+    // some error as update PUT not getting ID
+    console.log(this.memberId);
+    this.memberApi.update(this.memberId,this.memberForm.value).subscribe((res: any) => {
+      const id = res._id;
+      console.log('invitaion type change to =',res.isInviteAccepted);
+    }, (err: any) => {
+      console.log(err)
+    });
+        
+    });    
+    
+  }
+
   async basicShare(){
     await Share.share({
       title:' This will appear in subject  ',
@@ -312,29 +341,32 @@ async getMembers(){
       try {
         this.tempEmail = res.email;
         console.log(this.tempEmail);
+        this.inviteControlApi.getMcontrolEmail(this.tempEmail).subscribe((res:any)=>{
+          try {
+          console.log(res);
+          if(res.inviteCode)
+          {
+            console.log("already invited..get invitaion code from DB only")
+            console.log(res.inviteCode);
+            this.presentAlert(res.inviteCode,"Already Invited","Invitaion Acceptance is Still Pending!!");
+            // return res.invitationCode;
+          }else
+          {
+            console.log("not yet invited or invitation expired");
+            // this.CodeAlert(uID,'Invitation Code','Please Ask Member to Enter this code in JOIN GYM input *** Code Valid for 3 Days *** ');
+    
+            // return false;
+          }
+          } catch (error) {
+            throw error;
+          }
+        });
       } catch (error) {
         throw error;
       }
     });       
 
-    this.inviteControlApi.getMcontrolEmail(this.tempEmail).subscribe((res:any)=>{
-      try {
-      console.log(res.length());
-      if(res.length){
-        console.log("already invited..get invitaion code from DB only")
-        console.log(res.inviteCode);
-        this.presentAlert(res.inviteCode,"Already Invited","Please Ask Member to Enter This Code");
-        // return res.invitationCode;
-      }else{
-        console.log("not yet invited or invitation expired");
-        this.CodeAlert(uID,'Invitation Code','Please Ask Member to Enter this code in JOIN GYM input *** Code Valid for 3 Days *** ');
-
-        // return false;
-      }
-      } catch (error) {
-        throw error;
-      }
-    });
+    
   }
 
   deleteCodeIfacceptedOrExpired(email:any,ifAccepted:boolean){    
