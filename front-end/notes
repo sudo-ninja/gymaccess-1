@@ -13,3 +13,23 @@ npm install @capacitor/geolocation
 to convert location into address for that location use native geocoader plug in 
 npm install cordova-plugin-nativegeocoder 
 npm install @awesome-cordova-plugins/native-geocoder 
+
+03-04-23
+Add Slidshow on Member action page
+Disabled Invite Member button once Member accept the Invitation 
+Disable attendance if not near to Gym 
+Correct Gmap with Gps Location , remove locate me button 
+
+**Major Problem in Ionic Date-time = correct that**
+
+
+05-04-23
+Add Lock API - added 
+
+06-04-23
+change login page CSS and HTML with good look
+
+07-04-23
+Correct CSS for individual page 1 by 1
+
+

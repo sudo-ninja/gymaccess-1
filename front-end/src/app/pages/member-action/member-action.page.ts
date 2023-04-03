@@ -14,6 +14,10 @@ import {MemberserviceService} from 'src/app/services/memberservice.service';
 
 import {AttendanceService} from 'src/app/services/attendance.service';
 import { AlertController, ModalController } from '@ionic/angular';
+// call service for lock open 
+import { MqttService } from 'src/app/services/mqtt.service';
+// call service of gym for gym lock id
+import { GymService } from 'src/app/services/gym.service';
 
 @Component({
   selector: 'app-member-action',
@@ -34,6 +38,9 @@ export class MemberActionPage implements OnInit {
   userEndDate:any;
   username:String='';
 
+  gymId:any;
+  lockId:any;
+
   serviceProviders: any; // serviceprovider means admin as he is providing service to members.
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
   usersUrl:string='http://localhost:3000/users';// URL at postman from where all user are fetched
@@ -48,9 +55,10 @@ export class MemberActionPage implements OnInit {
     private attenApi:AttendanceService,
     private formBuilder: FormBuilder,
     private alertCtrl: AlertController, 
-    private modalCtrl: ModalController,
     private _user:UserService,
     private memberApi:MemberserviceService,
+    private lockApi:MqttService,
+    private gymApi:GymService
 
   ) {
     this._user.user().subscribe(
@@ -206,25 +214,26 @@ async validAttendance(current_date:any,current_time:any,email:any){
       if(((new Date(res.m_enddate)).getTime())>=((new Date(current_date)).getTime()))
         {
             console.log("DB out time :", res.m_outtime, "current time:",current_time);
-            if(res.m_outtime>=current_time){
+            if(res.m_outtime>=current_time)
+            {
               console.log("valid attendance add to DB");
               this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
-                this.openLock(); // iff attendance saved then only open the lock
+                this.openLock(email); // iff attendance saved then only open the lock
               console.log(res);      
-        },(err: any) => {
-            console.log(err);
-            this.isLoadingResults = false;
-          });
-        }else{
-          console.log("Not Allowed at this Time..Contact Admin");
-          this.presentAlert("Not Allowed","Contact Admin","Access in Allowed Time Only");
-        }
+                  },(err: any) => {
+                    console.log(err);
+                    this.isLoadingResults = false;
+                                  });
+            }else{
+                  console.log("Not Allowed at this Time..Contact Admin");
+                  this.presentAlert("Not Allowed","Contact Admin","Access in Allowed Time Only");
+                  }
 
-      }else {
-        console.log("Time Expired Contact Admin to Increase Validity");
-        this.presentAlert("Validity Expired","Contact Admin","");
-        console.log("current date :", current_date, "DB End Date:",res.m_enddate);
-      };
+        }else {
+              console.log("Time Expired Contact Admin to Increase Validity");
+              this.presentAlert("Validity Expired","Contact Admin","");
+              console.log("current date :", current_date, "DB End Date:",res.m_enddate);
+              };
     } catch (error) {
       throw error;
     }
@@ -232,9 +241,33 @@ async validAttendance(current_date:any,current_time:any,email:any){
    
 }
 
-openLock(){
+openLock(email:any){
   console.log("Lock Open Comand Given");
+  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
+    console.log(data);
+    try {
+      this.gymId = data.gym_id;
+      this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
+        try {
+          this.lockId = data.lockId;
+        } catch (error) {
+          throw error;
+        }
+      });
+    } catch (error) {
+      throw error;
+    }
+    
+  });
+  this.lockApi.openLock(
+    {
+      topic:this.lockId,
+      message:"1"
+    }
+  );
   console.log("Lock succesfull open");
+  
+
 // need to pass unique Lock ID 
 // unique lock ID will be saved along with Gym Detail
 // unique lock ID will be topic for that lock 
@@ -243,6 +276,36 @@ openLock(){
   // if not valid ..show alert control .. 
   //contact Gym Administrator    
 }
+
+
+// to calculat distance betwwen two point
+distance(lat1, lat2, lon1, lon2)
+{
+// The math module contains a function
+// named toRadians which converts from
+// degrees to radians.
+lon1 =  lon1 * Math.PI / 180;
+lon2 = lon2 * Math.PI / 180;
+lat1 = lat1 * Math.PI / 180;
+lat2 = lat2 * Math.PI / 180;
+
+// Haversine formula
+let dlon = lon2 - lon1;
+let dlat = lat2 - lat1;
+let a = Math.pow(Math.sin(dlat / 2), 2)
++ Math.cos(lat1) * Math.cos(lat2)
+* Math.pow(Math.sin(dlon / 2),2);
+
+let c = 2 * Math.asin(Math.sqrt(a));
+
+// Radius of earth in kilometers. Use 3956
+// for miles
+let r = 6371;
+
+// calculate the result
+return(c * r);
+}
+
 
 // also get gym ID by QR scaner result and 
 // using that search gym 

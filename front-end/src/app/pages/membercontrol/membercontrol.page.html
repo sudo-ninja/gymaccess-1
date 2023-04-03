@@ -19,15 +19,17 @@
         <ion-input 
             formControlName="m_startdate"             
             [(ngModel)]="startDateValue"
+            (ngModelChange)="startDateValue=$event" name="inputField" type="datetime"
               >
           <ion-popover 
-              [dismissOnSelect]="true" 
+              [dismissOnSelect]="false" 
               trigger="open-date-input" 
               show-backdrop="false" 
               side="end">   
                 <ng-template>        
                       <app-date-time-picker
                       #datetime
+                      [min]="startDateValue"
                       [value]="startDateValue"
                       type="date"
                       [date_format]="format"
@@ -92,7 +94,7 @@
               [(ngModel)]="endDateValue"
               >
             <ion-popover 
-                [dismissOnSelect]="true" 
+                [dismissOnSelect]="false" 
                 trigger="open-date-input2" 
                 show-backdrop="false" 
                 side="end">   
@@ -112,11 +114,10 @@
       </ion-item>
 
       <ion-item>
-        <ion-label position="floating">Balance Days : </ion-label>        
+        <ion-label position>Valid Days : </ion-label>        
         <ion-input 
-        formControlName="m_validdays"         
-        type="number" required>
-        {{BalanceDays}}
+        formControlName="m_validdays"
+        [(ngModel)]="BalanceDays">
         </ion-input>        
       </ion-item>
 

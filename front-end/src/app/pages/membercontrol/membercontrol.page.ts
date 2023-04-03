@@ -156,6 +156,7 @@ EndDatechange(event) {
   // this.m_startdate = event;
   console.log((new Date(event)).getTime());
   this.endDateValue = event;
+  this.validDaysCalc();
   // this.endDateValue = ((new Date(event)).getTime()).toString();
   // const new_date_value = this.formatDate(this.endDateValue, this.format); // this date is not in ISOstring so formate not needed
   // console.log(new_date_value);
@@ -212,3 +213,15 @@ async validDaysCalc(){
 // after that correct memeber action page use same parsing methode for date time
 
 }
+
+// correct detail page as not showing exact dat of user 
+/* detail pagse should show 
+1. Name 
+2. Mobile Number ( with hyper link to make call)
+3. End Date 
+4. Balance Days from today 
+5. invitaion accepted 
+6. User Type - Member or Staff
+7. Paid or Free 
+8. Allowed Time in
+9. Allowed time Out*/

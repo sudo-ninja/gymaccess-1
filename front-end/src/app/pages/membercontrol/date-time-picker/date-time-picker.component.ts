@@ -17,7 +17,7 @@ export class DateTimePickerComponent implements OnInit {
   @Input() date_format;
   // @Input() value = new Date(Date.now()).toISOString();
   @Input() value = Date.now().toString();
-  @Input() value2 = new Date(Date.now()).toISOString();
+  // @Input() value2 = new Date(Date.now()).toISOString();
   @Output() datePickerValue: EventEmitter<any> = new EventEmitter<any>();
 
   dateValue = '';
@@ -43,6 +43,15 @@ export class DateTimePickerComponent implements OnInit {
   change(value) {
     // this.dateValue = this.formatDate(value, this.date_format);
     this.datePickerValue.emit(value);
+  }
+
+
+  formattedString:any;
+  showPicker:boolean=true;
+  dateChanged(value){
+this.dateValue = value;
+this.formattedString= format(parseISO(value),'HH:mm, MMM d, yyyy');
+this.showPicker = false;
   }
 
 
