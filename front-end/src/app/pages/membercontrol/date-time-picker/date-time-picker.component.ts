@@ -32,8 +32,8 @@ export class DateTimePickerComponent implements OnInit {
   }
   
   reset() {
-    // this.datetime.reset(new Date(Date.now()).toISOString());
-    this.datetime.cancel(true);
+    this.datetime.reset(new Date(Date.now()).toISOString());
+    // this.datetime.cancel(true);
   }
 
   formatDate(value: string, date_format = 'MMM dd yyyy') {

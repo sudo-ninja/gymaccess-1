@@ -1,18 +1,18 @@
- <ion-menu contentId="main-content">
+ <!-- <ion-menu contentId="main-content">
   <ion-header>
     <ion-toolbar>
       <ion-title> Main Menu </ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding">GYM INFO, Reports, Logout</ion-content>
-</ion-menu> 
+</ion-menu>  -->
 
-<div class="ion-page" id="main-content">
+<!-- <div class="ion-page" id="main-content"> -->
   <ion-header>
     <ion-toolbar>
-       <ion-buttons slot="start">
+       <!-- <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
-      </ion-buttons>  
+      </ion-buttons>   -->
 
       <ion-grid>
         <ion-row>
@@ -30,8 +30,7 @@
             </ion-list>
           </ion-item></ion-col>
        </ion-row>
-      </ion-grid>
-      
+      </ion-grid>     
 
     </ion-toolbar>
   </ion-header>
@@ -60,25 +59,34 @@
       *ngFor="let m of members | filter:searchTerm">
               <ion-card-header>            
                 <ion-card-title>
-                  {{m.m_name}}
+                  {{m.m_name}}                   
                 </ion-card-title>
                 <ion-card-subtitle>
-                  <ion-badge>{{m.memberType}}</ion-badge>                  
+                  <ion-badge>{{m.memberType}}</ion-badge> 
+                  <p (click)="CallTel(m.mobile)"><ion-icon name="call"></ion-icon> Mobile {{m.mobile}}</p>                 
                 </ion-card-subtitle>
               </ion-card-header>
             
               <ion-card-content>
-                 <p>Join Date {{m.m_joindate}} </p>
-                
-                 <ion-badge slot="start">balance :" {{m.m_validdays}} "Day(s)</ion-badge>
-                 <p>Mobile {{m.mobile}}</p> 
+                 <!-- <p>Balance Days {{m.m_validdays}} </p> --> 
+                 <div>               
+                 <ion-badge slot="start">Balance :{{m.m_validdays}} Day(s)</ion-badge>              
+                </div>
+                <div>
+                 <ion-badge slot="start">End Date:{{m.m_enddate | date }}</ion-badge>
+                </div>
+                 <!-- <p>unique ID {{m._id}} </p>  -->
+                 <!-- <p>
+                  <ion-button (click)="rangeValue(m.m_enddate,m.m_validdays)"> 
+                    value
+                  </ion-button>
+                 </p> -->
 
-                 <ion-badge slot="start">End Date:{{m.m_enddate}} </ion-badge>
-                 <p>unique ID {{m._id}} </p> 
-                 <p></p>
-
-                 <a [routerLink]="['/member/', m._id]">{{ m._id }}</a>
-              </ion-card-content>  
+                 <!-- <a [routerLink]="['/member/', m._id]">{{ m._id }}</a> -->
+              </ion-card-content> 
+              <!-- <ion-item>
+                <ion-range aria-label="Custom range" [value]={rangeValue} [pin]="true"></ion-range>
+              </ion-item>  -->
 
               <ion-grid>
                 <ion-row>
@@ -174,5 +182,5 @@
 
   </ion-content>
 
-</div>
+<!-- </div> -->
  

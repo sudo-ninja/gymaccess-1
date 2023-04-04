@@ -11,28 +11,28 @@
 
   <ion-card>
     <ion-card-header>
-      <ion-card-title><h2>{{member.m_name}}</h2></ion-card-title>
-      <ion-card-subtitle>Aadhar no.- {{member.aadhar}}</ion-card-subtitle>
+      <ion-card-title><h2><ion-icon name="person-circle-outline"></ion-icon>{{member.m_name}}</h2></ion-card-title>
+      <ion-card-subtitle><ion-icon name="call-outline"></ion-icon>Mobile No.- {{member.mobile}}</ion-card-subtitle>
     </ion-card-header>
 
     <ion-card-content>
       <dl>
-        <dt>Mobile:</dt>
-        <dd>{{member.mobile}}</dd>
+        <dt><ion-icon name="calendar-outline"></ion-icon>Subscription Expiry Date:</dt>
+        <dd>{{member.m_enddate}}</dd>
 
-        <dt>Emergency Mobile:</dt>
-        <dd>{{member.Emergency_mobile}}</dd>
+        <dt><ion-icon name="timer-outline"></ion-icon>Allowed Time In:</dt>
+        <dd>{{member.m_intime}}</dd>
 
-        <dt>Email:</dt>
-        <dd>{{member.email}}</dd>
+        <dt><ion-icon name="time-outline"></ion-icon>Allowed Time Out:</dt>
+        <dd>{{member.m_outtime}}</dd>
 
-        <dt>Join Date:</dt>
-        <dd>{{member.m_joindate}}</dd>
+        <dt><ion-icon name="mail-open-outline"></ion-icon>Invitation Status:</dt>
+        <dd>{{member.isInviteAccepted}}</dd>
 
-        <dt>Access Type Paid/Free:</dt>
+        <dt><ion-icon name="key-outline"></ion-icon>Access Type Paid/Free:</dt>
         <dd>{{member.m_accesstype}}</dd>
 
-        <dt>Member Type Member/Staff:</dt>
+        <dt><ion-icon name="people-outline"></ion-icon>Member Type Member/Staff:</dt>
         <dd>{{member.memberType}}</dd>
          </dl>
     </ion-card-content>

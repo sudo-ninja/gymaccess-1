@@ -156,6 +156,8 @@ EndDatechange(event) {
   // this.m_startdate = event;
   console.log((new Date(event)).getTime());
   this.endDateValue = event;
+  const new_date_value = this.formatDate(this.endDateValue, this.format);
+  console.log(new_date_value);
   this.validDaysCalc();
   // this.endDateValue = ((new Date(event)).getTime()).toString();
   // const new_date_value = this.formatDate(this.endDateValue, this.format); // this date is not in ISOstring so formate not needed
@@ -207,21 +209,7 @@ async validDaysCalc(){
 
 }
 
-// using get set method pass this balance days to member list page as .ts and from there use under {{}} at html page
-//here as of now leave valid days field hidden , later on may use for other purpose
-// also use date time picker componet with different id to time and time out setting also
+
 // after that correct memeber action page use same parsing methode for date time
 
 }
-
-// correct detail page as not showing exact dat of user 
-/* detail pagse should show 
-1. Name 
-2. Mobile Number ( with hyper link to make call)
-3. End Date 
-4. Balance Days from today 
-5. invitaion accepted 
-6. User Type - Member or Staff
-7. Paid or Free 
-8. Allowed Time in
-9. Allowed time Out*/

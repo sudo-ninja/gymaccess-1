@@ -95,7 +95,7 @@ export class MemberUpdatePage implements OnInit {
       'memberType':['', Validators.required],
       'm_joindate': ['', Validators.required],
       'm_accesstype':['', Validators.required],
-      'isInviteAccepted': ['', Validators.required],
+      // 'isInviteAccepted': [''],
     });
   }
 
@@ -114,7 +114,7 @@ export class MemberUpdatePage implements OnInit {
         memberType: data.memberType,
         m_joindate: data.m_joindate,
         m_accesstype: data.m_accesstype,
-        isInviteAccepted: data.m.isInviteAccepted,
+        // // isInviteAccepted: data.m.isInviteAccepted,
       });
     });
   }

@@ -32,6 +32,9 @@ export class MemberListPage implements OnInit {
   _invitationcode:any;
 
   searchField: FormControl;
+
+  //range value for slider bar to show how much % left 
+  RangeValue:Number;
   
 
 
@@ -404,5 +407,19 @@ async getMembers(){
     console.log(event);
   }
   
+  CallTel(tel) {
+    window.location.href = 'tel:'+ tel;
+}
+
+rangeValue(endate:any,balanceDays:any){
+  let currentDate = new Date();
+  endate = new Date(endate);
+  return  Math.floor((Math.floor((Date.UTC(endate.getFullYear(), endate.getMonth(), endate.getDate())-Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())) /(1000 * 60 * 60 * 24)))/balanceDays);
+
+  // console.log();
+    // console.log(((new Date(endate)).getTime()-Date.now()));
+    // console.log(balanceDays);
+
+}
 
 }
