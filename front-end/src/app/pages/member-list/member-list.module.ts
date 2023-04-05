@@ -18,6 +18,10 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 // import{ScrollingModule} from '@angular/cdk/scrolling';
 // import{DragDropModule} from '@angular/cdk/drag-drop';
+// swiper module
+// import {SwiperModule} from 'swiper/angular';
+// custom schema for swiper js
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 @NgModule({
   imports: [
@@ -31,6 +35,8 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
     MemberListPageRoutingModule,
     QRCodeModule
   ],
-  declarations: [MemberListPage]
+  declarations: [MemberListPage],
+  // exports:[MemberListPage], // to use footer tab at this page
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MemberListPageModule {}

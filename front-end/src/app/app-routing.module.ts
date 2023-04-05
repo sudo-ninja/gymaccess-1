@@ -74,7 +74,11 @@ const routes: Routes = [
   {
     path: 'gmap',
     loadChildren: () => import('./pages/gmap/gmap.module').then( m => m.GmapPageModule)
+  },  {
+    path: 'me',
+    loadChildren: () => import('./pages/me/me.module').then( m => m.MePageModule)
   },
+
  
 ];
 

@@ -53,11 +53,11 @@
         </ion-refresher>
   
       <ion-card class="ion-margin" 
-      appSwipe
-      (swipe)="onSwipe($event)"
-      SWIPE GESTURE  
+        
       *ngFor="let m of members | filter:searchTerm">
-              <ion-card-header>            
+              <ion-card-header appSwipe
+              (swipe)="onSwipe($event)"
+              SWIPE GESTURE>            
                 <ion-card-title>
                   {{m.m_name}}                   
                 </ion-card-title>
@@ -100,6 +100,7 @@
               
                      
     </ion-card>
+    
 
     <!-- <ion-button
     class="ion-margin" 

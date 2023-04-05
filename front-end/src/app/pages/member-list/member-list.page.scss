@@ -9,3 +9,18 @@ ion-range {
     --pin-background: #ffafcc;
     --pin-color: #fff;
   }
+
+  .button_border{
+    border-radius: 10px !important;
+    border: 2px solid #ffffff;
+    background-color: white;
+    color: #0032fe;
+    box-shadow: none !important;
+    padding-left: 24px;
+    padding-right: 34px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 18px;
+    margin-left: 20px;
+    margin-right: 20px;
+} 

@@ -11,6 +11,8 @@ import { MembercontrolPage } from '../membercontrol/membercontrol.page';
 
 import{McontrolService} from 'src/app/services/mcontrol.service' // to control invite code 
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+// swiper 
+
 
 
 @Component({
@@ -403,8 +405,12 @@ async getMembers(){
     console.log('press: ', event);
   }
 
-  onSwipe(event: any) {
-    console.log(event);
+  onSwipe(event:any) {
+    console.log(event);    
+    if(event.dirX==="right"){
+      console.log(event.dirX);
+      // this.updateMember(uid);
+    }
   }
   
   CallTel(tel) {
