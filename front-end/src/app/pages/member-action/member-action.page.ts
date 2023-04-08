@@ -307,6 +307,9 @@ return(c * r);
 }
 
 
+memberActionSelected(){
+  
+}
 // also get gym ID by QR scaner result and 
 // using that search gym 
 // cross verify if member have that gym id 

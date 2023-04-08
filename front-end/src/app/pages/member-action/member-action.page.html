@@ -1,63 +1,83 @@
-<ion-menu contentId="main-content">
   <ion-header>
     <ion-toolbar>
-      <ion-title> My Gym </ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content class="ion-padding">Here My Report and My Detail Link, Logout</ion-content>
-</ion-menu>
-
-<div class="ion-page" id="main-content">
-  <ion-header>
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-menu-button></ion-menu-button>
-      </ion-buttons>
-      <ion-title>Welcome to Gym </ion-title>
+          <ion-title>Welcome to Gym "Gym Name"</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-content class="ion-padding">
 
-    <ion-card class="ion-text-center">
-      <ion-card-content>
-        <ion-datetime-button datetime="datetime" displayFormat="MMM DD, YYYY HH:mm" ></ion-datetime-button>
-        <ion-modal [keepContentsMounted]="true">
-          <ng-template>
-            <ion-datetime id="datetime"></ion-datetime>
-          </ng-template>
-        </ion-modal>
-      </ion-card-content>
-    </ion-card>
+      <div class="div-0">
+          <ion-card class="ion-text-center">
+            <ion-card-content>
+              <ion-datetime-button datetime="datetime" displayFormat="MMM DD, YYYY HH:mm" ></ion-datetime-button>
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime id="datetime"></ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </ion-card-content>
+          </ion-card>
+      </div>
 
+     
 
+      <div class="div-0">
+        <ion-label class="ion-text-center"><h1>Scan the QR code to access Gym</h1></ion-label>
+       
+            <ion-button
+            class="ion-text-center"
+            expand="block"
+            class="ion-margin"
+            (click)="attendance()"
+            shape="round"
+            >Tap to Scan </ion-button>
+         
+      </div>
 
-    <ion-card class="ion-text-center">
-      <ion-card-content>
-        Scan the QR code to access Gym
-      </ion-card-content>
-  
-  <ion-card-header>            
-    <ion-card-title>
-      <ion-button
-      expand="block"
-      class="ion-margin"
-      (click)="attendance()"
-      >Tap to Scan </ion-button>
-    </ion-card-title>
-    </ion-card-header>
-  </ion-card>
+      <div class="div-0">
+        <ion-label color="dark"><h2>My Account</h2></ion-label>
+        <ion-grid [fixed]="true">
+          <ion-row>
+            <ion-col> 
+              <ion-list  [inset]="true">
+              <ion-item>
+                <ion-label color="dark"><h2>Days Left...</h2> </ion-label>                   
+              </ion-item>
 
+              <ion-item>
+                <ion-label color="dark"><h2>End Date......</h2> </ion-label>                   
+              </ion-item>
 
-  <ion-item>
+              <ion-item>
+                <ion-label color="dark"><h2>Locker ID ...</h2> </ion-label>                   
+              </ion-item>
+            </ion-list>
+          </ion-col>
 
-  <!-- <ion-label class="ion-text-wrap"> Scanned Result:{{scannedResult}} -->
+            <ion-col>
+              <ion-list [inset]="true">
+                <ion-item>
+                  <ion-label color="dark"><h2>Allowed Time</h2> </ion-label>                   
+                </ion-item>
 
-  </ion-item>
+                <ion-item>
+                  <ion-label color="dark"><h2>Check In at......</h2> </ion-label>                   
+                </ion-item>
 
+                <ion-item>
+                  <ion-label color="dark"><h2>Check Out at......</h2> </ion-label>                   
+                </ion-item>
 
-   
+              </ion-list>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
 
-
+        <ion-item class="ion-text-center">
+          <ion-label color="dark"><h2>Recharge Request</h2> </ion-label>                   
+        </ion-item>
+        
+       
+      </div>
   </ion-content>
-</div>
+

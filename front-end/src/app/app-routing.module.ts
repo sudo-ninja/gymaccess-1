@@ -74,9 +74,30 @@ const routes: Routes = [
   {
     path: 'gmap',
     loadChildren: () => import('./pages/gmap/gmap.module').then( m => m.GmapPageModule)
-  },  {
-    path: 'me',
-    loadChildren: () => import('./pages/me/me.module').then( m => m.MePageModule)
+  },
+  // {
+  //   path: 'me',
+  //   loadChildren: () => import('./pages/me/me.module').then( m => m.MePageModule)
+  // },
+  {
+    path: 'privacy-policy',
+    loadChildren: () => import('./static/privacy-policy/privacy-policy.module').then( m => m.PrivacyPolicyPageModule)
+  },
+  {
+    path: 'terms-condition',
+    loadChildren: () => import('./static/terms-condition/terms-condition.module').then( m => m.TermsConditionPageModule)
+  },
+  {
+    path: 'infor',
+    loadChildren: () => import('./pages/infor/infor.module').then( m => m.InforPageModule)
+  },
+  // {
+  //   path: 'memberinfor',
+  //   loadChildren: () => import('./pages/memberinfor/memberinfor.module').then( m => m.MemberinforPageModule)
+  // },
+  {
+    path: 'tabs',
+    loadChildren: () => import('./pages/membertabs/membertabs.module').then( m => m.MembertabsPageModule)
   },
 
  
