@@ -75,6 +75,11 @@ export class MemberListPage implements OnInit {
   MyDefaultGymValue:any;
   compareWith:any;
 
+
+  //detect swipe direction
+  swipeDirect:any;
+  selectedUid:any;// user ID of selected user
+
   
 
   public results = [...this.members];
@@ -431,15 +436,42 @@ async getMembers(){
     console.log('double tap: ', event);
   }
 
-  onPress(event: any) {
+  onPress(uid:string,event: any) {
     console.log('press: ', event);
+
   }
 
-  onSwipe(event:any) {
-    console.log(event);    
-    if(event.dirX==="right"){
+  // swipe work in android limited phone , need to make backup in case does not work 
+  // make small size button at right and left 
+  // right button < for invite
+  // left button > for update
+  onSwipe(uid:string,event:any) {
+       
+    if(event.dirX=="right" && event.swipeType=="moveend"){
       console.log(event.dirX);
+      console.log(uid);
+      this.inviteMember(uid); 
+     
+    }
+    if(event.dirX=="left" && event.swipeType=="moveend"){
+      console.log(event.dirX);
+      this.updateMember(uid);
+      
+    }
+    
+  }
+
+  swipeDirection(uid,dir){
+    if(dir==="right")
+    {
+      // this.swipeDirect=event.dirX;
+      // 
+    }
+    if(dir==="left")
+    {
+      // this.swipeDirect=event.dirX;
       // this.updateMember(uid);
+      
     }
   }
   

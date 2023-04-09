@@ -6,8 +6,9 @@ import { MemberListPage } from './member-list.page';
 const routes: Routes = [
   {
     path: '',
-    component: MemberListPage
+    component: MemberListPage,
   }
+
 ];
 
 @NgModule({

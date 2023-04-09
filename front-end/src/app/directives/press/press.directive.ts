@@ -25,8 +25,8 @@ export class PressDirective implements OnInit {
   
   @HostListener('touchstart', ['$event'])
   @HostListener('touchend', ['$event'])
-  onPress(event) {
-    // console.log(event);
+  onPress(uid,event) {
+    console.log(uid);
     if (!this.pressGesture.enabled) {
       return;
     } // Press is not enabled, don't do anything.

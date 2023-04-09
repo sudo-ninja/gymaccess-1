@@ -87,10 +87,10 @@ const routes: Routes = [
     path: 'terms-condition',
     loadChildren: () => import('./static/terms-condition/terms-condition.module').then( m => m.TermsConditionPageModule)
   },
-  {
-    path: 'infor',
-    loadChildren: () => import('./pages/infor/infor.module').then( m => m.InforPageModule)
-  },
+  // {
+  //   path: 'infor',
+  //   loadChildren: () => import('./pages/infor/infor.module').then( m => m.InforPageModule)
+  // },
   // {
   //   path: 'memberinfor',
   //   loadChildren: () => import('./pages/memberinfor/memberinfor.module').then( m => m.MemberinforPageModule)
@@ -99,7 +99,10 @@ const routes: Routes = [
     path: 'tabs',
     loadChildren: () => import('./pages/membertabs/membertabs.module').then( m => m.MembertabsPageModule)
   },
-
+  {
+    path: 'gymtabs',
+    loadChildren: () => import('./pages/gymtabs/gymtabs.module').then( m => m.GymtabsPageModule)
+  },
  
 ];
 
