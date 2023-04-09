@@ -49,6 +49,18 @@ export class GymListPage implements OnInit {
     const user = localStorage.getItem('User');
     this.loggeduser=JSON.parse(user!);
     console.log(this.loggeduser._id);
+    this.gymApi.wildSearch(this.loggeduser._id).subscribe((data:any)=>{
+      try {
+        if(data){
+          console.log(data.length);
+          console.log(data[0].gym_name); // use this info to make default select GYM value and refer this further https://forum.ionicframework.com/t/ion-select-and-default-values-ionic-4-solved/177550/5
+          localStorage.setItem('DefaultGym',JSON.stringify(data[0]));
+          // this.router.navigateByUrl('/member-list',{replaceUrl:true})
+        }      
+      } catch (error) {
+        throw error;
+      }
+    });
     }
 
   

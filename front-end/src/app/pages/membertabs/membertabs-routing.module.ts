@@ -31,8 +31,7 @@ const routes: Routes = [
           {
             path:'',
             loadChildren: () => import('../me/me.module').then( m => m.MePageModule)
-          }
-            ]
+          }]
         },
         {
           path:'',

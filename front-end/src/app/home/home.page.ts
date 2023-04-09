@@ -83,10 +83,11 @@ export class HomePage implements OnInit{
      )
      const user = localStorage.getItem('User')
      console.log(JSON.parse(user!).isMember);
+     console.log(JSON.parse(user!).username );
      console.log(JSON.parse(user!)._id);
       if(JSON.parse(user!).isMember)
       {           
-      this.router.navigateByUrl('/member-action',{replaceUrl:true});    
+      this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true});    
       }
       else
       {
@@ -160,6 +161,7 @@ logs: string[] = [];
       //here check if logged user is member then switch direct to member action page 
       // if logged user is not member then direct to gym list page .
       if(this.loggeduser.isMembertype===true){
+        console.log("User Is Member as member Type True ");
         this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
         localStorage.setItem('User',JSON.stringify(this.loggeduser));
       }

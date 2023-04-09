@@ -11,6 +11,9 @@ import { MembercontrolPage } from '../membercontrol/membercontrol.page';
 
 import{McontrolService} from 'src/app/services/mcontrol.service' // to control invite code 
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { GymService } from 'src/app/services/gym.service';
+import { Gym } from 'src/app/models/gym.model';
+import { JsonPipe } from '@angular/common';
 // swiper 
 
 
@@ -58,6 +61,7 @@ export class MemberListPage implements OnInit {
   invitaionButtonDisabled:Boolean = false;
 
   loggeduserEmail:any;
+  loggeduser: any;
 
   searchTerm: string;
 
@@ -65,6 +69,11 @@ export class MemberListPage implements OnInit {
   tempDuration:any;
   tempEmail:any;
   memberId:any;
+
+  gyms:Gym[]=[];
+  currentGym :any;
+  MyDefaultGymValue:any;
+  compareWith:any;
 
   
 
@@ -76,6 +85,7 @@ export class MemberListPage implements OnInit {
     public loadingController:LoadingController,
     public router :Router,
     public route :ActivatedRoute,
+    public gymApi:GymService,
     
     private cd: ChangeDetectorRef, 
     private alertCtrl: AlertController, 
@@ -87,10 +97,28 @@ export class MemberListPage implements OnInit {
     public memberApi:MemberserviceService,
 
   ) { 
-    const GYM_ID = localStorage.getItem('GYM_ID');
-    this._gym_id=GYM_ID;
-    console.log(this._gym_id);
-    this.searchField = new FormControl('');
+    const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Gym list page
+    this.MyDefaultGymValue = (JSON.parse(defaultGym))._id;
+    this._gym_id=this.MyDefaultGymValue;
+    console.log(this._gym_id); // this default Gym got from Gym List page ( first added Gym become Default Gym)
+    
+    
+    this.searchField = new FormControl(''); // for search bar
+
+    const user = localStorage.getItem('User'); // collected user detail from login
+    this.loggeduser=JSON.parse(user!);
+    console.log(this.loggeduser._id);
+
+    this.gymApi.wildSearch(this.loggeduser._id).subscribe((data:any)=>{
+      try {
+        if(data){
+          console.log(data.length);
+           this.gyms = data; // from here passing data to gym selector
+        }      
+      } catch (error) {
+        throw error;
+      }
+    });
   }
 
   ngOnInit() {
@@ -101,6 +129,9 @@ export class MemberListPage implements OnInit {
     //   startWith(this.searchField.value));
     console.log(this.searchTerm);
     this.memberControl(); // here its call so that patch value can work
+    // to get default gym value
+    // this.MyDefaultGymValue = "GYM NAME here"
+    this.compareWith = this.compareWithFn;
 
     
     
@@ -199,8 +230,8 @@ async getMembers(){
       this.invitaionAccepted = data.isInviteAccepted;
 
     if(this.invitaionAccepted==="Yes"){
-        this.presentAlert('Invitaion Accepted','Already Member','');
-        console.log("disable invitaion button");
+        this.presentAlert('Invitation Accepted','Already Member','');
+        console.log("disable invitation button");
         this.invitaionButtonDisabled=true;
      }else if(this.invitaionAccepted==="Pending")
      {
@@ -208,7 +239,7 @@ async getMembers(){
         this.CheckIfInvited(uid);
      }
      else{  
-          this.CodeAlert(uid,'Invitaion Code','Please Ask Member to Enter this code in JOIN GYM input *** Code Valid for 3 Days *** ');
+          this.CodeAlert(uid,'Invitation Code','Please Ask Member to Enter this code in JOIN GYM input *** Code Valid for 3 Days *** ');
       };
       } catch (error) {
       throw error;
@@ -308,8 +339,7 @@ async getMembers(){
     }, 2000);
   };
 
-  setInvitaion(email:any,pending:any){
-  
+  setInvitaion(email:any,pending:any){  
     console.log("in invitaion code setup")
     this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
       this.memberId = data._id
@@ -427,5 +457,36 @@ rangeValue(endate:any,balanceDays:any){
     // console.log(balanceDays);
 
 }
+
+
+selecthandleChange(ev){
+this.currentGym = ev.target.value;
+this.MyDefaultGymValue = ev.target.value;
+// console.log(this.currentGym);
+this._gym_id = this.currentGym;
+console.log(this._gym_id);
+this.getMembers();
+this.compareWithFn(this._gym_id,ev.target.value);
+}
+
+customPopoverOptions = {
+  header: 'My GYM(s)',
+  // subHeader: 'Select Specific Gym',
+  message: 'Select Specific Gym',
+};
+
+// compareFn(g1:Gym,g2:Gym) : boolean{
+//   return g1 && g2 ? g1.gym_name == g2.gym_name : g1 == g2;
+
+// }
+
+
+
+compareWithFn(o1, o2) {
+  return o1 === o2;
+};
+
+
+
 
 }
