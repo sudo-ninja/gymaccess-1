@@ -15,14 +15,16 @@ class="ion-no-border"
           label="Select Gym"
           aria-label="Gym_Choice"
           placeholder="Select Gym"
-          (ionChange)="handleChange($event)"
+          interface="popover"
+          (ionChange)="selecthandleChange($event)"
+          [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
+          slot="end"
           (ionCancel)="pushLog('ionCancel fired')"
           (ionDismiss)="pushLog('ionDismiss fired')"
            
         >
-          <ion-select-option value="gym1">GYM 1</ion-select-option>
-          <ion-select-option value="gym2">GYM 2</ion-select-option>
-          <ion-select-option value="gym3">GYM 3</ion-select-option>
+        <ion-select-option *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
+            
         </ion-select>
       </ion-item>
     </ion-list>
@@ -39,7 +41,7 @@ class="ion-no-border"
         <ion-list>
           
             <ion-item>
-              <ion-label color="dark"><h2>Total Members ...</h2> </ion-label>
+              <ion-label color="dark"><h2>Total Members :- {{totalMembers}} Persons</h2> </ion-label>
             </ion-item> 
           
             <ion-item> 

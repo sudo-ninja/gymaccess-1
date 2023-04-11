@@ -9,6 +9,7 @@ import {GymService} from './../../services/gym.service';
 import { Gym } from 'src/app/models/gym.model';
 import { GymDetailsPage } from '../gym-details/gym-details.page';
 import { UserService } from 'src/app/services/user.service';
+import { StorageService } from 'src/app/services/storage.service';
 
 
 @Component({
@@ -25,6 +26,11 @@ export class GymListPage implements OnInit {
 
   searchTerm: string; // for search filter on page
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
+  loggeduserName:any;
+
+   gymsResult:any;
+
+   
 
 
   // Used to store the retrieved documents from the 
@@ -45,17 +51,26 @@ export class GymListPage implements OnInit {
    private cd: ChangeDetectorRef, 
    private _user:UserService,
 
+   private storageService :StorageService, // storage service is used insted of get set method
+
   ) { 
     const user = localStorage.getItem('User');
     this.loggeduser=JSON.parse(user!);
     console.log(this.loggeduser._id);
+    this.loggeduserName = this.loggeduser.username;
+    this.storageService.store('loggeduser_id',this.loggeduser._id);
+     this.storageService.get('loggeduser_id').then((val)=>{
+      console.log(val);
+     });
+
     this.gymApi.wildSearch(this.loggeduser._id).subscribe((data:any)=>{
       try {
         if(data){
           console.log(data.length);
+          this.storageService.store('gymList',data);
           console.log(data[0].gym_name); // use this info to make default select GYM value and refer this further https://forum.ionicframework.com/t/ion-select-and-default-values-ionic-4-solved/177550/5
           localStorage.setItem('DefaultGym',JSON.stringify(data[0]));
-          this.router.navigateByUrl('/gymtabs/member-list',{replaceUrl:true})
+          // this.router.navigateByUrl('/gymtabs/member-list',{replaceUrl:true})
         }      
       } catch (error) {
         throw error;
@@ -63,7 +78,7 @@ export class GymListPage implements OnInit {
     });
     }
 
-  
+    first:boolean = true; // this to fetch data first time from DB
 
   onChangeURL(url: SafeUrl) {
     this.qrCodeDownloadLink = url;
@@ -95,20 +110,30 @@ export class GymListPage implements OnInit {
      message: 'Loading....'
    });
    await loading.present();
-   await this.gymApi.wildSearch(id)
-   .subscribe(res=>{
-     this.gyms=res;
-     //  localStorage.setItem('thisGym',JSON.stringify(res));
-     loading.dismiss();
-   }),err=>{
-     console.log(err);
-     loading.dismiss();
-     }
+   if(this.first){
+        await this.gymApi.wildSearch(id).subscribe(res=>{
+          this.gyms= res;
+          console.log(this.gyms);
+          loading.dismiss();
+          this.storageService.store('gymResult',res); // data stored in storage service 
+      }),err=>{
+        console.log(err);
+        loading.dismiss();
+      };             
+    this.first = false;                    
+    }else{
+      await this.storageService.get('gymResult').then((val)=>{
+          console.log(val);
+          this.gymsResult = val;
+          console.log(this.gymsResult);
+          this.gyms = this.gymsResult;
+          loading.dismiss();
+      });
+    }
    }
 
-   ngViewwillenter(){
-    
-   }
+   ngViewwillenter(){}
+   
    addGym(){
     this.router.navigate(['/gym-add']);
    }

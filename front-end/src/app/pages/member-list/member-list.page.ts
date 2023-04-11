@@ -14,7 +14,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { GymService } from 'src/app/services/gym.service';
 import { Gym } from 'src/app/models/gym.model';
 import { JsonPipe } from '@angular/common';
-// swiper 
+// to get storage
+import { StorageService } from 'src/app/services/storage.service';
 
 
 
@@ -101,6 +102,10 @@ export class MemberListPage implements OnInit {
     private mcontrol_s: McontrolService,
     public memberApi:MemberserviceService,
 
+    // to store data
+    private storageService :StorageService, // storage service is used insted of get set method
+
+
   ) { 
     const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Gym list page
     this.MyDefaultGymValue = (JSON.parse(defaultGym))._id;
@@ -183,6 +188,7 @@ async getMembers(){
     this.members=res;
     console.log(this.members);
     localStorage.setItem('thisMember',JSON.stringify(res));
+    this.storageService.store('membersList',res);
     loading.dismiss();
   }),err=>{
     console.log(err);

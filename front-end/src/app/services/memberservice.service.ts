@@ -29,9 +29,16 @@ export class MemberserviceService {
   }
 
   getMember(id: any): Observable<Member> {
-    console.log("i m in get member by ID loop");
-    return this.http.get(`${baseUrl}/${id}`);
+    console.log("i m in get member by ID function");
+    return this.http.get(`${baseUrl}/findone?id=${id}`);
   }
+
+  // get total member those are free or paid in same gym id
+  getMemberType(id: any, type:any): Observable<Member> {
+    console.log("i m in get member by ID function");
+    return this.http.get(`${baseUrl}/accesstype?gym_id=${id}&m_accesstype=${type}`);
+  }
+
 
   getMemberByEmail(email: any): Observable<Member> {
     console.log("i m in get member by email search ");

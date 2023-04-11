@@ -1,41 +1,29 @@
   <ion-header>
-    <ion-toolbar>
-       <ion-grid>
-        <ion-row>
-          <ion-col><ion-title>Members List</ion-title></ion-col>
-           
-          <!-- <ion-col><ion-item ><ion-label><h3>Selected Gym</h3></ion-label></ion-item></ion-col> -->
-          <ion-col>            
-              <ion-item>
-                <ion-select 
-                  aria-label="Gym"
-                  placeholder="Select Gym"
-                  interface="popover"
-                  (ionChange)="selecthandleChange($event)"
-                  [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
-                  slot="end">
-                  <!-- <ion-select-option *ngFor="let mt of MemberType" [value]="mt">{{ mt.name }}</ion-select-option> -->
-                    <ion-select-option *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
-                    
-                </ion-select>
-              </ion-item>         
-           </ion-col>
-       </ion-row>
-      </ion-grid>     
-
-    </ion-toolbar>
-  </ion-header>
-
-<ion-content class="ion-padding">
-       <ion-searchbar         
+    <ion-searchbar         
         placeholder ='Search Member'
         [(ngModel)]="searchTerm"
         showCancelButton="focus"
         animated   
         >    
       </ion-searchbar>
+      <ion-item>
+        <ion-select 
+          aria-label="Gym"
+          placeholder="Select Gym"
+          interface="popover"
+          (ionChange)="selecthandleChange($event)"
+          [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
+          slot="end">
+          <!-- <ion-select-option *ngFor="let mt of MemberType" [value]="mt">{{ mt.name }}</ion-select-option> -->
+            <ion-select-option *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
+            
+        </ion-select>
+      </ion-item> 
+     
+  </ion-header>
 
-      <!-- debounce="100"
+<ion-content class="ion-padding">
+        <!-- debounce="100"
         (ionChange)="handleChange($event)" -->
 
         <!-- to refresh page on pull down  -->
@@ -72,20 +60,11 @@
                         <ion-col color="danger">Finish Time:{{m.m_outtime | date:'shortTime' }}</ion-col>
                       </ion-row>
                     </ion-grid>
-                    <ion-row>
-                      <ion-col>
-                        <ion-badge slot="start"></ion-badge>
-                      </ion-col>
-                      <ion-col>
-                        <ion-badge slot="start"></ion-badge>
-                      </ion-col>
-                    </ion-row>
+                   
                   </ion-grid>               
                                
                 </div>
-                <div>
-                 
-                </div>
+                
                  <!-- <p>unique ID {{m._id}} </p>  -->
                  <!-- <p>
                   <ion-button (click)="rangeValue(m.m_enddate,m.m_validdays)"> 

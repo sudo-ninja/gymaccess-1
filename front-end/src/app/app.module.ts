@@ -12,6 +12,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import {MemberserviceService} from './services/memberservice.service';
 
+import { IonicStorageModule } from '@ionic/storage-angular';
+
 // import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@awesome-cordova-plugins/native-geocoder/ngx';
 // import both main and modal page here 
 
@@ -27,10 +29,10 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     HttpClientModule,
     AppRoutingModule,
     // NativeGeocoder, 
- 
+    IonicStorageModule.forRoot(), 
     ReactiveFormsModule,
   ],
-  providers: [
+  providers: [Storage,
     MemberserviceService,
     { 
     provide: RouteReuseStrategy, 

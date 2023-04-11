@@ -1,0 +1,104 @@
+.profile-photo {
+    border-radius: 50% !important;
+    overflow: hidden;
+    }
+
+    // ion-item::part(native) {
+    //     background: #19422d;
+    //     color: #fff;
+      
+    //     border-color: #fff;
+    //     border-style: dashed;
+    //     border-width: 2px;
+      
+    //     border-radius: 20px;
+    //   }
+      
+    //   ion-item::part(detail-icon) {
+    //     color: white;
+    //     opacity: 1;
+    //     font-size: 20px;
+    //   }
+
+    .div-1 {
+         
+        background: #c7c7d3;
+          
+        
+        margin-top:40px;
+        margin-right: 10px;
+        margin-left: 10px;
+
+        padding-top:20px;
+        padding-right: 5px;
+        padding-left: 5px;
+
+        border-radius: 20px;
+        border: 0.1px solid #000000;
+        min-height: 500px; 
+      }
+
+      .ion-item-1 {
+            padding-top:10px;
+        --margin-top: -11px; 
+        --background: #c9ccda;
+        // --color: #0c0f27;
+         
+        // --top-padding: 5px;
+        // --width: 180px;
+        --min-height: 140px; 
+      
+        // --border-color: #fff;
+        // --border-style: solid;
+        // --border-width: 0.2px;
+
+        // --border-radius: 15px;
+        // --border: 0.2px solid #969696;
+      
+        
+      
+        --ripple-color: rgb(230, 214, 230);
+      
+        --detail-icon-color: white;
+        --detail-icon-opacity: 1;
+        --detail-icon-font-size: 40px;
+      }
+
+      .ion-item-0 {
+        padding-top:5px;
+        margin-top: 2px; 
+        background: transparent;
+        min-height: 40px; 
+  
+    // --border-color: #fff;
+    // --border-style: solid;
+    // --border-width: 0.2px;
+
+    // --border-radius: 15px;
+    // --border: 0.2px solid #969696;
+  
+    
+  
+    // --ripple-color: rgb(230, 214, 230);
+  
+    --detail-icon-color: rgb(186, 190, 235);
+    --detail-icon-opacity: 1;
+    --detail-icon-font-size: 50px;
+  }
+
+  div{         
+    background: transparent;     
+    
+    margin-top:5px;
+    margin-right: 10px;
+    margin-left: 10px;
+
+    padding-top:5px;
+    padding-right: 5px;
+    padding-left: 5px;
+    padding-bottom: 10px;
+
+    border-radius: 20px;
+    border: 0.1px solid #3880ff;
+    min-height: 50px; 
+  }

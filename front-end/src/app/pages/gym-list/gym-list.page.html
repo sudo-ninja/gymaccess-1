@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-title>
-      GYM
+      Welcome {{loggeduserName}}
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -12,102 +12,45 @@
   [(ngModel)]="searchTerm"
   showCancelButton="focus"
   animated   
-  >    
-</ion-searchbar>
+  ></ion-searchbar>
 <!-- to refresh page on pull down  -->
 <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
   <ion-refresher-content></ion-refresher-content>
 </ion-refresher>
 
   <ion-list>
-    <div>
-    <ion-card *ngFor="let item of gyms | filter:searchTerm" class="ion-padding">
-            <ion-card-header>            
-              <ion-card-title>
-                Gym Name: {{item.gym_name}}
-              </ion-card-title>
-              <ion-card-subtitle>
-                Gym Mobile:{{item.gym_mobile}}
-              </ion-card-subtitle>
-            </ion-card-header>
-          
-            <ion-card-content>
-               <p>Gym Gstin (if any): {{item.gym_gstin}}</p>
-               <p>Gym Emergency No. {{item.gym_emergency}} </p>
-               <p>Gym Google Map Location Link {{item._id}} </p>
-            </ion-card-content>  
-
-            <div>
-              <!-- <ion-nav-link router-direction="forward" routerLink="/member-add"> -->
-                <ion-button (click)="addMember(item._id)" color="success" style="width: 100%;">
+    <div class="div-0" *ngFor="let gym of gyms | filter:searchTerm" class="ion-padding">
+      <ion-label color="dark"> <h1>{{gym.gym_name}}</h1> </ion-label>     
+        <ion-item class="ion-item-0" >        
+          <ion-list>            
+              <ion-item>
+                <ion-icon name="call-outline"></ion-icon>
+                <ion-label color="dark"><h3>{{gym.gym_mobile}}</h3> </ion-label>
+              </ion-item>             
+              <ion-item>
+                <ion-icon name="location-outline"></ion-icon>
+                <ion-label color="dark"><h3>Location of Map</h3> </ion-label>
+              </ion-item> 
+            <!--  /* Get Id from here pass that to function and click to google map 
+                https://maps.google.com/?q=<lat>,<lng></lng>*/  -->
+                    
+           </ion-list> 
+        </ion-item> 
+              <ion-button 
+                fill="outline"  
+                shape="round"  
+                expand="full"
+                (click)="addMember(gym._id)" 
+                 >
                   <ion-icon slot="icon-only" name="checkmark-outline"></ion-icon> add Members </ion-button>
-              <!-- </ion-nav-link> -->
-            </div>
+    </div>
+  </ion-list>
 
-            <div>
-              <ion-card class="ion-text-center">
-                <ion-card-content>
-              <!-- <qrcode [qrdata]="myAngularxQrCode" [width]="256" [errorCorrectionLevel]="'M'"></qrcode> -->
-              <qrcode (qrCodeURL)="onChangeURL($event)" 
-              [qrdata]="qrcode_data" 
-              [width]="256" 
-              [errorCorrectionLevel]="'M'"
-              
-              ></qrcode>  
-            </ion-card-content>
-            
-            <!-- For unique QR code of each gym location -->
-            <ion-card-header>            
-              <ion-card-title>
-                <ion-button 
-                [href]="qrCodeDownloadLink" 
-                download="qrcode" 
-                (click)="qrcode(item._id,$event)" 
-                color="success" style="width: 100%;">
-                <ion-icon slot="icon-only" name="checkmark-outline"></ion-icon> download QR code  </ion-button>
-              
-              </ion-card-title>
-              </ion-card-header>
-            </ion-card>
-            </div>
-            
-  </ion-card>
-</div>
-
-<!-- TO Generate QR code and Download for each Gym Location -->
-  <ion-card class="ion-text-center">
-    <ion-card-content>
-  <!-- <qrcode [qrdata]="myAngularxQrCode" [width]="256" [errorCorrectionLevel]="'M'"></qrcode> -->
-  <qrcode (qrCodeURL)="onChangeURL($event)" 
-  [qrdata]="qrcode_data" 
-  [width]="256" 
-  [errorCorrectionLevel]="'M'"
-  ></qrcode>  
-</ion-card-content>
-
-<!-- For unique QR code of each gym location -->
-<ion-card-header>            
-  <ion-card-title>
-    <a [href]="qrCodeDownloadLink" download="qrcode">Download</a>
-  </ion-card-title>
-  </ion-card-header>
-</ion-card>
-
-</ion-list>
-
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="addGym()"> 
+  <ion-fab  vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button fill="outline"  color="primary" (click)="addGym()"> 
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-
-  <!-- <swiper-container>
-    <swiper-slide>Slide 1</swiper-slide>
-    <swiper-slide>Slide 2</swiper-slide>
-    <swiper-slide>Slide 3</swiper-slide>
-  </swiper-container> -->
-
-  <!--  swiper error  -->
 
 </ion-content>
 
