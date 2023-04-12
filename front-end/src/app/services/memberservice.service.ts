@@ -39,6 +39,12 @@ export class MemberserviceService {
     return this.http.get(`${baseUrl}/accesstype?gym_id=${id}&m_accesstype=${type}`);
   }
 
+   // get total member those subscription going to end after certain days
+   getGoingtoEndMember(id: any, type:any): Observable<Member> {
+    console.log("i m in get member by ID function", type);
+    return this.http.get(`${baseUrl}/valid7?gym_id=${id}&m_enddate=${type}`); // date to be entered in unix formate
+  }
+
 
   getMemberByEmail(email: any): Observable<Member> {
     console.log("i m in get member by email search ");

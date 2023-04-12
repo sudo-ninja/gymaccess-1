@@ -45,15 +45,15 @@ class="ion-no-border"
             </ion-item> 
           
             <ion-item> 
-              <ion-label color="dark"><h2>Free Members ...</h2> </ion-label>
+              <ion-label color="dark"><h2>Free Members :- {{freeMembers}} Persons...</h2> </ion-label>
             </ion-item> 
           
             <ion-item> 
-              <ion-label color="dark"><h2>Paid Members ...</h2> </ion-label>
+              <ion-label color="dark"><h2>Paid Members :- {{paidMembers}} Persons...</h2> </ion-label>
             </ion-item> 
           
             <ion-item> 
-              <ion-label color="dark"><h2>Validity Going to End.... Members</h2></ion-label>
+              <ion-label color="dark"><h2>Validity Going to End :- {{goingtoExpire}} Persons</h2></ion-label>
             </ion-item> 
           
             <ion-item> 
@@ -63,7 +63,7 @@ class="ion-no-border"
           
           
             <ion-item href="#"> 
-              <ion-label color="dark"><h2>Download Data </h2> </ion-label>
+              <ion-label color="dark"><h2>Download Data (CSV format)</h2> </ion-label>
             </ion-item>
           
         </ion-list> 
@@ -82,7 +82,7 @@ class="ion-no-border"
               <ion-toggle aria-label="Primary toggle" color="primary" [checked]="false"></ion-toggle>
         </ion-item>
 
-        <ion-item>
+        <ion-item href="#">
             <ion-label color="dark"><h2>Download QR code for Selected Gym </h2></ion-label>
         </ion-item>
 

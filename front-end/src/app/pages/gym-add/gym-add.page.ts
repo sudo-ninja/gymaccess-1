@@ -35,7 +35,6 @@ export class GymAddPage implements OnInit {
 
   @ViewChild(GmapPage, {static : true}) gmap : GmapPage;
 
-
   constructor(
     private router: Router,
     public fb: FormBuilder,
@@ -153,7 +152,7 @@ export class GymAddPage implements OnInit {
         m_address_long: res.gym_address_long,
         memberType :'Admin',
         m_joindate: Date.now(),
-        m_accesstype: 'Free',
+        m_accesstype: 'free',
         isInviteAccepted : true,
         m_startdate: Date.now(),
         m_enddate: Date.now(),
@@ -222,19 +221,6 @@ export class GymAddPage implements OnInit {
 
 async LoggedUserInfo(){
 
-}      
+}  
+
 }
-  // formSubmit() {
-
-  //   if (!this.gymForm.valid){
-  //     // return false;
-  //   }else {
-  //     // this.gymService.createBooking(this.gymForm.value).then(res => {
-  //     //   console.log(res)
-  //     //   this.gymForm.reset();
-  //     //   this.router.navigate(['/gym-lst']);
-  //     // }).catch(error => console.log(error));
-  //   }
-
-   
-  // }

@@ -7,6 +7,7 @@ import { Gym } from 'src/app/models/gym.model';
 import { MemberserviceService } from 'src/app/services/memberservice.service';
 // to store once fetched data from DB to store locally
 import { StorageService } from 'src/app/services/storage.service';
+import { SafeUrl } from '@angular/platform-browser';
 
 
 
@@ -28,9 +29,13 @@ export class InforPage implements OnInit {
   // to get members count
   memberResults:any;
   totalMembers:any;
-  paidMebers:any;
+  paidMembers:any;
   freeMembers:any;
-  goingtoExpireMembers:any;
+  goingtoEndResults:any;
+  goingtoExpire:any;
+  paidMemberResults:any;
+  freeMemberResults:any;
+  _daysAfter:any;
 
 
 
@@ -67,6 +72,32 @@ export class InforPage implements OnInit {
 
 
     // 
+
+    this.memberApi.getMemberType(this._gym_id,"paid").subscribe((data)=>{
+      this.paidMemberResults = data;
+      this.paidMembers = this.paidMemberResults.length;
+      console.log((data));
+    });
+
+    this.memberApi.getMemberType(this._gym_id,"free").subscribe((data)=>{
+      this.freeMemberResults = data;
+      this.freeMembers = this.freeMemberResults.length;
+      console.log(data);
+    });
+
+    // Java code for date calculation 
+    var date = new Date();
+    date.setDate(date.getDate() + 7);
+    console.log(date.getTime());
+    this._daysAfter = date.getTime();
+    console.log(this._daysAfter);
+
+    this.memberApi.getGoingtoEndMember(this._gym_id,this._daysAfter).subscribe((data)=>{
+      console.log(data);
+      this.goingtoEndResults = data;
+      this.goingtoExpire = this.goingtoEndResults.length;      
+    });
+
   }
 
   ngOnInit() {
@@ -91,5 +122,19 @@ export class InforPage implements OnInit {
     compareWithFn(o1, o2) {
       return o1 === o2;
     };
+
+// for QR code generation of gym ID and then download welcome gym QR code page ..
+// here we need to make one designer page with center having QR code ..
+// download in pdf file with file name as gymID.
+  public qrcode_data: string;
+  public qrCodeDownloadLink: SafeUrl = "";
+    downloadQrCode(gid:any,url:SafeUrl){
+      this.qrCodeDownloadLink = url;
+      this.qrcode_data=JSON.stringify(gid);
+    }
+
+    onChangeURL(url: SafeUrl) {
+      this.qrCodeDownloadLink = url;
+    }
 
 }
