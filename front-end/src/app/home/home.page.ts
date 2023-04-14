@@ -67,8 +67,7 @@ export class HomePage implements OnInit{
     private renderer: Renderer2,
     private actionSheetCtrl: ActionSheetController,
     private formBuilder: FormBuilder,
-    public memberApi:MemberserviceService,
-    
+    public memberApi:MemberserviceService,   
 
   ) {
     this.userApi.user().subscribe(
@@ -83,10 +82,11 @@ export class HomePage implements OnInit{
      )
      const user = localStorage.getItem('User')
      console.log(JSON.parse(user!).isMember);
-     console.log(JSON.parse(user!).username );
+     console.log(JSON.parse(user!).email );
      console.log(JSON.parse(user!)._id);
       if(JSON.parse(user!).isMember)
-      {           
+      {  
+        console.log()         
       this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true});    
       }
       else
@@ -162,7 +162,7 @@ logs: string[] = [];
       // if logged user is not member then direct to gym list page .
       if(this.loggeduser.isMembertype===true){
         console.log("User Is Member as member Type True ");
-        this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
+        this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true}); 
         localStorage.setItem('User',JSON.stringify(this.loggeduser));
       }
 
@@ -215,7 +215,7 @@ logs: string[] = [];
                         this.invitationCode = data.inviteCode;
                         if(var_code === this.invitationCode){
                           console.log("code matched");
-                          this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
+                          this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true}); 
                           this.updateUserToMember();
                           this.updateMemberInvitedAccepted(this.loggeduserEmail,"Yes");
                           // this.userApi.getUserbyEmail(this.loggeduserEmail).subscribe((res:any)=>{
@@ -251,7 +251,7 @@ logs: string[] = [];
                       const var_code= alertData.name1;
                       console.log(var_code);
                       if(var_code =="123456"){
-                        this.router.navigate(['/member-action'],{replaceUrl:true});
+                        this.router.navigate(['/tabs/member-action'],{replaceUrl:true});
                   
                       }
                     }
@@ -287,7 +287,7 @@ logs: string[] = [];
         }
         if(data.isInviteAccepted=="Yes")
         {
-          this.router.navigateByUrl('/member-action',{replaceUrl:true}); 
+          this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true}); 
          }
 
       } catch (error) {

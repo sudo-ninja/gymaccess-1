@@ -2,8 +2,8 @@
 [translucent]="true"
 collapse="fade"
 class="ion-no-border"
->
-  <ion-toolbar>
+> 
+  <ion-toolbar> {{loggeduserName}} Report
     <ion-buttons slot="start">
       <ion-back-button default-href="/member-action"></ion-back-button>
     </ion-buttons>
@@ -20,17 +20,17 @@ class="ion-no-border"
           
             <ion-item>
               <ion-icon name="calendar-outline"></ion-icon>
-              <ion-label color="dark"><h2>Attended Days ...</h2> </ion-label>
+              <ion-label color="dark"><h2>Attended :- {{memberAttendances}} Days </h2> </ion-label>
             </ion-item> 
           
-            <ion-item> 
+            <!-- <ion-item> 
               <ion-icon name="calendar-number-outline"></ion-icon>
               <ion-label color="dark"><h2>Balance Days ...</h2> </ion-label>
-            </ion-item> 
+            </ion-item>  -->
           
             <ion-item> 
               <ion-icon name="calendar-number-outline"></ion-icon>
-              <ion-label color="dark"><h2>End Date ...</h2> </ion-label>
+              <ion-label color="dark"><h2>End Date : {{memberEndDate | date}} </h2> </ion-label>
             </ion-item> 
           
             <ion-item> 

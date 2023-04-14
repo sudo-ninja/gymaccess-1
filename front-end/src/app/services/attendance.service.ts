@@ -4,8 +4,10 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rxjs';
 import{ Attendance_ } from '../models/attendance.model';
 
-const baseUrl = 'http://localhost:3000/attendance';
-const searchUrl = 'http://localhost:3000/attendance/search/';
+
+
+const baseUrl = 'http://localhost:3000/attendances';
+const searchUrl = 'http://localhost:3000/attendances/search/';
 
 
 @Injectable({
@@ -27,9 +29,15 @@ export class AttendanceService {
   }
 
   getAttendance(id: any): Observable<Attendance_> {
-    console.log("i m in get  by ID loop");
-    return this.http.get(`${baseUrl}/${id}`);
+    console.log("i m in get  by ID Method");
+    return this.http.get(`${baseUrl}/findone?id=${id}`);
   }
+
+  getMemberAttendance(member_id: any): Observable<Attendance_> {
+    console.log("i m in get  by ID Method");
+    return this.http.get(`${baseUrl}/findallid?member_id=${member_id}`);
+  }
+
 
   addAttendance(data: any): Observable<any> {
     console.log("i m in add member loop");

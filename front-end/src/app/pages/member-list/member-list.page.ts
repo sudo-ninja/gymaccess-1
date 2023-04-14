@@ -14,8 +14,13 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { GymService } from 'src/app/services/gym.service';
 import { Gym } from 'src/app/models/gym.model';
 import { JsonPipe } from '@angular/common';
+
+// call user service to update user as member as soon as invite accepted
+import { UserService } from 'src/app/services/user.service';
+
 // to get storage
 import { StorageService } from 'src/app/services/storage.service';
+ 
 
 
 
@@ -92,6 +97,7 @@ export class MemberListPage implements OnInit {
     public router :Router,
     public route :ActivatedRoute,
     public gymApi:GymService,
+    public userApi: UserService,
     
     private cd: ChangeDetectorRef, 
     private alertCtrl: AlertController, 
@@ -242,6 +248,7 @@ async getMembers(){
 
     if(this.invitaionAccepted==="Yes"){
         this.presentAlert('Invitation Accepted','Already Member','');
+        
         console.log("disable invitation button");
         this.invitaionButtonDisabled=true;
      }else if(this.invitaionAccepted==="Pending")
@@ -433,6 +440,14 @@ async getMembers(){
     }
   }
  
+  //set user as member if invite accepted
+  setUserasMember(loggedUserId:any){
+    this.userApi.update(loggedUserId,{"isMember":"true"}).subscribe((data)=>{
+      console.log(data);
+    });
+  
+
+  }
 
   onTap(event: any) {
     console.log('tap: ', event);
@@ -524,7 +539,9 @@ compareWithFn(o1, o2) {
   return o1 === o2;
 };
 
-
+deletAllMembers(){
+  this.memberApi.deleteAll();
+}
 
 
 }
