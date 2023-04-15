@@ -23,11 +23,17 @@ export class GmapPage implements OnInit {
 
   @ViewChild('map') mapRef: ElementRef<HTMLElement>;
   @ViewChild(IonModal) modal: IonModal; // to make this page modal
+
+  
+
   newMap: GoogleMap;
+  memberCurrent_lat:any;
+  memberCurrent_long:any;
   center: any = {
-    lat: 28.6468935,
-    lng: 76.9531791,
+    lat: 26.2,
+    lng: 75.3,    
   };
+
   markerId: string;
 
    i:Number =1;
@@ -41,13 +47,33 @@ export class GmapPage implements OnInit {
   gymlat:any
   gymlng:any
 
-  name: string; // used for modal
+  name = {
+    lat:'',
+    lng:'',
+  }; // used for modal
 
   constructor(
     //  nativeGeocoder: NativeGeocoder
     private router: Router,
     private modalCtrl: ModalController
-     ) {}
+     ) {
+      const current_lat = localStorage.getItem('current_lat');
+      const current_long = localStorage.getItem('current_long');
+      const gym_current_lat = localStorage.getItem('gym_current_lat');
+      const gym_current_long = localStorage.getItem('gym_current_long');
+      console.log(current_lat);
+      console.log(gym_current_lat);
+      this.memberCurrent_lat = current_lat;
+      this.memberCurrent_long = current_long;
+      console.log(this.center);
+      if(!this.center){
+      this.center.lat = Number(current_lat);
+      this.center.lng = Number(current_long);
+      } else {
+        this.center.lat = Number(gym_current_lat);
+        this.center.lng = Number(gym_current_long);
+      }
+    }
 
      // model confirm button
      confirm() {
@@ -102,9 +128,12 @@ locationfixed(){
     this.gymlng=this.mylng_
   };
 
+  console.log(this.gymlat , this.gymlng);
   localStorage.setItem('gymLat',this.gymlat);
   localStorage.setItem('gymLng',this.gymlng);
   // this.router.navigateByUrl("/gym-add");
+  this.name.lat = this.gymlat;
+  this.name.lng = this.gymlng;
   return this.modalCtrl.dismiss(this.name, 'confirm');
 }
 

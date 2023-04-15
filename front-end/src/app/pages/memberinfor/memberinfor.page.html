@@ -36,12 +36,13 @@ class="ion-no-border"
             <ion-item> 
               <ion-icon name="alert-outline"></ion-icon>
               <ion-label color="dark"><h2>Set Reminder(7 days)</h2> </ion-label>
-              <ion-toggle aria-label="Primary toggle" color="primary" [checked]="true"></ion-toggle>
+              <ion-toggle aria-label="Primary toggle" color="primary" (ionChange)="changeToggle()"></ion-toggle>
             </ion-item>
 
             <ion-item>
               <ion-icon name="location-outline"></ion-icon>
-              <ion-label color="dark"><h2>Update My Address</h2> </ion-label>                   
+              <ion-label color="dark"><h2>Update My Address</h2> </ion-label>  
+              <ion-button slot="end" (click)="getLocation()">Set </ion-button>                 
             </ion-item>
           
           
@@ -63,12 +64,13 @@ class="ion-no-border"
                        
         <ion-item>
           <ion-icon name="trending-up-outline"></ion-icon>
-          <ion-label color="dark"><h2>Select Days</h2> </ion-label>
-               
+          <ion-label color="dark"><h2>Enter Days</h2> </ion-label>
+         
+          <ion-input label="Enter Days" type="number" placeholder="000"></ion-input> 
         </ion-item>
 
         <ion-item>
-            <ion-label color="dark"><h2>Recharge Request</h2></ion-label>
+            <ion-button>Recharge Request</ion-button>
         </ion-item>
 
       </ion-list>

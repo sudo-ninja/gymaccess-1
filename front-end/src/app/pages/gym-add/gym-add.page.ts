@@ -5,6 +5,10 @@ import { GymService } from './../../services/gym.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from 'src/app/services/user.service';
+
+//to get current location Lattitude and Longitude
+import { Geolocation } from '@capacitor/geolocation';
+
 import { GmapPage } from '../gmap/gmap.page';
 
 // to set login user as admin if he added gym
@@ -23,16 +27,15 @@ export class GymAddPage implements OnInit {
 
   adminForm!: FormGroup;
   gymForm!: FormGroup;
+
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
   usersUrl:string='http://localhost:3000/users';// URL at postman from where all user are fetched
   _id :string; // This is an observable
+
   loggedUserId:any;
   loggedUserName:any;
-  loggedUserEmail:any;
-
-
-   
-
+  loggedUserEmail:any;   
+// for modal controller
   @ViewChild(GmapPage, {static : true}) gmap : GmapPage;
 
   constructor(
@@ -51,6 +54,9 @@ export class GymAddPage implements OnInit {
     this.loggeduser=JSON.parse(user!);
     console.log(this.loggeduser._id);
     // this.mainForm();
+
+    // fetch location as soon as page is open 
+    this.fetchLocation();
   }
 
   ngOnInit() {
@@ -60,7 +66,7 @@ export class GymAddPage implements OnInit {
     // this.addName(user);
     console.log(user); // here user info is being display after login successfull
     this.loggeduser=user;
-    console.log(this.loggeduser.username);
+    // console.log(this.loggeduser.username);
     if(user==null){
       this.router.navigateByUrl('/login',{replaceUrl:true}) // here URL by replace so that user can not back and go to come again here without login
     }else{
@@ -71,40 +77,60 @@ export class GymAddPage implements OnInit {
       this.loggedUserName = this.loggeduser.username;
       this.loggedUserEmail = this.loggeduser.email;
       // this.mainForm();
-      this.http.get(this.usersUrl).subscribe(res=>{
-        console.log(res)
-        // this.serviceProviders=res;
-        // this.originalserviceProvider=res;
-      },error=>{
-        console.log(error)});
+      // this.http.get(this.usersUrl).subscribe(res=>{
+      //   console.log(res)
+      //   // this.serviceProviders=res;
+      //   // this.originalserviceProvider=res;
+      // },error=>{
+      //   console.log(error)});
     }
+
+    this.findInvalidControls();
     
   }
 
   mainForm(){
     console.log(this.loggeduser._id);
+    console.log(localStorage.getItem('gymLat'));
+    console.log(localStorage.getItem('gymLng'));
+
     this.gymForm = this.fb.group({
       user_id: [localStorage.getItem('loggedUserId'), Validators.required],
       gym_name: [''],
       gym_emergency: [''],
       gym_mobile: [''],
       gym_gstin: [''],
-      gym_address_lat: [localStorage.getItem('gymLat'), Validators.required],
-      gym_address_long: [localStorage.getItem('gymLng'), Validators.required],
+      gym_address_lat: [localStorage.getItem('gymLat')],
+      gym_address_long: [localStorage.getItem('gymLng')],
       gym_lockId:[''],      
     })
-    console.log(localStorage.getItem('gymLat'),localStorage.getItem('gymLng'));
+    
   }
 
    // Getter to access form control
-   get myForm() {
-    return this.gymForm.controls;  }
+  //  get myForm() 
+  //  {
+  //   return this.gymForm.controls;
+  //  }
 
+    // to fetch gym location from page and use this info to open google map for this default location
+    current_lat:any
+    current_long:any
+  async fetchLocation(){
+  const _geoLocation = Geolocation.getCurrentPosition();
+  console.log('current location =', _geoLocation);
+  const coordinates = await Geolocation.getCurrentPosition();    
+  console.log('Current position:--', coordinates.coords.latitude,coordinates.coords.longitude , coordinates.timestamp.toPrecision(4));
+  this.current_lat=coordinates.coords.latitude;
+  this.current_long=coordinates.coords.longitude;
+  localStorage.setItem('current_lat',this.current_lat);
+  localStorage.setItem('current_long',this.current_long);
+}
+
+// modal controller of gmap page 
+  message:any;
     async getLocation()
-      // this.router.navigateByUrl("/gmap",{replaceUrl:true});
-
-      // this.gmap.locate();
-      {
+     {
         const modal = await this.modalCtrl.create({
         component: GmapPage,
         // componentProps:{id:uid},
@@ -113,18 +139,19 @@ export class GymAddPage implements OnInit {
       });
       await modal.present();
       const { data, role } = await modal.onWillDismiss();
-
     if (role === 'confirm') {
-      // this.message = `Hello, ${data}!`;
+      this.message = `Hello, ${data.lat}!`;
+      console.log(this.message);
+      console.log(localStorage.getItem('gymLat'),localStorage.getItem('gymLng'));
     }
-
     }
     
 
   onSubmit() {
-    // this.submitted = true;
-    
-
+    // this.submitted = true;  
+    /**************************************** */
+    // search this why this gym form is not valid ????
+    /************************************************** */
     if (!this.gymForm.valid) {
       return false;
     } else {
@@ -137,7 +164,6 @@ export class GymAddPage implements OnInit {
       // if gym successfully added with gym ID then user detail to be added in members
       //as Admin with Free access and with gym ID , so first member to
       // any gym is Admin him self  
-
       if(!this.memberApi.getMemberByEmail(this.loggeduser.email)){
       this.adminAdd();
      
@@ -163,6 +189,8 @@ export class GymAddPage implements OnInit {
       this.memberApi.addMember (this.adminForm.value).subscribe((res: any) => {
                   const id = res._id;
                   console.log('Added as Admin member Type=',res.memberType);
+                  // here also we need to set user type as ADMIN also so that next time if he login then dirctly
+                  // got to add gym page .. not stay at home page
                 }, (err: any) => {
                   console.log(err)
                 });
@@ -222,5 +250,17 @@ export class GymAddPage implements OnInit {
 async LoggedUserInfo(){
 
 }  
+
+// how to use this to find invalid control 
+public findInvalidControls() {
+  const invalid = [];
+  const controls = this.gymForm.controls;
+  for (const name in controls) {
+      if (controls[name].invalid) {
+          invalid.push(name);
+      }
+  }
+  return invalid;
+}
 
 }

@@ -7,6 +7,10 @@ import{ Router} from '@angular/router';
 import { ActionSheetController, AlertController } from '@ionic/angular';
 
 import { PushNotifications } from '@capacitor/push-notifications';
+
+//to get current location Lattitude and Longitude
+import { Geolocation } from '@capacitor/geolocation';
+
 import { GmapsService } from '../services/gmaps/gmaps.service';
 
 // for invitaion accept check call m control service
@@ -385,6 +389,19 @@ logs: string[] = [];
   }
 
 
+  // to fetch member location
+current_lat:any
+current_long:any
+async fetchLocation(){
+  const _geoLocation = Geolocation.getCurrentPosition();
+  console.log('current location =', _geoLocation);
+  const coordinates = await Geolocation.getCurrentPosition();    
+  console.log('Current position:--', coordinates.coords.latitude,coordinates.coords.longitude);
+  this.current_lat=coordinates.coords.latitude;
+  this.current_long=coordinates.coords.longitude;
+  localStorage.setItem('current_lat',this.current_lat);
+  localStorage.setItem('current_long',this.current_long);
+}
 
   //////////////google map///////////////////////
   ngAfterViewInit() {
