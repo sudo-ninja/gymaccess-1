@@ -48,10 +48,10 @@ isLoadingResults = false;
   ) { }
 
   ngOnInit() {
-    this.getProduct();
+    this.getMembers();
   }
 
-  async getProduct(){
+  async getMembers(){
     if (this.route.snapshot.paramMap.get('id')==='null'){
       this.presentAlertConfirm('You Are not selecting');
     }else{

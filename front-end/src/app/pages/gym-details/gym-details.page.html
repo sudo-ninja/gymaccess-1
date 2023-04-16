@@ -1,6 +1,16 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Update Gym Informationon-title</ion-title>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Update Gym</ion-title>
+    <ion-buttons slot="end">
+      <ion-button 
+      type="submit" 
+      [disabled]="!gymForm.valid" 
+      (click)="onSubmit()" 
+      [strong]="true">Update</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -9,83 +19,79 @@
     <ion-spinner *ngIf="isLoadingResults" ></ion-spinner>
   </div>
 
-  <form 
-  [formGroup]="gymForm" 
-  (ngSubmit)="onSubmit()">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>
-        <ion-label position="floating">Gym Name </ion-label>
-        <ion-input 
-           formControlName="m_name"      
-            type="text" required>
-        </ion-input>
-        <div
-              class="invalid-feedback"
-              *ngIf="submitted && myForm['m_name'].errors?.['required']"
+  <form [formGroup]="gymForm" (ngSubmit)="onSubmit()">
+        <ion-item>
+          <ion-label position="floating">Gym Name </ion-label>
+            <ion-input 
+                  formControlName="gym_name"      
+                  type="text" required>
+            </ion-input>
+                    <div class="invalid-feedback"
+                         *ngIf="submitted && myForm['gym_name'].errors?.['required']"
+                        >   Name is required.
+                    </div>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Gym Mobile </ion-label>
+            <ion-input 
+                      formControlName="gym_mobile"     
+                      type="text" required>
+            </ion-input>
+                      <div
+                      class="invalid-feedback"
+                      *ngIf="submitted && myForm['gym_mobile'].errors?.['required']"
+                    >
+                      Mobile Number is required.
+                    </div>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Emergency Mobile: </ion-label>
+            <ion-input 
+                    formControlName="gym_emergency"     
+                    type="text" required>
+            </ion-input>
+                      <div
+                          class="invalid-feedback"
+                       *ngIf="submitted && myForm['gym_emergency'].errors?.['required']"
+                          > Emergency Mobile Number is required.                    
+                      </div>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">GSTIN (Optional): </ion-label>
+            <ion-input 
+                    formControlName="gym_gstin"     
+                    type="text" > 
+            </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Lock ID: </ion-label>
+            <ion-input 
+                    formControlName="gym_lockId"     
+                    type="text"> 
+            </ion-input>
+        </ion-item>
+
+
+        <ion-item>
+          <ion-label>Location on Map</ion-label>
+          <ion-button slot="end" (click)="getLocation()">Set </ion-button>
+        </ion-item>
+
+        <!-- <div>
+          <ion-button 
+            type="submit" 
+            [disabled]="!gymForm.valid" 
+            color="primary" 
+            shape="full" 
+            expand="block"
             >
-              Name is required.
-            </div>
-       </ion-card-title>
-
-      <ion-card-subtitle><ion-label position="floating">Gym Mobile </ion-label>
-        <ion-input 
-           formControlName="mobile"     
-            type="text" required>
-        </ion-input>
-            <div
-              class="invalid-feedback"
-              *ngIf="submitted && myForm['mobile'].errors?.['required']"
-            >
-              Mobile Number is required.
-            </div>
-          </ion-card-subtitle>
-    </ion-card-header>
-
-    <ion-card-content>
-      <dl>
-        <dt>Emergency Mobile:</dt>
-        <dd><ion-input 
-          formControlName="Emergency_mobile"     
-           type="text" required>
-       </ion-input>
-           <div
-             class="invalid-feedback"
-             *ngIf="submitted && myForm['Emergency_mobile'].errors?.['required']"
-           >
-             Emergency Mobile Number is required.
-           </div></dd>
-
-        <dt>GSTIN (Optional):</dt>
-        <dd><ion-input 
-          formControlName="gym_gstin"     
-           type="text" required>
-       </ion-input>
-          </dd>
-
-        <dt>gym_lat:</dt>
-        <dd><ion-input 
-          formControlName="gym_lat"     
-           type="text" required>
-       </ion-input></dd>
-
-        <dt>gym_long:</dt>
-        <dd><ion-input 
-          formControlName="gym_long"     
-           type="text" required>
-       </ion-input></dd>
-
-         </dl>
-    </ion-card-content>
-
-    <div class="form-group">
-      <ion-button class="btn btn-success btn-lg btn-block" type="submit">
-        Update
-      </ion-button>
-    </div>
-         
-  
-   </ion-card>
+          Update
+          </ion-button>
+      </div> -->
 
    </form>
 

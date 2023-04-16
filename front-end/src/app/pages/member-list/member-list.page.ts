@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Share } from '@capacitor/share';
-import { AlertController, GestureController, LoadingController, ModalController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { Member } from 'src/app/models/member.model';
 import {Mcontrol} from 'src/app/models/mcontrol'
 
@@ -92,20 +92,17 @@ export class MemberListPage implements OnInit {
 
 
   constructor(
-    private gestureCtrl: GestureController,
     public loadingController:LoadingController,
     public router :Router,
     public route :ActivatedRoute,
     public gymApi:GymService,
     public userApi: UserService,
     
-    private cd: ChangeDetectorRef, 
     private alertCtrl: AlertController, 
     private modalCtrl: ModalController,
 
     private formBuilder: FormBuilder,
     private inviteControlApi:McontrolService,
-    private mcontrol_s: McontrolService,
     public memberApi:MemberserviceService,
 
     // to store data
@@ -211,10 +208,10 @@ async getMembers(){
     this.router.navigate(['/member-add']);
   }
 
-  async updateMember(uid:string) {
+  async updateMember(mid:string) {
       const modal = await this.modalCtrl.create({
       component: MemberUpdatePage,
-      componentProps:{id:uid},
+      componentProps:{id:mid},
       breakpoints: [0, 0.5, 0.8],
       initialBreakpoint: 0.8,      
     });
@@ -330,7 +327,6 @@ async getMembers(){
 
             this.inviteControlApi.addMcontrol (this.inviteControlForm.value)
             .subscribe((res: any) => {
-                const id = res._id;
                 console.log('Added invitation code');
                 console.log(this.member.email);
                 this.setInvitaion(this.member.email,"Pending");
@@ -370,7 +366,6 @@ async getMembers(){
     // some error as update PUT not getting ID
     console.log(this.memberId);
     this.memberApi.update(this.memberId,this.memberForm.value).subscribe((res: any) => {
-      const id = res._id;
       console.log('invitaion type change to =',res.isInviteAccepted);
     }, (err: any) => {
       console.log(err)
@@ -457,7 +452,7 @@ async getMembers(){
     console.log('double tap: ', event);
   }
 
-  onPress(uid:string,event: any) {
+  onPress(event: any) {
     console.log('press: ', event);
 
   }
@@ -482,7 +477,7 @@ async getMembers(){
     
   }
 
-  swipeDirection(uid,dir){
+  swipeDirection(dir){
     if(dir==="right")
     {
       // this.swipeDirect=event.dirX;

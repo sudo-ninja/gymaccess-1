@@ -7,14 +7,17 @@ export class TapDirective implements OnInit {
 
   @Output() tap = new EventEmitter();
   @Output() doubleTap = new EventEmitter();
+
   lastTap = 0;
   tapCount = 0;
   tapTimeout = null;
+  
   tapGesture = {
     name: 'tap',
     enabled: false,
     interval: 250,
   };
+
   doubleTapGesture = {
     name: 'doubleTap',
     enabled: false,
@@ -29,6 +32,7 @@ export class TapDirective implements OnInit {
   }
 
   @HostListener('click', ['$event'])
+
   handleTaps(e: { timeStamp: number; }) {
     const tapTimestamp = Math.floor(e.timeStamp);
     const isDoubleTap = this.lastTap + this.tapGesture.interval > tapTimestamp;

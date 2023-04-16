@@ -16,7 +16,6 @@ import { RouterModule } from '@angular/router';
     ReactiveFormsModule,
     IonicModule,
     RouterModule,
-
     GymDetailsPageRoutingModule
   ],
   declarations: [GymDetailsPage]

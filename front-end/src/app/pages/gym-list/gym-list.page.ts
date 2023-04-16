@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChildren} from '@
 import { ActivatedRoute, Router } from '@angular/router';
 import { Share } from '@capacitor/share';
 
-import { LoadingController, ModalController, NavController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController, NavController, ToastController } from '@ionic/angular';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {GymService} from './../../services/gym.service';
 import { Gym } from 'src/app/models/gym.model';
@@ -50,6 +50,7 @@ export class GymListPage implements OnInit {
    private modalCtrl: ModalController,
    private cd: ChangeDetectorRef, 
    private _user:UserService,
+   private alertCtrl: AlertController, 
 
    private storageService :StorageService, // storage service is used insted of get set method
 
@@ -145,26 +146,23 @@ export class GymListPage implements OnInit {
   }
 
   async updateGym(gid:string){
-    // to update gym info by long press change event
-    // redirect to gym-detail page that consists
-    // update and delete
-    // same can be done by modal controller also 
-    const modal = await this.modalCtrl.create({
+    console.log(gid);
+    localStorage.setItem('gymID',gid);
+     const modal = await this.modalCtrl.create({
       component: GymDetailsPage,
       componentProps:{id:gid},
       breakpoints: [0, 0.5, 0.8],
-      initialBreakpoint: 0.8,
-      
+      initialBreakpoint: 0.8,      
     });
     console.log(res => {
       this.gymApi.getGym(res.id);});
     await modal.present();
   }
 
-  removeGym(gym, index) {
+  deleteGym(gid) {
     if(window.confirm('Are you sure?')) {
-        this.gymApi.delete(gym._id).subscribe((data) => {
-          this.gyms.splice(index, 1);
+        this.gymApi.delete(gid).subscribe((data) => {
+          // this.gyms.splice(index, 1);
         }
       )    
     }
@@ -195,7 +193,51 @@ export class GymListPage implements OnInit {
     }, 2000);
   };
 
+
+
+  // Gym Location on External Google Mape only for display purpose 
+  // no editing work 
+  gymLat:any;
+  gymLng:any;
+async gymLocationOnMap(gid:string){
+   this.gymApi.getGym(gid).subscribe((data)=>{
+    // console.log(data);
+    this.gymLat = data.gym_address_lat;
+    this.gymLng = data.gym_address_long;
+    window.location.href =`https://www.google.com/maps/@${this.gymLat},${this.gymLng},21z`;
+    // https://www.google.com/maps/@26.8539768,75.7255187,15z
+  });
 }
+
+//double to update or delet
+onDoubleTap(uid:string,event: any) {
+  console.log('double tap: ', event);
+  console.log(uid);
+  this.presentAlert("Want to Update or Delete?",uid);
+}
+ 
+// Alert for Update and Delet of Gym
+async presentAlert(header:string , gid:any) {
+  const alert = await this.alertCtrl.create({
+    header:header,    
+    buttons: [{
+      text: 'Delete',
+      role: 'delete',
+      handler: () => { this.deleteGym(gid);   }
+    },
+    {
+      text: 'Update',
+      role: 'update',
+      handler: () => { this.updateGym(gid);  }
+    }],
+  });
+  await alert.present();
+}
+  
+
+}
+
+
 // ****************************************************
 
 // retrieve() : void

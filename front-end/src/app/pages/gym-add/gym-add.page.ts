@@ -76,6 +76,7 @@ export class GymAddPage implements OnInit {
       this.loggedUserId=this.loggeduser._id;
       this.loggedUserName = this.loggeduser.username;
       this.loggedUserEmail = this.loggeduser.email;
+
       // this.mainForm();
       // this.http.get(this.usersUrl).subscribe(res=>{
       //   console.log(res)
@@ -85,7 +86,7 @@ export class GymAddPage implements OnInit {
       //   console.log(error)});
     }
 
-    this.findInvalidControls();
+   
     
   }
 
@@ -95,7 +96,7 @@ export class GymAddPage implements OnInit {
     console.log(localStorage.getItem('gymLng'));
 
     this.gymForm = this.fb.group({
-      user_id: [localStorage.getItem('loggedUserId'), Validators.required],
+      user_id: [this.loggeduser._id, Validators.required],
       gym_name: [''],
       gym_emergency: [''],
       gym_mobile: [''],
@@ -107,11 +108,7 @@ export class GymAddPage implements OnInit {
     
   }
 
-   // Getter to access form control
-  //  get myForm() 
-  //  {
-  //   return this.gymForm.controls;
-  //  }
+   
 
     // to fetch gym location from page and use this info to open google map for this default location
     current_lat:any
@@ -149,10 +146,9 @@ export class GymAddPage implements OnInit {
 
   onSubmit() {
     // this.submitted = true;  
-    /**************************************** */
-    // search this why this gym form is not valid ????
-    /************************************************** */
+     
     if (!this.gymForm.valid) {
+      this.findInvalidControls();
       return false;
     } else {
       return this.apiService.addGym(this.gymForm.value).subscribe((res: any) => {
@@ -160,12 +156,15 @@ export class GymAddPage implements OnInit {
         // localStorage.setItem('ID',JSON.stringify(id));
         // this.isLoadingResults = false;
       localStorage.setItem('GYM',JSON.stringify(res)) // trick use to transfer added gym info gym list page
+      /********************************************************* */
       // logic added if any login user add GYM it means he is admin for that gym 
       // if gym successfully added with gym ID then user detail to be added in members
       //as Admin with Free access and with gym ID , so first member to
-      // any gym is Admin him self  
+      // by defualt user is admin as "ismember" = false is already set ..
+      /********************************************************** */
       if(!this.memberApi.getMemberByEmail(this.loggeduser.email)){
       this.adminAdd();
+      this._user.update(this.loggeduser._id,{"isMember":false});
      
       this.adminForm.patchValue({
         gym_id :res._id,
@@ -252,15 +251,22 @@ async LoggedUserInfo(){
 }  
 
 // how to use this to find invalid control 
-public findInvalidControls() {
-  const invalid = [];
-  const controls = this.gymForm.controls;
-  for (const name in controls) {
-      if (controls[name].invalid) {
-          invalid.push(name);
-      }
-  }
+public findInvalidControls() 
+{
+  console.log("invlid control");
+  let invalid = [];
+       const controls = this.gymForm.get('gym') as FormGroup; 
+       console.log(this.gymForm.value)  ;
+       console.log(controls) ; 
+       for (const name in controls.controls) 
+       {       
+        if (controls.controls[name].invalid) 
+        {         
+          invalid.push(' ' +(+name + 1));        
+        }     
   return invalid;
+        }
 }
+
 
 }

@@ -5,7 +5,8 @@ import { Directive, EventEmitter, HostListener, OnInit, Output } from '@angular/
 })
 export class PressDirective implements OnInit {
 
-  @Output() press = new EventEmitter();
+  @Output()press = new EventEmitter();
+
   pressGesture = {
     name: 'press',
     enabled: false,
@@ -25,8 +26,8 @@ export class PressDirective implements OnInit {
   
   @HostListener('touchstart', ['$event'])
   @HostListener('touchend', ['$event'])
-  onPress(uid,event) {
-    console.log(uid);
+  onPress(event) {
+    // console.log(uid);
     if (!this.pressGesture.enabled) {
       return;
     } // Press is not enabled, don't do anything.
@@ -37,7 +38,7 @@ export class PressDirective implements OnInit {
     if (type == 'touchstart') {
       this.pressTimeout = setTimeout(() => {
         this.isPressing = true;
-        // this.press.emit('start');
+        this.press.emit('start');
       }, this.pressGesture.interval); // Considered a press if it's longer than interval (default: 251).
     } else if (type == 'touchend') {
       clearTimeout(this.pressTimeout);

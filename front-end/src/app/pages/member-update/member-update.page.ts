@@ -75,10 +75,10 @@ export class MemberUpdatePage implements OnInit {
   ngOnInit() {
 
     let idu = this.id || this.route.snapshot.params['id'];
-    // this.getProduct(this.route.snapshot.params['id']);
-    // this.getProduct(this.route.snapshot.paramMap.get('id'));
+    // this.getMember(this.route.snapshot.params['id']);
+    // this.getMember(this.route.snapshot.paramMap.get('id'));
     this.idun=this.id;
-    this.getProduct(idu);
+    this.getMember(idu);
     localStorage.setItem('ID',this.idu);
     console.log(idu,this.id,this.idun);
     // this.route.snapshot.params[this.id];
@@ -99,7 +99,7 @@ export class MemberUpdatePage implements OnInit {
     });
   }
 
-  async getProduct(id: any) {  
+  async getMember(id: any) {  
     this.memberApi.getMember(id).subscribe((data: any) => {
       this.id = data.id;
       this.memberForm.setValue({
@@ -127,9 +127,9 @@ export class MemberUpdatePage implements OnInit {
     let idux = this.id||this.route.snapshot.paramMap.get('id')||this.idun;
     console.log(idux , this.id, this.idun);
     this.memberApi.update(idux, this.memberForm.value).subscribe((res: any) => {
-      console.log(res._id);
-      console.log(this.idu);
-      console.log(this.idun);      
+      // console.log(res._id);
+      // console.log(this.idu);
+      // console.log(this.idun);      
         this.idu = res._id;
         // localStorage.setItem('ID', JSON.stringify(this.id));
         this.isLoadingResults = false;

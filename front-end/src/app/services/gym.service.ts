@@ -38,8 +38,9 @@ export class GymService {
   }
 
   update(id: any, data: any): Observable<any> {
-    console.log("i m in Update by ID oop");
-    return this.http.put(`${baseUrl}${id}`, data).pipe(catchError(this.errorMgmt));
+    console.log("i m in Update by ID gym ID is ..",id);
+    return this.http.put(`${baseUrl}/${id}`,data).pipe(tap((data:any)=> console.log(`updated with ID =${id}`)),
+    catchError(this.errorMgmt));
   }
 
   delete(id: any): Observable<any> {

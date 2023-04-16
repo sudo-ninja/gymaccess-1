@@ -10,11 +10,15 @@ import { GymListPage } from './gym-list.page';
 import { QRCodeModule } from 'angularx-qrcode';
 // filter on list page 
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
+// Call Directive Module for gesture , tap , swipe and long press control 
+import{DirectivesModule} from './../../directives/directives.module';
+
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
+    DirectivesModule,
     IonicModule,
     GymListPageRoutingModule,
     Ng2SearchPipeModule,
