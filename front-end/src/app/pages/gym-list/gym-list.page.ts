@@ -5,8 +5,12 @@ import { Share } from '@capacitor/share';
 
 import { AlertController, LoadingController, ModalController, NavController, ToastController } from '@ionic/angular';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+
 import {GymService} from './../../services/gym.service';
 import { Gym } from 'src/app/models/gym.model';
+
+import { MemberserviceService } from 'src/app/services/memberservice.service';
+
 import { GymDetailsPage } from '../gym-details/gym-details.page';
 import { UserService } from 'src/app/services/user.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -46,6 +50,7 @@ export class GymListPage implements OnInit {
    public router :Router,
    public route :ActivatedRoute,
    public gymApi:GymService,
+   private memberApi:MemberserviceService,
    public loadingController:LoadingController,
    private modalCtrl: ModalController,
    private cd: ChangeDetectorRef, 
@@ -160,11 +165,13 @@ export class GymListPage implements OnInit {
   }
 
   deleteGym(gid) {
-    if(window.confirm('Are you sure?')) {
+    if(window.confirm('Are you sure? this will Delete all associated members also!!')) {
+        this.memberApi.deleteAllofThisGymID(gid).subscribe(()=>{
+          console.log( "All member deleted associated with this gy ID")
+        });
         this.gymApi.delete(gid).subscribe((data) => {
-          // this.gyms.splice(index, 1);
-        }
-      )    
+          console.log(" Gym also deleted now .")
+        });    
     }
   }
 

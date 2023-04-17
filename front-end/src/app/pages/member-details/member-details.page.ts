@@ -92,7 +92,7 @@ isLoadingResults = false;
     await this.memberApi.delete(id)
     .subscribe(res=>{
     this.isLoadingResults= false;
-    this.router.navigate(['/member-list']);
+    this.router.navigate(['/gymtabs/member-list']);
     },err=>{
       console.log(err);
     this.isLoadingResults= false;
@@ -106,7 +106,7 @@ isLoadingResults = false;
   }
 
   BacktoList(){
-    this.router.navigate(['/member-list'],{replaceUrl:true});
+    this.router.navigate(['/gymtabs/member-list'],{replaceUrl:true});
   }
 
   AddMore(){

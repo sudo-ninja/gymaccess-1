@@ -78,6 +78,11 @@ export class MemberserviceService {
     return this.http.delete(baseUrl).pipe(catchError(this.errorMgmt));
   }
 
+  // delete all memebrs of particular Gym 
+  deleteAllofThisGymID(gymid:any): Observable<any> {
+    return this.http.delete(`${baseUrl}gymid?gym_id=${gymid}`).pipe(catchError(this.errorMgmt));
+  }
+
   wildSearch(searchstring: any): Observable<Member[]> {
     console.log("i m in wild search loop");
     return this.http.get<Member[]>(`${baseUrl}/search/${searchstring}`).pipe(catchError(this.errorMgmt));

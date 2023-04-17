@@ -51,6 +51,8 @@ export class GymService {
     return this.http.delete(baseUrl).pipe(catchError(this.errorMgmt));
   }
 
+  
+
   wildSearch(user_id: any): Observable<Gym[]> {
     console.log("i m in wild search loop");
     return this.http.get<Gym[]>(`${searchUrl}/${user_id}`).pipe(catchError(this.errorMgmt));

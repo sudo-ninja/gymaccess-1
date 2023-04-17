@@ -75,6 +75,7 @@ export class GymDetailsPage implements OnInit {
     let idu = this.id || this.route.snapshot.paramMap.get('id');
     // this.getGyms();
     this.getGym(idu);
+    console.log(this.new_lat,this.new_lng);
     this.gymForm = this.formBuilder.group({
       //if key of form are kept in single quote the become editable
       user_id: ['',Validators.required],
@@ -82,7 +83,7 @@ export class GymDetailsPage implements OnInit {
       gym_emergency: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       gym_mobile: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       gym_gstin:['', Validators.required],
-      gym_address_lat:[this.new_lat, Validators.required],
+      gym_address_lat:[localStorage.getItem('gymLat'), Validators.required],
       gym_address_long: [this.new_lng, Validators.required],
       'gym_lockId': ['', Validators.required],
       //   email: [

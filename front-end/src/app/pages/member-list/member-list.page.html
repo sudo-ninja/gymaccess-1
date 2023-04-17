@@ -38,8 +38,7 @@
       *ngFor="let m of members | filter:searchTerm">
               <ion-card-header appSwipe
               (swipe)="onSwipe(m._id,$event)"
-              SWIPE GESTURE>
-                          
+              SWIPE GESTURE>                          
                 <ion-card-title>
                   <ion-item>
                     <ion-avatar slot="start">
@@ -56,10 +55,10 @@
                 <ion-card-subtitle>
                    <ion-grid>
                       <ion-row>
-                        <ion-col color="danger">Balance :{{m.m_validdays}} Day(s)</ion-col>
-                        <ion-col color="danger">End Date:{{m.m_enddate | date }}</ion-col>
-                        <ion-col color="danger">Start Time:{{m.m_intime | date:'shortTime' }}</ion-col>
-                        <ion-col color="danger">Finish Time:{{m.m_outtime | date:'shortTime' }}</ion-col>
+                        <ion-col>Balance :{{m.m_validdays}} Day(s)</ion-col>
+                        <ion-col>End Date:{{m.m_enddate | date }}</ion-col>
+                        <ion-col>Start Time:{{m.m_intime | date:'shortTime' }}</ion-col>
+                        <ion-col>Finish Time:{{m.m_outtime | date:'shortTime' }}</ion-col>
                       </ion-row>
                     </ion-grid>                       
                 </ion-card-subtitle>
@@ -132,29 +131,29 @@
     SWIPE GESTURE
   </ion-button> -->
 
-  <ion-button
+  <!-- <ion-button
     class="ion-margin" 
     expand="block"
     appTap
     (tap)="onTap($event)">
     TAP GESTURE
-  </ion-button>
+  </ion-button> -->
 
-  <ion-button
+  <!-- <ion-button
     class="ion-margin" 
     expand="block"
     appTap
     (doubleTap)="onDoubleTap($event)">
     DOUBLE TAP GESTURE
-  </ion-button>
+  </ion-button> -->
 
-  <ion-button
+  <!-- <ion-button
     class="ion-margin" 
     expand="block"
     appPress
     (press)="onPress($event)">
     LONG PRESS GESTURE
-  </ion-button>
+  </ion-button> -->
 
   <!-- <ion-button
     class="ion-margin" 
@@ -173,7 +172,7 @@
     <!-- <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
       <ion-infinite-scroll-content></ion-infinite-scroll-content>
     </ion-infinite-scroll> -->
-<ion-button (click)="deletAllMembers()"> Delet All Members</ion-button>
+<!-- <ion-button (click)="deletAllMembers()"> Delet All Members</ion-button> -->
 
   </ion-content>
 

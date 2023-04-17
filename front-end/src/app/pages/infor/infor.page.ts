@@ -8,6 +8,7 @@ import { MemberserviceService } from 'src/app/services/memberservice.service';
 // to store once fetched data from DB to store locally
 import { StorageService } from 'src/app/services/storage.service';
 import { SafeUrl } from '@angular/platform-browser';
+import { AlertController } from '@ionic/angular';
 
 
 
@@ -37,6 +38,9 @@ export class InforPage implements OnInit {
   freeMemberResults:any;
   _daysAfter:any;
 
+  //lock ID toggle set as momentry trigger only
+  lockIDtoggleTrigger:boolean = false;
+
 
 
   constructor(
@@ -44,6 +48,8 @@ export class InforPage implements OnInit {
     public memberApi:MemberserviceService, // to get total numer of members
   // to store daa once fetch
     private storageService :StorageService, // storage service is used insted of get set method
+    // for alert controller
+    public alertController :AlertController,
 
     ) { 
     // for select default gym in gym selector
@@ -136,5 +142,47 @@ export class InforPage implements OnInit {
     onChangeURL(url: SafeUrl) {
       this.qrCodeDownloadLink = url;
     }
+
+// lock ID toggle 
+lockIdToggle($event){
+  console.log("i m in lock id toggle method");
+    this.lockIDinputAlert();
+    this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
+
+}
+
+
+// alert controller for Lock ID input 
+async lockIDinputAlert(){
+  
+  const alert = await this.alertController.create({
+    header :'Enter New Lock ID',
+    inputs: [
+    {
+        name: 'lock_id',
+        type: 'text'
+    }],    
+    buttons: [
+        {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {
+                console.log('Confirm Cancel');
+            }
+        }, 
+        {
+            text: 'Ok',
+            handler: (alertData) => { //takes the data 
+                console.log(alertData.lock_id);
+                this.gymApi.update(this._gym_id,{"gym_lockId":alertData.lock_id}).subscribe((data)=>{
+                  console.log("Lock Id Updated as",data.gym_lockId );
+                });
+            }
+        }
+    ]
+});
+await alert.present();
+}
 
 }
