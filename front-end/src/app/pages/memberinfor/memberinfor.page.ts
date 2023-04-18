@@ -21,6 +21,8 @@ import { MemberserviceService } from 'src/app/services/memberservice.service';
 // call gmap page for location update 
 import { GmapPage } from '../gmap/gmap.page';
 
+ 
+
 @Component({
   selector: 'app-memberinfor',
   templateUrl: './memberinfor.page.html',
@@ -34,6 +36,7 @@ export class MemberinforPage implements OnInit {
   memberAttendances:any;
   memberBalanceDays:any;
   memberEndDate:any;
+  
 
   messageReminder:boolean = false;
 
@@ -51,7 +54,7 @@ export class MemberinforPage implements OnInit {
     public route :ActivatedRoute,
     public router :Router,
     public loadingController:LoadingController,
-    private alertCtrl: AlertController,
+    private alertController: AlertController,
     private modalCtrl: ModalController,
     private cd: ChangeDetectorRef,
     private storageService :StorageService, // storage service is used insted of get set method
@@ -129,6 +132,7 @@ getMemberEndDate(email:any){
   this.MemberApi.getMemberByEmail(email).subscribe((data:any)=>{
     try {
       console.log(data);
+      this.memberID= data._id;
       if(data)
       {
       console.log(data.m_enddate);
@@ -188,7 +192,7 @@ setReminder(email:any,days:any){
 }
 
 async presentAlert(header:string,subheader:string, message:string) {
-  const alert = await this.alertCtrl.create({
+  const alert = await this.alertController.create({
     header:header,
     subHeader: subheader,
     message:message,
@@ -229,6 +233,40 @@ async getLocation()
     if (role === 'confirm') {
       // this.message = `Hello, ${data}!`;
     }
+    }
+
+    // recharge request alert
+    async rechargeRequestAlert(){  
+      const alert = await this.alertController.create({
+        header :'Enter Days for Recharge',
+        inputs: [
+        {
+            name: 'recharge_days',
+            type: 'number'
+        }],    
+        buttons: [
+            {
+                text: 'Cancel',
+                role: 'cancel',
+                cssClass: 'secondary',
+                handler: () => {
+                    console.log('Confirm Cancel');
+                }
+            }, 
+            {
+                text: 'Ok',
+                handler: (alertData) => { //takes the data 
+                    console.log(alertData.recharge_days);
+// if already recharge request made by same member then show alert that rechagre request is already made..wait
+// if no recharge request made earlier then only make request 
+                     this.RechargeApi.addRecharge({"member_id":this.memberID,"days":alertData.recharge_days,"isAccepted": "0"}).subscribe((data)=>{
+                      console.log(data);
+                     });
+                }
+            }
+        ]
+    });
+    await alert.present();
     }
 
 }

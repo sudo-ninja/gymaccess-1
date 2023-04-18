@@ -19,6 +19,8 @@ import { MqttService } from 'src/app/services/mqtt.service';
 // call service of gym for gym lock id
 import { GymService } from 'src/app/services/gym.service';
 
+// call recharge request services
+
 @Component({
   selector: 'app-member-action',
   templateUrl: './member-action.page.html',
@@ -305,6 +307,7 @@ let r = 6371;
 // calculate the result
 return(c * r);
 }
+
 
 
 memberActionSelected(){

@@ -1,4 +1,14 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { GymService } from 'src/app/services/gym.service';
+import { MemberserviceService } from 'src/app/services/memberservice.service';
+
+//call member service to get all information about logged user Membrs
+
+// call recharge request api to get information about recharge
+import { RechargeService } from 'src/app/services/recharge.service';
+
 
 @Component({
   selector: 'app-me',
@@ -6,16 +16,49 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./me.page.scss'],
 })
 export class MePage implements OnInit {
+  loggeduserUsername:any;
+  loggeduserEmail:any;
+  loggeduserIsAdmin:boolean;
 
-  constructor() { }
+  gymName:any;
+  gymLocation_lat:any;
+  gymLocation_lng:any;
+  gymEmergencyMobile:any;
 
-  // Welcome by Logger User name 
+  memberEnddate:any;
+  memberEntrytime:any;
+
+  memberGymId:any;
+  
+
+  constructor(
+    private router:Router,
+    private http:HttpClient,
+    public memberApi:MemberserviceService,
+    private gymApi: GymService,
+    private rechargeApi :RechargeService,
+  ) { 
+
+    const user = localStorage.getItem('User')
+     console.log(JSON.parse(user!).isMember);
+     console.log(JSON.parse(user!).email );
+     console.log(JSON.parse(user!)._id);
+     console.log(JSON.parse(user!).username);
+     this.loggeduserUsername = JSON.parse(user!).username;
+     this.loggeduserEmail = JSON.parse(user!).email;
+     this.loggeduserIsAdmin = JSON.parse(user!).isMember;
+  }
+
+ 
   // if logged user is member then change the page information 
   // if logged user is admin then in gym managment show .. gym , associated with him , gym names, 
-  //if logged user is member then in gym management show .. gym joined by him 
+  //if logged user is member then in gym management show .. gym joined by him
+
   // in message centre if loffed user is admin then here hw should get all mrequest sent by members to him
   // for extension show them as one liner .. if click that one liner then show that in alert ..
   // if click Ok in alert send back response message as delivered to member message centre with Accepted or Denied.
+  
+  
   // help and feedback .. keep some text area here limit 140 char, as soon as type start show
   // submit button 
   // as soon as submit is prssed store this message in DB and back end let this message go to app developer 
@@ -38,10 +81,48 @@ export class MePage implements OnInit {
    */
 
   ngOnInit() {
+    this.gymManagement(this.loggeduserIsAdmin);
   }
 
+
+  gymManagement(admin:boolean){
+    if(admin){
+      console.log("Admin Execution")
+    }else {   // means member if it false
+      console.log("Member Execution")
+      this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{
+        console.log(data);
+        this.memberGymId = data.gym_id;
+        this.gymApi.getGym(this.memberGymId).subscribe((res)=>{
+          this.gymName= res.gym_name;
+           this.gymLocation_lat= res.gym_address_lat;
+          this.gymLocation_lng = res.gym_address_long;
+          this.gymEmergencyMobile=res.gym_emergency;          
+        });
+
+
+      });
+    }
+
+  }
   getImage(){
     
+  }
+
+  // Request Made show here use Ion chip to show number of request made by use with date and time 
+  // also show if that is pending or accepted if pending .. if accepted then remove that and show push notification
+  // as request accepted . 
+  // use ngIF at html to check if request message is made or not 
+  //if made then show div with Request Message made for Days ...
+  // Recharge Request Accepted .. Pending 
+  rechargeRequestMessage(memberId:any){
+    this.rechargeApi.getRechargeRequestMadeByMemberId(memberId).subscribe((data)=>{
+      console.log(data);
+      if(data.length){
+        console.log("Recharge Request Made",data[0].days,data[0].isAccepted,)
+      }
+    });
+
   }
 
 }

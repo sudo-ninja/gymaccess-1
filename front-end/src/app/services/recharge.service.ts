@@ -57,6 +57,12 @@ export class RechargeService {
     return this.http.get<Recharge[]>(`${searchUrl}=${mobile}`).pipe(catchError(this.errorMgmt));
   }
 
+  //get all recharges request by member id 
+  getRechargeRequestMadeByMemberId(memberID:any): Observable<Recharge[]>{
+    console.log("i m in get recharge request made by member id loop");
+    return this.http.get<Recharge[]>(`${baseUrl}/memberid?member_id=${memberID}`).pipe(catchError(this.errorMgmt));
+    }
+
   // Error handling
   errorMgmt(error: HttpErrorResponse) {
     let errorMessage = '';

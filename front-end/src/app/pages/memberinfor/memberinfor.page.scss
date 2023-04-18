@@ -3,6 +3,13 @@
     overflow: hidden;
     }
 
+.ripple-parent {
+      position: relative;
+      overflow: hidden;
+    
+      border: 1px solid #ddd;
+    }
+
     // ion-item::part(native) {
     //     background: #19422d;
     //     color: #fff;

@@ -153,8 +153,7 @@ lockIdToggle($event){
 
 
 // alert controller for Lock ID input 
-async lockIDinputAlert(){
-  
+async lockIDinputAlert(){  
   const alert = await this.alertController.create({
     header :'Enter New Lock ID',
     inputs: [
