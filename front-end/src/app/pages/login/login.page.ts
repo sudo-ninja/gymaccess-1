@@ -69,3 +69,8 @@ export class LoginPage implements OnInit {
  
 
 }
+
+// change design of login page 
+// login by email 
+// password
+// login by gmail roung circle as fab icon in centre 

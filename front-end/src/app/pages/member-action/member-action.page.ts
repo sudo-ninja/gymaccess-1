@@ -27,6 +27,10 @@ import { GymService } from 'src/app/services/gym.service';
   styleUrls: ['./member-action.page.scss'],
 })
 export class MemberActionPage implements OnInit {
+
+  loggedUserEmail:any;
+  isloggedUserMember:boolean;
+
   scannedResult:any;
   content_visibility = '';
   dateTime;
@@ -72,6 +76,22 @@ export class MemberActionPage implements OnInit {
         // this.router.navigate(['/login'])
         console.log(error)
       });
+
+      // to know the status of logged user if he is member or admin
+      const user = localStorage.getItem('User')
+      this.loggeduser=JSON.parse(user);
+      this.loggedUserEmail = this.loggeduser.email;
+      this._user.getUserbyEmail(this.loggedUserEmail).subscribe(
+        res=>{
+          // this.addName(res),
+          console.log(res);
+          this.isloggedUserMember = res.isMember;
+        },
+        error=>{
+          // this.router.navigate(['/login'])
+          console.log(error)
+        }
+       )
       // to get current user location as soon as page is opened
       this.fetchLocation();
   }

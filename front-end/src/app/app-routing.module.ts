@@ -64,7 +64,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/member-update/member-update.module').then( m => m.MemberUpdatePageModule)
   },
   {
-    path: 'qrlabel',
+    path: 'qrlabel/:id',
     loadChildren: () => import('./pages/qrlabel/qrlabel.module').then( m => m.QrlabelPageModule)
   },
   {

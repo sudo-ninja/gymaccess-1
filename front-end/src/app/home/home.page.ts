@@ -58,6 +58,8 @@ export class HomePage implements OnInit{
   loggeduserId:any;
 
   userForm!: FormGroup;
+  isloggedUserMember: boolean;
+  loggeduserIsAdmin: boolean;
 
   constructor(
     private router:Router,
@@ -85,32 +87,58 @@ export class HomePage implements OnInit{
       }
      )
      const user = localStorage.getItem('User')
-     console.log(JSON.parse(user!).isMember);
      console.log(JSON.parse(user!).email );
      console.log(JSON.parse(user!)._id);
-      if(JSON.parse(user!).isMember)
+
+      // to know the status of logged user if he is member or admin      
+      this.loggeduser=JSON.parse(user);
+      this.loggeduserEmail = this.loggeduser.email;
+      this.userApi.getUserbyEmail(this.loggeduserEmail).subscribe(
+        res=>{
+           console.log(res);
+          this.isloggedUserMember = res.isMember;
+          console.log(this.isloggedUserMember);
+          if(!this.isloggedUserMember){
+           this.loggeduserIsAdmin = true;
+           console.log("Logged Used is Admin");
+           this.gymApi.wildSearch(JSON.parse(user!)._id).subscribe((res:any)=>{
+            try {
+              console.log(res.length);
+              if(res.length<1)
+              {
+                console.log("No gym Add by this persom Gym Please")
+                this.loggedUserRoleaAlert("Welcome to Gym Access Control","let's start by .");
+                // this.presentAlert("Welcome to Gym Acceess Control !!","Kindly Choose your role.","If you Want to Add Gym then click on My GYM to Add Gym or Please Ask Gym Owner to Invite you to Join Gym")
+              }
+              else
+              {
+                this.router.navigateByUrl('/gym-list',{replaceUrl:true});
+              }
+            } catch (error) {
+              throw error;
+            }
+          });
+          }else{
+           this.isloggedUserMember=true;
+           this.loggeduserIsAdmin = false;
+           console.log("Logged User is Member");
+           this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true});
+          }
+        },
+        error=>{
+             console.log(error)
+        }
+       )
+       
+     
+      if(this.isloggedUserMember)
       {  
         console.log()         
-      this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true});    
+        this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true});
       }
       else
       {
-      this.gymApi.wildSearch(JSON.parse(user!)._id).subscribe((res:any)=>{
-        try {
-          console.log(res.length);
-          if(res.length<1)
-          {
-            console.log("No gym Add Gym Please")
-            this.presentAlert("You Are Not Gym Owner!!","You Are not Member of Any Gym","If you Want to Add Gym then click on My GYM to Add Gym or Please Ask Gym Owner to Invite you to Join Gym")
-          }
-          else
-          {
-            this.router.navigateByUrl('/gym-list',{replaceUrl:true});
-          }
-        } catch (error) {
-          throw error;
-        }
-      });
+      
   }
   
   }
@@ -126,6 +154,8 @@ logs: string[] = [];
     this.logs.unshift(msg);
   }
 
+  // here if logged user click on Add Gym he become Admin 
+  // if logged user click on Join Gym he become Member
   handleChange(e,) {
     this.pushLog('ionChange fired with value: ' + e.detail.value);
     console.log(this.loggeduser._id);
@@ -137,7 +167,16 @@ logs: string[] = [];
 
     }else if (e.detail.value=="join") {
       console.log(e.detail.value) ;
-      this.checkIfInvited(this.loggeduserEmail);
+      this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{
+        console.log(data);
+        if(!data){
+          console.log("no member");
+          this.presentAlert("Gym Not Joined Yet !!","Please Ask Gym Admin to Invite to Join Gym","")
+        }else{
+          this.checkIfInvited(this.loggeduserEmail);
+        }
+      });
+      // this.checkIfInvited(this.loggeduserEmail);
       // this.joinGymAlert();
      }
   }
@@ -278,10 +317,14 @@ logs: string[] = [];
   checkIfInvited(email:any){
     this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
       console.log("in Check if Invited");
+      console.log(data.length);
+      // here try to check if member email exist or not .. if member email is not there then 
+      //show alert that you have strill not asscooaited to any gym
       try {
+         
         if(data.isInviteAccepted=="Not")
         {
-          console.log("Please ask respective gym owner to invite you to join gym"); 
+          console.log("Please ask respective gym admin to invite you to join gym"); 
           this.presentAlert("Gym Not Joined","Please Ask Gym Admin to Invite to Join Gym","")
         }
         if(data.isInviteAccepted=="Pending")
@@ -338,6 +381,39 @@ logs: string[] = [];
       subHeader: subheader,
       message:message,
       buttons: ['OK'],
+    });
+    await alert.present();
+  }
+
+  async loggedUserRoleaAlert(header:string,message:string) {
+    const alert = await this.alertCtrl.create({
+      header:header,
+      message:message,
+      buttons: [
+        {
+          text: 'Add Gym',
+          role: 'admin',
+          handler: () => { localStorage.setItem('loggedUserId',this.loggeduser._id);
+                           console.log(this.loggeduser._id);
+                          this.router.navigate(['/gym-add'],{replaceUrl:true});
+                        }
+        },
+        {
+          text: 'Join Gym',
+          role: 'member',
+          handler: () => {  
+            this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{
+              console.log(data);
+              if(!data){
+                console.log("no member");
+                this.presentAlert("Gym Not Joined Yet !!","Please Ask Gym Admin to Invite to Join Gym","")
+              }else{
+                this.checkIfInvited(this.loggeduserEmail);
+              }
+            });
+          }
+        }
+      ]
     });
     await alert.present();
   }

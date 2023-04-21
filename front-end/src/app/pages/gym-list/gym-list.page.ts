@@ -76,7 +76,7 @@ export class GymListPage implements OnInit {
           this.storageService.store('gymList',data);
           console.log(data[0].gym_name); // use this info to make default select GYM value and refer this further https://forum.ionicframework.com/t/ion-select-and-default-values-ionic-4-solved/177550/5
           localStorage.setItem('DefaultGym',JSON.stringify(data[0]));
-          // this.router.navigateByUrl('/gymtabs/member-list',{replaceUrl:true})
+          this.router.navigateByUrl('/gymtabs/member-list',{replaceUrl:true})
         }      
       } catch (error) {
         throw error;
@@ -117,12 +117,12 @@ export class GymListPage implements OnInit {
    });
    await loading.present();
    if(this.first){
-        await this.gymApi.wildSearch(id).subscribe(res=>{
-          this.gyms= res;
-          console.log(this.gyms);
-          loading.dismiss();
-          this.storageService.store('gymResult',res); // data stored in storage service 
-      }),err=>{
+        this.gymApi.wildSearch(id).subscribe(res => {
+       this.gyms = res;
+       console.log(this.gyms);
+       loading.dismiss();
+       this.storageService.store('gymResult', res); // data stored in storage service 
+     }),err=>{
         console.log(err);
         loading.dismiss();
       };             

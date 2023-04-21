@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
+import { Recharge } from 'src/app/models/recharge';
 import { GymService } from 'src/app/services/gym.service';
 import { MemberserviceService } from 'src/app/services/memberservice.service';
 
@@ -8,6 +10,7 @@ import { MemberserviceService } from 'src/app/services/memberservice.service';
 
 // call recharge request api to get information about recharge
 import { RechargeService } from 'src/app/services/recharge.service';
+import { UserService } from 'src/app/services/user.service';
 
 
 @Component({
@@ -20,6 +23,9 @@ export class MePage implements OnInit {
   loggeduserEmail:any;
   loggeduserIsAdmin:boolean;
 
+  loggedUserGymId:any;
+
+
   gymName:any;
   gymLocation_lat:any;
   gymLocation_lng:any;
@@ -27,8 +33,19 @@ export class MePage implements OnInit {
 
   memberEnddate:any;
   memberEntrytime:any;
-
   memberGymId:any;
+  memberId:any;
+
+
+  anyMessage:boolean=false;
+  isMessageFromAdmin:boolean=false;
+
+   
+   recharges:Recharge[]=[];
+  loggeduser: any;
+  isloggedUserMember: boolean;
+
+
   
 
   constructor(
@@ -37,16 +54,43 @@ export class MePage implements OnInit {
     public memberApi:MemberserviceService,
     private gymApi: GymService,
     private rechargeApi :RechargeService,
+    // for ionic alert
+    private alertCtrl: AlertController,
+    // logged user API 
+    private userApi:UserService,
   ) { 
 
     const user = localStorage.getItem('User')
-     console.log(JSON.parse(user!).isMember);
+     
      console.log(JSON.parse(user!).email );
      console.log(JSON.parse(user!)._id);
      console.log(JSON.parse(user!).username);
+
+     // to know the status of logged user if he is member or admin      
+     this.loggeduser=JSON.parse(user);
+     this.loggeduserEmail = this.loggeduser.email;
+     this.userApi.getUserbyEmail(this.loggeduserEmail).subscribe(
+       res=>{
+          console.log(res);
+         this.isloggedUserMember = res.isMember;
+         console.log(this.isloggedUserMember);
+         if(!this.isloggedUserMember){
+          this.loggeduserIsAdmin = true;
+          console.log("Logged Used is Admin");
+         }else{
+          this.isloggedUserMember=true;
+          this.loggeduserIsAdmin = false;
+          console.log("Logged Used is Member");
+         }
+       },
+       error=>{
+            console.log(error)
+       }
+      )
+     
      this.loggeduserUsername = JSON.parse(user!).username;
-     this.loggeduserEmail = JSON.parse(user!).email;
-     this.loggeduserIsAdmin = JSON.parse(user!).isMember;
+     this.loggeduserEmail = JSON.parse(user!).email;     
+     
   }
 
  
@@ -81,7 +125,21 @@ export class MePage implements OnInit {
    */
 
   ngOnInit() {
-    this.gymManagement(this.loggeduserIsAdmin);
+    if(!this.loggeduserIsAdmin){
+    this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{
+        
+      this.memberId = data._id;
+      this.memberGymId = data.gym_id;
+      this.gymManagement(this.loggeduserIsAdmin);
+      this.rechargeRequestMessage(this.memberId);
+    });
+  }
+
+  if(this.loggeduserIsAdmin){
+
+
+  }
+    
   }
 
 
@@ -89,19 +147,17 @@ export class MePage implements OnInit {
     if(admin){
       console.log("Admin Execution")
     }else {   // means member if it false
-      console.log("Member Execution")
-      this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{
-        console.log(data);
-        this.memberGymId = data.gym_id;
-        this.gymApi.getGym(this.memberGymId).subscribe((res)=>{
+      console.log("Member Execution")    
+        
+          this.gymApi.getGym(this.memberGymId).subscribe((res)=>{
           this.gymName= res.gym_name;
            this.gymLocation_lat= res.gym_address_lat;
           this.gymLocation_lng = res.gym_address_long;
           this.gymEmergencyMobile=res.gym_emergency;          
         });
-
-
-      });
+        
+         
+        console.log(this.memberId);
     }
 
   }
@@ -115,14 +171,34 @@ export class MePage implements OnInit {
   // use ngIF at html to check if request message is made or not 
   //if made then show div with Request Message made for Days ...
   // Recharge Request Accepted .. Pending 
-  rechargeRequestMessage(memberId:any){
-    this.rechargeApi.getRechargeRequestMadeByMemberId(memberId).subscribe((data)=>{
-      console.log(data);
+  rechargeDays:any;
+  isAccepted:any;
+  async rechargeRequestMessage(md:any){
+    console.log(md);
+    this.rechargeApi.getRechargeRequestMadeByMemberId(md).subscribe((data) => {
+     console.log(data.length);
       if(data.length){
-        console.log("Recharge Request Made",data[0].days,data[0].isAccepted,)
+        this.anyMessage = true;
+         this.rechargeDays = data[0].days;
+         this.isAccepted = data[0].isAccepted;
       }
     });
 
+  }
+
+  alertForMemberMessage(){
+    if(!this.isAccepted){
+    this.presentAlert(`Request Made for ${this.rechargeDays} Days`,"Approval Status is Still Pending");
+      }
+}
+
+  async presentAlert(header:string,  message:string) {
+    const alert = await this.alertCtrl.create({
+      header:header,
+       message:message,
+      buttons: ['OK'],
+    });
+    await alert.present();
   }
 
 }

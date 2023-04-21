@@ -235,8 +235,21 @@ async getLocation()
     }
     }
 
+
+
     // recharge request alert
-    async rechargeRequestAlert(){  
+rechargeRequestAlert(){
+  this.RechargeApi.getRechargeRequestMadeByMemberId(this.memberID).subscribe((data) => {
+    console.log(data.length);
+   if(!data.length){
+      this.rechargeRequestAlertFirst();
+    }else{
+      this.rechargeRequestMessageAlert("Already Request Sent","Please wait for request approval ..")
+
+   }
+ });
+}
+    async rechargeRequestAlertFirst(){  
       const alert = await this.alertController.create({
         header :'Enter Days for Recharge',
         inputs: [
@@ -257,8 +270,6 @@ async getLocation()
                 text: 'Ok',
                 handler: (alertData) => { //takes the data 
                     console.log(alertData.recharge_days);
-// if already recharge request made by same member then show alert that rechagre request is already made..wait
-// if no recharge request made earlier then only make request 
                      this.RechargeApi.addRecharge({"member_id":this.memberID,"days":alertData.recharge_days,"isAccepted": "0"}).subscribe((data)=>{
                       console.log(data);
                      });
@@ -267,6 +278,17 @@ async getLocation()
         ]
     });
     await alert.present();
+    }
+
+
+    async rechargeRequestMessageAlert(header:string, message:string) {
+      const alert = await this.alertController.create({
+        header:header,
+      
+        message:message,
+        buttons: ['OK'],
+      });
+      await alert.present();
     }
 
 }

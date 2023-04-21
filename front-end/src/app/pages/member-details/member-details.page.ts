@@ -78,7 +78,7 @@ isLoadingResults = false;
         {
           text : 'Okay',
           handler:()=>{
-            this.router.navigate(['/member-list']);
+            this.router.navigate(['/gymtabs/member-list']);
           }
         }
       ]

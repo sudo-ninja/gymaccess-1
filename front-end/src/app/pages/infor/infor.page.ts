@@ -9,6 +9,7 @@ import { MemberserviceService } from 'src/app/services/memberservice.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { SafeUrl } from '@angular/platform-browser';
 import { AlertController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 
 
@@ -50,6 +51,8 @@ export class InforPage implements OnInit {
     private storageService :StorageService, // storage service is used insted of get set method
     // for alert controller
     public alertController :AlertController,
+    // to navigate page to qr code page
+    private router: Router
 
     ) { 
     // for select default gym in gym selector
@@ -115,6 +118,7 @@ export class InforPage implements OnInit {
     this.logs.unshift(msg);
   }
 
+   
   selecthandleChange(ev){
     this.currentGym = ev.target.value;
     this.MyDefaultGymValue = ev.target.value;
@@ -123,11 +127,16 @@ export class InforPage implements OnInit {
     console.log(this._gym_id);
     // this.getMembers();
     this.compareWithFn(this._gym_id,ev.target.value);
+    console.log(this.compareWithFn(this._gym_id,ev.target.value));
     }
 
     compareWithFn(o1, o2) {
       return o1 === o2;
     };
+
+gymIdQrCodeDownload(){
+  // from here pass gym id to Qr code page which will generate QR code for download
+}
 
 // for QR code generation of gym ID and then download welcome gym QR code page ..
 // here we need to make one designer page with center having QR code ..
@@ -137,6 +146,7 @@ export class InforPage implements OnInit {
     downloadQrCode(gid:any,url:SafeUrl){
       this.qrCodeDownloadLink = url;
       this.qrcode_data=JSON.stringify(gid);
+
     }
 
     onChangeURL(url: SafeUrl) {
@@ -150,7 +160,6 @@ lockIdToggle($event){
     this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
 
 }
-
 
 // alert controller for Lock ID input 
 async lockIDinputAlert(){  
@@ -182,6 +191,10 @@ async lockIDinputAlert(){
     ]
 });
 await alert.present();
+}
+
+QrCodeDownLoad(gymid:any){
+  this.router.navigate(['/qrlabel/',gymid]);
 }
 
 }

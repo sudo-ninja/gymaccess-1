@@ -25,7 +25,7 @@
 
     
   </div>
-  <div class="div-1">     
+  <div class="div-1"  *ngIf="!this.loggeduserIsAdmin">     
       <ion-label><ion-icon slot="start"  name="barbell-sharp"></ion-icon><h2>Gym Management</h2> 
         </ion-label>
         <ion-list [inset]="true" lines="none">
@@ -49,18 +49,63 @@
 
         </ion-list>
     </div>  
-      <!-- <ion-icon slot="end"  name="chevron-forward-outline"></ion-icon> -->
+     
+    <div class="div-1"  *ngIf="this.loggeduserIsAdmin">     
+      <ion-label><ion-icon slot="start"  name="barbell-sharp"></ion-icon><h2>Gym Management</h2> 
+        </ion-label>
+        <ion-list [inset]="true" lines="none">
+          <ion-item>
+            <ion-label>
+              <p>Add More Gym..</p>
+              <ion-icon slot="end"  name="chevron-forward-outline"></ion-icon>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+    </div>
      
   
-<div class="div-1">
-    <ion-item class="ion-item-1"   href="#">
-      <ion-icon slot="start" name="mail-unread"></ion-icon>
-      <ion-label color="dark">
-        <h2 color="primary">Message Center</h2>
-      </ion-label>
-      <!-- <ion-icon slot="end"  name="chevron-forward-outline"></ion-icon> -->
+<div class="div-1" *ngIf="!this.loggeduserIsAdmin">
+  <ion-item>
+    <ion-label><h2 color="primary">Message Center</h2></ion-label>
+    <ion-badge color="success" slot="end">10</ion-badge>
+    <ion-badge color="danger" slot="end"*ngIf="anyMessage">1</ion-badge>
+    
+    <ion-icon slot="start" name="mail-unread"><h2 color="primary">New Message</h2></ion-icon>
+  </ion-item>
+  <div>
+    <ion-item *ngIf="anyMessage">
+      <ion-label><h2 color="primary">Request Sent</h2></ion-label>
+     
+      <ion-icon slot="end"  name="chevron-forward-outline" (click)="alertForMemberMessage()"></ion-icon>
     </ion-item> 
+    <ion-item *ngIf="isMessageFromAdmin">
+      <ion-label><h2 color="primary">Message From Gym Admin</h2></ion-label>
+      <ion-icon slot="start" name="mail-unread"> </ion-icon>
+    </ion-item>
+  </div>
 </div>
+
+<div class="div-1" *ngIf="this.loggeduserIsAdmin">
+  <ion-item>
+    <ion-label><h2 color="primary">Message Center</h2></ion-label>
+    <ion-badge color="success" slot="end">10</ion-badge>
+    <ion-badge color="danger" slot="end"*ngIf="anyMessage">1</ion-badge>
+    
+    <ion-icon slot="start" name="mail-unread"><h2 color="primary">New Message</h2></ion-icon>
+  </ion-item>
+  <div>
+    <ion-item *ngIf="anyMessage">
+      <ion-label><h2 color="primary">Request Sent</h2></ion-label>
+     
+      <ion-icon slot="end"  name="chevron-forward-outline" (click)="alertForMemberMessage()"></ion-icon>
+    </ion-item> 
+    <ion-item *ngIf="isMessageFromAdmin">
+      <ion-label><h2 color="primary">Message From Gym Admin</h2></ion-label>
+      <ion-icon slot="start" name="mail-unread"> </ion-icon>
+    </ion-item>
+  </div>
+</div>
+
 
 <div class="div-1">
     <ion-item color="primary" class="ion-item-1"  href="#">

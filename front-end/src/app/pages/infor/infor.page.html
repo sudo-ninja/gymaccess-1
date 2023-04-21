@@ -83,7 +83,7 @@ class="ion-no-border"
         </ion-item>
 
         <ion-item href="http://localhost:8100/qrlabel">
-            <ion-label color="dark"><h2>Download QR code for Selected Gym </h2></ion-label>
+            <ion-label color="dark" *ngFor="let gym of gyms" (click)="QrCodeDownLoad(gym._id)"><h2>Download QR code for Selected Gym </h2></ion-label>
         </ion-item>
 
       </ion-list>
