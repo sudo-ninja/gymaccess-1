@@ -29,6 +29,7 @@ import { GymService } from 'src/app/services/gym.service';
 export class MemberActionPage implements OnInit {
 
   loggedUserEmail:any;
+  loggedUserName:any;
   isloggedUserMember:boolean;
 
   scannedResult:any;
@@ -81,6 +82,7 @@ export class MemberActionPage implements OnInit {
       const user = localStorage.getItem('User')
       this.loggeduser=JSON.parse(user);
       this.loggedUserEmail = this.loggeduser.email;
+      this.loggedUserName = this.loggeduser.username;
       this._user.getUserbyEmail(this.loggedUserEmail).subscribe(
         res=>{
           // this.addName(res),

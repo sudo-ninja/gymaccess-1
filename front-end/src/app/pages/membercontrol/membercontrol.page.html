@@ -11,11 +11,11 @@
   
   <form [formGroup]="memberForm" (ngSubmit)="onFormSubmit()">
     
-      <ion-item
+      <!-- <ion-item
             button="true" 
             id= "open-date-input">
               <ion-label>Start Date</ion-label>
-        <!-- <ion-text slot="end">{{startDateValue}}</ion-text> -->
+        <!-- <ion-text slot="end">{{startDateValue}}</ion-text> --
         <ion-input 
             formControlName="m_startdate"             
             [(ngModel)]="startDateValue"
@@ -39,7 +39,7 @@
                 </ng-template>
            </ion-popover>
         </ion-input>
-      </ion-item>
+      </ion-item> -->
     
 <!-- <ion-item>
   <ion-label>End Date </ion-label>
@@ -83,12 +83,66 @@
         type="date" required>
         </ion-input>
       </ion-item> - -->
+      <ion-item>
+        <ion-label position = "fixed"> Start Date   </ion-label>
+        <ion-datetime-button slot="end" datetime ="sdate"></ion-datetime-button>
+      </ion-item>
 
-      <ion-item
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+          [value]= "startDateValue"
+          [showDefaultButtons]="true"
+          presentation="date" 
+          id="sdate" 
+          (ionChange)="StartDateChange($event)"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+
+      <ion-item>
+        <ion-label position = "fixed"> End Date   </ion-label>
+        <ion-datetime-button slot="end" datetime ="edate"></ion-datetime-button>
+      </ion-item>
+
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+          [showDefaultButtons]="true"
+          
+          [min]="Start_Date" 
+          presentation="date" 
+          id="edate" 
+          (ionChange)="EndDateChange($event)"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+
+      <ion-item>
+        <ion-label position = "fixed"> In Time   </ion-label>
+        <ion-datetime-button slot="end" datetime ="Itime"></ion-datetime-button>
+      </ion-item>
+
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime presentation="time" id="Itime" (ionChange)="EndDateChange($event)"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+
+      <ion-item>
+        <ion-label position = "fixed"> Out Time   </ion-label>
+        <ion-datetime-button slot="end" datetime ="Otime"></ion-datetime-button>
+      </ion-item>
+
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime presentation="time" id="Otime" (ionChange)="EndDateChange($event)"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+
+      <!-- <ion-item
         button="true" 
         id= "open-date-input2">
         <ion-label>End Date</ion-label>
-   <!-- <ion-text slot="end">{{startDateValue}}</ion-text> -->
+   <!-- <ion-text slot="end">{{startDateValue}}</ion-text> 
           <ion-input 
               formControlName="m_enddate"               
               [(ngModel)]="endDateValue"
@@ -111,7 +165,7 @@
             </ion-popover>
           </ion-input>
 
-      </ion-item>
+      </ion-item> -->
 
       <ion-item>
         <ion-label position>Valid Days : </ion-label>        
@@ -121,7 +175,7 @@
         </ion-input>        
       </ion-item>
 
-      <ion-item>
+      <!-- <ion-item>
         <ion-label position="floating">Time In</ion-label>
         <ion-input 
         formControlName="m_intime" 
@@ -137,7 +191,7 @@
         [(ngModel)]="ExitTime"
          type="Time" required>
         </ion-input>
-      </ion-item>
+      </ion-item> -->
 
       
 

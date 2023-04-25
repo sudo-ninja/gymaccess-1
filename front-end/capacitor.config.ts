@@ -7,7 +7,7 @@ const config: CapacitorConfig = {
     },
   },
   appId: 'com.jenixindia.gymaccess',
-  appName: 'gym-access',
+  appName: 'gym access',
   webDir: 'www',
   bundledWebRuntime: false
 };

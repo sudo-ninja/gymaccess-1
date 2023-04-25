@@ -33,8 +33,7 @@
 
        
   
-      <ion-card class="ion-margin" 
-        
+      <ion-card class="ion-margin"         
       *ngFor="let m of members | filter:searchTerm">
               <ion-card-header appSwipe
               (swipe)="onSwipe(m._id,$event)"

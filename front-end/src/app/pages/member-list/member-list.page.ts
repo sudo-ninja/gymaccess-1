@@ -125,8 +125,10 @@ export class MemberListPage implements OnInit {
     this.gymApi.wildSearch(this.loggeduser._id).subscribe((data:any)=>{
       try {
         if(data){
-          console.log(data.length);
+          console.log(data.length,"GYM ID==..",data);
            this.gyms = data; // from here passing data to gym selector
+           
+
         }      
       } catch (error) {
         throw error;
@@ -185,6 +187,9 @@ async getMembers(){
     message: 'Loading....'
   });
   await loading.present();
+  // to store gym id as same will be used to add member page to add member in perticular gym
+  this.storageService.store('defaultGymId',this._gym_id);
+  localStorage.setItem('gymID',this._gym_id);
   console.log(this._gym_id);
   await this.memberApi.wildSearch(this._gym_id)
   .subscribe(res=>{
@@ -537,6 +542,14 @@ compareWithFn(o1, o2) {
 deletAllMembers(){
   this.memberApi.deleteAll();
 }
-
+// may use inbuilt icon https://fontawesomeicons.com/Ionic/icons?search=bar
+// if memmber expiry date from current date is less then 5 only then show some image like
+// if more then 5 days then full 5 step with green color and thick green border 
+// battery full with 5 steps with red color 
+//if remain 4 then with 4 step with red
+// if 3 steps with 3 step with red
+// if 2 days then 2 step with red
+// if 1 day then 1 step with red and some flash and red border to member card
+// if Zero day then show more thick red border and all card text to red color 
 
 }

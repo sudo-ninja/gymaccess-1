@@ -201,4 +201,14 @@ export class MePage implements OnInit {
     await alert.present();
   }
 
+
+  logout(){
+    // clear all local storage data
+    localStorage.clear();
+    //if want to clear some perticualr data then use
+    // localStorage.removeItem('user'); // this will clear only user data
+    //clear all session storage data
+    // nevigate to login page 
+    this.router.navigate(['/login'],{replaceUrl:true});
+  }
 }

@@ -11,10 +11,10 @@ import { GymService } from 'src/app/services/gym.service';
 
 declare var require: any;
 
-import * as pdfMake from "pdfmake/build/pdfmake";
-import * as pdfFonts from "pdfmake/build/vfs_fonts";
-const htmlToPdfmake = require("html-to-pdfmake");
-(pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
+// import * as pdfMake from "pdfmake/build/pdfmake";
+// import * as pdfFonts from "pdfmake/build/vfs_fonts";
+// const htmlToPdfmake = require("html-to-pdfmake");
+// (pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
   selector: 'app-qrlabel',
@@ -32,9 +32,20 @@ export class QrlabelPage implements OnInit {
     private router: Router,
     private gymApi : GymService,
   ) { 
-    const user = localStorage.getItem('User');
-    this.loggeduser=JSON.parse(user!);
-    console.log(this.loggeduser._id);
+    // const user = localStorage.getItem('User');
+    // this.loggeduser=JSON.parse(user!);
+    // console.log(this.loggeduser._id);
+          // this.gymIdforQRcode = this.route.snapshot.paramMap.get('id');
+          // if(!this.route.snapshot.paramMap.get('id')){
+          //   console.log("no gym id came with route")
+          // } else console.log("gym id is ",this.route.snapshot.paramMap.get('id') );
+          // console.log(this.gymIdforQRcode);
+          // this.gymApi.getGym(this.gymIdforQRcode).subscribe((data)=>{
+          //   this.gymname = data.gym_name;
+          // });
+  }
+
+  ngOnInit() {
     this.gymIdforQRcode = this.route.snapshot.paramMap.get('id');
     if(!this.route.snapshot.paramMap.get('id')){
       console.log("no gym id came with route")
@@ -45,19 +56,16 @@ export class QrlabelPage implements OnInit {
     });
   }
 
-  ngOnInit() {
-  }
 
-
-  @ViewChild('pdfTable') pdfTable!: ElementRef;
+  // @ViewChild('pdfTable') pdfTable!: ElementRef;
   
-  public exportPDF() {
-    // const pdfTable = 
-    console.log(this.pdfTable);
-    // var html = htmlToPdfmake(pdfTable.innerHTML);
-    // const documentDefinition = { content: html };
-    // pdfMake.createPdf(documentDefinition).download(); 
-}
+//   public exportPDF() {
+//     // const pdfTable = 
+//     console.log(this.pdfTable);
+//     // var html = htmlToPdfmake(pdfTable.innerHTML);
+//     // const documentDefinition = { content: html };
+//     // pdfMake.createPdf(documentDefinition).download(); 
+// }
 
 downloadQrCode(){
   this.router.navigate(['/gymtabs/member-list'],{replaceUrl:true});

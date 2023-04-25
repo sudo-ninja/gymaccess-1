@@ -57,8 +57,8 @@ export class GmapPage implements OnInit {
     private router: Router,
     private modalCtrl: ModalController
      ) {
-      const current_lat = localStorage.getItem('current_lat');
-      const current_long = localStorage.getItem('current_long');
+      const current_lat = localStorage.getItem('current_lat'); // coming from gym add page 
+      const current_long = localStorage.getItem('current_long');// as soon ag gym page load this location store there and passed here
       const gym_current_lat = localStorage.getItem('gym_current_lat');
       const gym_current_long = localStorage.getItem('gym_current_long');
       console.log(current_lat);
@@ -66,7 +66,7 @@ export class GmapPage implements OnInit {
       this.memberCurrent_lat = current_lat;
       this.memberCurrent_long = current_long;
       console.log(this.center);
-      if(!this.center){
+      if(this.center){
       this.center.lat = Number(current_lat);
       this.center.lng = Number(current_long);
       } else {

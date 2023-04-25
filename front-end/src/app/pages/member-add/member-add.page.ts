@@ -6,6 +6,9 @@ import {MemberserviceService} from 'src/app/services/memberservice.service';
 import { AlertController, ModalController } from '@ionic/angular';
 import { parseISO } from 'date-fns';
 
+// to get storage
+import { StorageService } from 'src/app/services/storage.service';
+
 
 
 // import { ErrorStateMatcher } from '@angular/material/core';
@@ -25,6 +28,8 @@ import { parseISO } from 'date-fns';
   providers:[MemberserviceService]
 })
 export class MemberAddPage implements OnInit {
+
+  defaultGymID:any;
   
   memberForm!: FormGroup;
     gym_id='';
@@ -67,13 +72,16 @@ export class MemberAddPage implements OnInit {
     private formBuilder: FormBuilder,
     public memberApi:MemberserviceService,
    
-  ) {   
+  ) {
+    // get gym id from sesson storage here 
+    this.defaultGymID =sessionStorage.getItem('defaultGymId'); 
+    console.log("Default Gym ID..=", this.defaultGymID);
   }
 
     ngOnInit() {
       // this.selectAccessType(this.AccessType);
       // this.selectMemberType(this.MemberType);
-      console.log(localStorage.getItem('gymID'));
+      console.log("GYM ID FROM GYM PAGE..= ",localStorage.getItem('gymID'));
       this.memberForm = this.formBuilder.group({
         'gym_id' : [localStorage.getItem('gymID'), Validators.required],
         'm_name' : [null, [

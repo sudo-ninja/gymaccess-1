@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.jenixindia.gymaccess;
 
 import com.getcapacitor.BridgeActivity;
 

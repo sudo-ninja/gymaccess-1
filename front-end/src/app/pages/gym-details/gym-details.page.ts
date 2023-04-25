@@ -134,7 +134,7 @@ export class GymDetailsPage implements OnInit {
     });
     await alert.present();
   }
-// this method is used
+// this method is used to get gym by id
   getGym(id:any) {
     this.gymApi.getGym(id).subscribe((data) => {
       console.log(data);

@@ -197,4 +197,7 @@ QrCodeDownLoad(gymid:any){
   this.router.navigate(['/qrlabel/',gymid]);
 }
 
+addmoregym(){
+  this.router.navigate(['/gym-add/']),{replaceurl:true};}
+
 }

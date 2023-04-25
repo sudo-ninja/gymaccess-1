@@ -1,3 +1,37 @@
+ion-header {
+    ion-toolbar{
+        --padding-start:16px;
+        --padding-end:16px;
+        ion-title{
+          //font-size:1.1 rem;
+          //letter-spacing:0.5px;
+          max-width:40vh;
+          //text-shadow:1px 1px  1px var(--ion-color-secondary)
+          ion-label{
+              ion-text{
+                  font-size:1rem;
+                      }
+              p{
+                ion-text{
+                    font-size:1.3rem !important;
+                }
+              }
+          }
+        }
+        ion-avatar {
+          height:2.5rem;
+          width:2.5rem;
+          //border-radius:50%;
+          //position:relative;
+          border:1px solid var(--ion-color-tertiary);
+          ion-img {
+            max-width: 100%;
+          }
+}
+    }
+
+}
+
 .profile-photo {
     border-radius: 50% !important;
     overflow: hidden;

@@ -1,6 +1,6 @@
 import { Component, OnInit} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import {MemberserviceService} from 'src/app/services/memberservice.service';
 import { Member } from 'src/app/models/member.model';
@@ -79,28 +79,26 @@ formatedEndDate:any;
     
    
     // this.route.snapshot.params[this.id];
-   
+   // This member form will take data and update it
     this.memberForm = this.formBuilder.group({
-      'm_startdate': this.id.m_joindate,
-      'm_enddate': this.id.m_joindate,
-      'm_validdays': this.id.m_validdays,
-      'm_intime': this.id.m_intime,
-      'm_outtime': this.id.m_outtime
+       m_startdate : [this.Start_Date,Validators.required],
+       m_enddate: [this.End_Date,Validators.required],
+       m_validdays: [this.BalanceDays,Validators.required],
+       m_intime : [this.In_Time,Validators.required],
+       m_outtime : [this.Out_Time,Validators.required],
     });
   }
 
  
 
-  getMembercontrol(id) {
+ getMembercontrol(id) {
     this.memberApi.getMember(id).subscribe((data: any) => {
+      console.log(data);
       this.id = data.id;
       this.memberForm.patchValue({
-
         m_startdate:data.m_startdate,
         m_enddate:data.m_enddate,
-        m_validdays:this.BalanceDays,
-
-
+        m_validdays:data.m_validdays,
         m_intime:data.m_intime,
         m_outtime:data.m_outtime,
       });
@@ -115,6 +113,7 @@ onFormSubmit() {
   // console.log(this.idun);
   let idux = this.id||this.route.snapshot.paramMap.get('id')||this.idun;
   // console.log(idux , this.id, this.idun);
+  console.log(this.memberForm.value);
  
   this.memberApi.update(idux, this.memberForm.value).subscribe((res: any) => {
    
@@ -132,9 +131,9 @@ onFormSubmit() {
     // this.memberForm2 = this.formBuilder.group({   
     //   'm_validdays': this.BalanceDays,    
     // });
-
+    console.log("End Daye",this.End_Date,"Start Date", this .Start_Date);
     
-    console.log("146 line",this.StartDate);
+    // console.log("146 line",this.StartDate);
     this.idu= this.idun;
     this.validDaysCalc();
 
@@ -174,15 +173,15 @@ formatDate(value: string, date_format = 'MMM dd yyyy') {
 }
 
 async validDaysCalc(){
-  console.log(this.StartDate);
-  console.log(this.EndDate);
+  console.log(this.Start_Date);
+  console.log(this.End_Date);
   var _todayDate = moment(new Date());
-  var _StartDate = moment(new Date(this.StartDate));
-  var _EndDate = moment(new Date(this.EndDate));
+  var _StartDate = moment(new Date(this.Start_Date));
+  var _EndDate = moment(new Date(this.End_Date));
 
   var _todayModified = new Date();
-  var _SDModified = new Date(this.StartDate);
-  var _EDModified = new Date(this.EndDate);
+  var _SDModified = new Date(this.Start_Date);
+  var _EDModified = new Date(this.End_Date);
   
 
   const Time = _EDModified.getTime()-_SDModified.getTime();
@@ -211,5 +210,42 @@ async validDaysCalc(){
 
 
 // after that correct memeber action page use same parsing methode for date time
+End_Date:any;
+EndDateChange(event){
+  console.log(event);
+  if(event.returnValue){
+    console.log("Return Value True",event.detail.value);
+    this.End_Date = event.detail.value;
+  };
+}
+
+Start_Date:any;
+StartDateChange(event){
+  console.log(event);
+  if(event.returnValue){
+    console.log("Return Value True",event.detail.value);
+    this.Start_Date = event.detail.value;
+  };
+}
+
+In_Time:any;
+InTimeChange(event){
+  console.log(event);
+  if(event.returnValue){
+    console.log("Return Value True",event.detail.value);
+    this.In_Time = event.detail.value;
+  };
+}
+
+Out_Time:any;
+OutTimeChange(event){
+  console.log(event);
+  if(event.returnValue){
+    console.log("Return Value True",event.detail.value);
+    this.Out_Time = event.detail.value;
+  };
+}
 
 }
+// work on how to set date and time 
+// save unix date and time in DB 
