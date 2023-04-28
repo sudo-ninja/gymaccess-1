@@ -54,6 +54,7 @@ export class HomePage implements OnInit{
 
   //logged user email and get invitaion code
   loggeduserEmail:any;
+  loggedUserName:any;
   invitationCode:any;
   loggeduserId:any;
 
@@ -76,16 +77,16 @@ export class HomePage implements OnInit{
     public memberApi:MemberserviceService,   
 
   ) {
-    this.userApi.user().subscribe(
-      res=>{
-        // this.addName(res),
-        console.log(res);
-      },
-      error=>{
-        // this.router.navigate(['/login'])
-        console.log(error)
-      }
-     )
+    // this.userApi.user().subscribe(
+    //   res=>{
+    //     // this.addName(res),
+    //     console.log(res);
+    //   },
+    //   error=>{
+    //     // this.router.navigate(['/login'])
+    //     console.log(error)
+    //   }
+    //  )
      const user = localStorage.getItem('User')
      console.log(JSON.parse(user!).email );
      console.log(JSON.parse(user!)._id);
@@ -93,42 +94,49 @@ export class HomePage implements OnInit{
       // to know the status of logged user if he is member or admin      
       this.loggeduser=JSON.parse(user);
       this.loggeduserEmail = this.loggeduser.email;
+      this.loggedUserName = this.loggeduser.username
       this.userApi.getUserbyEmail(this.loggeduserEmail).subscribe(
-        res=>{
-           console.log(res);
+        (res) => {
+          console.log(res);
           this.isloggedUserMember = res.isMember;
           console.log(this.isloggedUserMember);
-          if(!this.isloggedUserMember){
-           this.loggeduserIsAdmin = true;
-           console.log("Logged Used is Admin");
-           this.gymApi.wildSearch(JSON.parse(user!)._id).subscribe((res:any)=>{
-            try {
-              console.log(res.length);
-              if(res.length<1)
-              {
-                console.log("No gym Add by this persom Gym Please")
-                this.loggedUserRoleaAlert("Welcome to Gym Access Control","let's start by .");
-                // this.presentAlert("Welcome to Gym Acceess Control !!","Kindly Choose your role.","If you Want to Add Gym then click on My GYM to Add Gym or Please Ask Gym Owner to Invite you to Join Gym")
-              }
-              else
-              {
-                this.router.navigateByUrl('/gym-list',{replaceUrl:true});
-              }
-            } catch (error) {
-              throw error;
-            }
-          });
-          }else{
-           this.isloggedUserMember=true;
-           this.loggeduserIsAdmin = false;
-           console.log("Logged User is Member");
-           this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true});
+          if (!this.isloggedUserMember) {
+            this.loggeduserIsAdmin = true;
+            console.log('Logged User is Admin');
+            this.gymApi
+              .wildSearch(JSON.parse(user!)._id)
+              .subscribe((res: any) => {
+                try {
+                  console.log(res.length);
+                  if (res.length < 1) {
+                    console.log('No gym Add by this persom Gym Please');
+                    this.loggedUserRoleaAlert(
+                      'Welcome to Gym Access Control',
+                      "let's start by ."
+                    );
+                    // this.presentAlert("Welcome to Gym Acceess Control !!","Kindly Choose your role.","If you Want to Add Gym then click on My GYM to Add Gym or Please Ask Gym Owner to Invite you to Join Gym")
+                  } else {
+                    this.router.navigateByUrl('/gym-list', {
+                      replaceUrl: true,
+                    });
+                  }
+                } catch (error) {
+                  throw error;
+                }
+              });
+          } else {
+            this.isloggedUserMember = true;
+            this.loggeduserIsAdmin = false;
+            console.log('Logged User is Member');
+            this.router.navigateByUrl('/tabs/member-action', {
+              replaceUrl: true,
+            });
           }
         },
-        error=>{
-             console.log(error)
+        (error) => {
+          console.log(error);
         }
-       )
+      );
        
      
       if(this.isloggedUserMember)
@@ -463,6 +471,7 @@ logs: string[] = [];
     const notificationList = await PushNotifications.getDeliveredNotifications();
     console.log('delivered notifications', notificationList);
   }
+
 
 
   // to fetch member location

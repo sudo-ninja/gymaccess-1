@@ -126,8 +126,7 @@ export class MePage implements OnInit {
 
   ngOnInit() {
     if(!this.loggeduserIsAdmin){
-    this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{
-        
+    this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{        
       this.memberId = data._id;
       this.memberGymId = data.gym_id;
       this.gymManagement(this.loggeduserIsAdmin);
@@ -136,7 +135,6 @@ export class MePage implements OnInit {
   }
 
   if(this.loggeduserIsAdmin){
-
 
   }
     
@@ -151,7 +149,7 @@ export class MePage implements OnInit {
         
           this.gymApi.getGym(this.memberGymId).subscribe((res)=>{
           this.gymName= res.gym_name;
-           this.gymLocation_lat= res.gym_address_lat;
+          this.gymLocation_lat= res.gym_address_lat;
           this.gymLocation_lng = res.gym_address_long;
           this.gymEmergencyMobile=res.gym_emergency;          
         });
@@ -211,4 +209,23 @@ export class MePage implements OnInit {
     // nevigate to login page 
     this.router.navigate(['/login'],{replaceUrl:true});
   }
+
+  //check if user exist as member or not ?
+// if he is not member or deleted by gym then page must route back to home page 
+isUserMember(email){
+  //search member DB for this email 
+  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
+    console.log(data);
+    if(!data){
+      
+      this.router.navigateByUrl('/home',{replaceUrl: true,});
+    }else{
+      // this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
+      // this.memberOutTime = data.m_outtime*1 // in Unix milisecond
+      // this.memberInTime = data.m_intime*1// in unix milisecond
+      // this.gymId = data.gym_id // get gym ID
+    }
+
+  });
+}
 }

@@ -63,6 +63,7 @@ export class MemberAddPage implements OnInit {
   membertype:'';
     // used to conver input text value into lowercase
   _textValue:string
+  defaultTime:any;
 
 
 
@@ -76,6 +77,13 @@ export class MemberAddPage implements OnInit {
     // get gym id from sesson storage here 
     this.defaultGymID =sessionStorage.getItem('defaultGymId'); 
     console.log("Default Gym ID..=", this.defaultGymID);
+    // this.defaultTime= Date().toLocaleString();
+    this.defaultTime = Date.now();
+    //date.now give unix formate of data
+    //while date() gives ISO form with GMT
+    console.log(this.defaultTime);
+    this.dateTotime();
+
   }
 
     ngOnInit() {
@@ -120,10 +128,24 @@ export class MemberAddPage implements OnInit {
           'm_startdate':[Date.now()],
           'm_enddate':[Date.now()],
           'm_validdays':['0'],
-          'm_intime':['05:20'],
-          'm_outtime':['05:20'],
+          'm_intime':[Date.now()],
+          'm_outtime':[Date.now()],
+           //date time all saved in Unix form in DB uniformaly accorss project 
+           // as per need reverse calculation done 
       }); 
         
+      }
+
+      dateTotime(){          
+                const d = new Date(); // Parses a ISO 8601 Date
+                console.log(d.getHours()); // gets the hours in the timezone of the browser.
+                console.log(d.getUTCHours()); // gets the hours in UTC timezone.
+                console.log(d.getMinutes()); // gets the minutes in the timezone of the browser.
+                console.log(d.getUTCMinutes()); // gets the minutes in UTC timezone.
+                console.log(d.getHours() + ':' + d.getMinutes());
+                console.log(d.getUTCHours() + ':' + d.getUTCMinutes());
+                this.defaultTime = 
+                console.log(d.getDate());
       }
 
         // Choose options with select-dropdown

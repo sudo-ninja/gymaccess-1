@@ -57,7 +57,7 @@
                 <ion-card-subtitle>
                    <ion-grid>
                       <ion-row>
-                        <ion-col>Balance :{{m.m_validdays}} Day(s)</ion-col>
+                        <!-- <ion-col>Balance :{{m.m_validdays}} Day(s)</ion-col> -->
                         <ion-col>End Date:{{m.m_enddate | date }}</ion-col>
                         <ion-col>Start Time:{{m.m_intime | date:'shortTime' }}</ion-col>
                         <ion-col>Finish Time:{{m.m_outtime | date:'shortTime' }}</ion-col>
@@ -86,7 +86,7 @@
 
               <ion-grid>
                 <ion-row>
-                  <ion-col><ion-button color="primary" shape="round" fill="outline" expand="block" (click)="updateMemberControl(m._id)"><ion-icon name="create"></ion-icon>Validity</ion-button>
+                  <ion-col><ion-button [disabled]="isButtonSubmit" color="primary" shape="round" fill="outline" expand="block" (click)="updateMemberControl(m._id)"><ion-icon name="create"></ion-icon>Validity</ion-button>
                   </ion-col>
                   <!-- <ion-col><ion-button color="primary" expand="block" (click)="updateMember(m._id)"><ion-icon name="documents"></ion-icon>Detail</ion-button></ion-col> -->
                   <!-- <ion-col><ion-button color="primary" expand="block" (click)="inviteMember(m._id)"><ion-icon name="send"></ion-icon>Invite</ion-button></ion-col> -->

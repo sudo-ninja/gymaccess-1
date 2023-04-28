@@ -11,199 +11,100 @@
   
   <form [formGroup]="memberForm" (ngSubmit)="onFormSubmit()">
     
-      <!-- <ion-item
-            button="true" 
-            id= "open-date-input">
-              <ion-label>Start Date</ion-label>
-        <!-- <ion-text slot="end">{{startDateValue}}</ion-text> --
-        <ion-input 
-            formControlName="m_startdate"             
-            [(ngModel)]="startDateValue"
-            (ngModelChange)="startDateValue=$event" name="inputField" type="datetime"
-              >
-          <ion-popover 
-              [dismissOnSelect]="false" 
-              trigger="open-date-input" 
-              show-backdrop="false" 
-              side="end">   
-                <ng-template>        
-                      <app-date-time-picker
-                      #datetime
-                      [min]=""
-                      [value]="startDateValue"
-                      type="date"
-                      [date_format]="format"
-                      (datePickerValue)="change($event)"
-                      >
-                      </app-date-time-picker>
-                </ng-template>
-           </ion-popover>
-        </ion-input>
-      </ion-item> -->
-    
-<!-- <ion-item>
-  <ion-label>End Date </ion-label>
-  <ion-input 
-        formControlName="m_enddate" 
-        [(ngModel)]="EndDate"
-        type="date" required>
-        <ion-modal trigger="open-modal">
-          <ng-template>
-            <ion-content>
-              <ion-datetime 
-                #datetime
-                [value]="endDateValue"
-                (ionChange)="EndDatechange(datetime.value)"
-                showDefaultButtons="true"
-                
-                [min]="startDateValue"
-                  >
-                </ion-datetime>
-            </ion-content>
-          </ng-template>
-        </ion-modal> 
-              <!-- [dismissOnSelect]="true" 
-              trigger="open-date-input" 
-              show-backdrop="false" 
-              side="end"> 
-                <ion-datetime 
-                displayFormat="DD/MM/YYYY" 
-                [min]="startDateValue" >
-                </ion-datetime>
-        </ion-popover> 
-  </ion-input>
-</ion-item> -->
-
-
-      <!-- <ion-item>
-        
-        <ion-input 
-        formControlName="m_enddate" 
-        [(ngModel)]="EndDate"
-        type="date" required>
-        </ion-input>
-      </ion-item> - -->
       <ion-item>
-        <ion-label position = "fixed"> Start Date   </ion-label>
-        <ion-datetime-button slot="end" datetime ="sdate"></ion-datetime-button>
+        <ion-label position = "fixed"> Start Date   </ion-label>         
+        <ion-datetime-button slot="end" datetime ="sdate" formControlName="m_startdate" ngDefaultControl></ion-datetime-button>
       </ion-item>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
           <ion-datetime
-          [value]= "startDateValue"
+          [value]="myDate"
           [showDefaultButtons]="true"
           presentation="date" 
-          id="sdate" 
-          (ionChange)="StartDateChange($event)"></ion-datetime>
+          id="sdate"
+          #sdate
+          hourCycle="h24" 
+          (ionChange)="StartDateChange($event)">
+          <span slot="title">Select a Start Date</span>
+        </ion-datetime>
         </ng-template>
       </ion-modal>
 
       <ion-item>
         <ion-label position = "fixed"> End Date   </ion-label>
-        <ion-datetime-button slot="end" datetime ="edate"></ion-datetime-button>
+        <ion-datetime-button slot="end" datetime ="edate" formControlName="m_enddate" ngDefaultControl></ion-datetime-button>
       </ion-item>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
           <ion-datetime
+                    
           [showDefaultButtons]="true"
-          
+          [value]="myEndDate"
+          hourCycle="h24"
           [min]="Start_Date" 
           presentation="date" 
           id="edate" 
-          (ionChange)="EndDateChange($event)"></ion-datetime>
+          #edate
+          (ionChange)="EndDateChange($event)">
+          <span slot="title">Select a End Date</span>
+        </ion-datetime>
+        <ion-buttons slot="buttons">
+          <ion-button color="danger" (click)="edate.reset()">Reset</ion-button>
+          <!-- <ion-button color="primary" (click)="edate.cancel()">Never mind</ion-button>
+          <ion-button color="primary" (click)="edate.confirm()">All Set</ion-button> -->
+        </ion-buttons>
         </ng-template>
       </ion-modal>
 
       <ion-item>
         <ion-label position = "fixed"> In Time   </ion-label>
-        <ion-datetime-button slot="end" datetime ="Itime"></ion-datetime-button>
+        <ion-datetime-button slot="end" datetime ="Itime" formControlName="m_intime" ngDefaultControl></ion-datetime-button>
       </ion-item>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="time" id="Itime" (ionChange)="EndDateChange($event)"></ion-datetime>
+          <ion-datetime 
+          [value]="myInTime"
+          [showDefaultButtons]="true"
+          presentation="time" 
+          hourCycle="h24"
+          id="Itime" 
+          (ionChange)="InTimeChange($event)"></ion-datetime>
         </ng-template>
       </ion-modal>
 
       <ion-item>
         <ion-label position = "fixed"> Out Time   </ion-label>
-        <ion-datetime-button slot="end" datetime ="Otime"></ion-datetime-button>
+        <ion-datetime-button slot="end" datetime ="Otime" formControlName="m_outtime" ngDefaultControl></ion-datetime-button>
       </ion-item>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="time" id="Otime" (ionChange)="EndDateChange($event)"></ion-datetime>
+          <ion-datetime
+          [value]="myOutTime"
+          [showDefaultButtons]="true"
+          [min]="In_Time"
+          presentation="time"
+          hourCycle="h24" 
+          id="Otime" 
+          (ionChange)="OutTimeChange($event)"></ion-datetime>
         </ng-template>
       </ion-modal>
 
-      <!-- <ion-item
-        button="true" 
-        id= "open-date-input2">
-        <ion-label>End Date</ion-label>
-   <!-- <ion-text slot="end">{{startDateValue}}</ion-text> 
-          <ion-input 
-              formControlName="m_enddate"               
-              [(ngModel)]="endDateValue"
-              >
-            <ion-popover 
-                [dismissOnSelect]="false" 
-                trigger="open-date-input2" 
-                show-backdrop="false" 
-                side="end">   
-                  <ng-template>        
-                        <app-date-time-picker
-                        [value]="endDateValue"
-                        type="date"
-                        [date_format]="format"
-                        (datePickerValue)="EndDatechange($event)"
-                        [min]="startDateValue"
-                        >
-                        </app-date-time-picker>
-                  </ng-template>
-            </ion-popover>
-          </ion-input>
-
-      </ion-item> -->
-
-      <ion-item>
-        <ion-label position>Valid Days : </ion-label>        
-        <ion-input 
-        formControlName="m_validdays"
-        [(ngModel)]="BalanceDays">
-        </ion-input>        
-      </ion-item>
-
       <!-- <ion-item>
-        <ion-label position="floating">Time In</ion-label>
-        <ion-input 
-        formControlName="m_intime" 
-        [(ngModel)]="EntryTime"
-         type="Time" required>
-        </ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="floating">Out Time</ion-label>
-        <ion-input 
-        formControlName="m_outtime" 
-        [(ngModel)]="ExitTime"
-         type="Time" required>
-        </ion-input>
+        <ion-label position>Duration  : {{BalanceDays}} Days </ion-label>        
       </ion-item> -->
 
-      
-
-      
-      
+          
      <div>
         <ion-button 
-          type="submit" 
-          
+          type="submit"           
           color="primary" 
           shape="full" 
           expand="block"
+          [disabled]="isButtonSubmit"
           >
         Update
         </ion-button>

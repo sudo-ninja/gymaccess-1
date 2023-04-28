@@ -1,8 +1,14 @@
 <ion-header>
-    <ion-toolbar color="primary">
-      <ion-title>
-        Welcome to My GYM {{username}}        
+    <ion-toolbar>
+      <ion-title mode="md" class="ion-no-padding">
+        <ion-label>
+          <ion-text color="tertiary">Welcome</ion-text>
+          <p><ion-text color="white"><strong>{{loggedUserName}}</strong></ion-text></p>
+        </ion-label>
       </ion-title>
+      <ion-avatar slot="end">
+        <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img>
+      </ion-avatar>
     </ion-toolbar>
   </ion-header>
   

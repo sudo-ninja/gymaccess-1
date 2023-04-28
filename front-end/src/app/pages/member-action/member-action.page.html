@@ -1,5 +1,5 @@
   <ion-header class=" ion-no-border">
-    <ion-toolbar color="primary">
+    <ion-toolbar>
           <ion-title mode="md" class="ion-no-padding">
             <ion-label>
               <ion-text color="tertiary">Welcome</ion-text>
@@ -15,7 +15,7 @@
   <ion-content class="ion-padding">
 
       <div class="div-0">
-          <ion-card class="ion-text-center">
+          <!-- <ion-card class="ion-text-center">
             <ion-card-content>
               <ion-datetime-button datetime="datetime" displayFormat="MMM DD, YYYY HH:mm" ></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
@@ -24,7 +24,7 @@
                 </ng-template>
               </ion-modal>
             </ion-card-content>
-          </ion-card>
+          </ion-card> -->
       </div>
 
      
@@ -47,33 +47,36 @@
         <ion-grid [fixed]="true">
           <ion-row>
             <ion-col> 
-              <ion-list  [inset]="true">
+              <ion-list  [inset]="true" lines="none">
+                <ion-item>
+                  <ion-label color="dark"><h2>Allowed Days</h2> </ion-label>                   
+                </ion-item>
               <ion-item>
-                <ion-label color="dark"><h2>Days Left...</h2> </ion-label>                   
+                <ion-label color="dark"><h2>Days Left : {{daysLeft}} Day(s)</h2> </ion-label>                   
               </ion-item>
 
               <ion-item>
-                <ion-label color="dark"><h2>End Date......</h2> </ion-label>                   
+                <ion-label color="dark"><h2>Last Date :{{lastDate | date}}</h2> </ion-label>                   
               </ion-item>
 
-              <ion-item>
+              <!-- <ion-item>
                 <ion-label color="dark"><h2>Locker ID ...</h2> </ion-label>                   
-              </ion-item>
+              </ion-item> -->
             </ion-list>
           </ion-col>
 
             <ion-col>
-              <ion-list [inset]="true">
+              <ion-list [inset]="true" lines="none">
                 <ion-item>
                   <ion-label color="dark"><h2>Allowed Time</h2> </ion-label>                   
                 </ion-item>
 
                 <ion-item>
-                  <ion-label color="dark"><h2>Check In at......</h2> </ion-label>                   
+                  <ion-label color="dark"><h2>Check In : {{checkinTime | date:'shortTime'}}</h2> </ion-label>                   
                 </ion-item>
 
                 <ion-item>
-                  <ion-label color="dark"><h2>Check Out at......</h2> </ion-label>                   
+                  <ion-label color="dark"><h2>Check Out :{{checkoutTime | date:'shortTime'}}</h2> </ion-label>                   
                 </ion-item>
 
               </ion-list>
@@ -81,9 +84,9 @@
           </ion-row>
         </ion-grid>
 
-        <ion-item class="ion-text-center">
+        <!-- <ion-item class="ion-text-center">
           <ion-label color="dark"><h2>Recharge Request</h2> </ion-label>                   
-        </ion-item>
+        </ion-item> -->
         
        
       </div>

@@ -42,8 +42,17 @@ export class MemberActionPage implements OnInit {
   attendance_lat:any;
   attendance_lon:any;
 
-  userEndDate:any;
+  memberEndDate:any;
+  memberOutTime:any;
+  memberInTime:any
+  unixCurrentDateTime:any;
+  
   username:String='';
+
+  daysLeft:any;
+  lastDate:any;
+  checkinTime:any;
+  checkoutTime:any;
 
   gymId:any;
   lockId:any;
@@ -82,6 +91,7 @@ export class MemberActionPage implements OnInit {
       const user = localStorage.getItem('User')
       this.loggeduser=JSON.parse(user);
       this.loggedUserEmail = this.loggeduser.email;
+      this.isUserMember(this.loggedUserEmail); // to chekc user available in member DB or not?
       this.loggedUserName = this.loggeduser.username;
       this._user.getUserbyEmail(this.loggedUserEmail).subscribe(
         res=>{
@@ -96,6 +106,8 @@ export class MemberActionPage implements OnInit {
        )
       // to get current user location as soon as page is opened
       this.fetchLocation();
+      console.log(this.memberEndDate);
+      
   }
 
   addName(data:any){
@@ -192,15 +204,7 @@ export class MemberActionPage implements OnInit {
     });
 
     this.validAttendance(new Date(),new Date().toLocaleTimeString(),this.loggeduser.email);
-    // this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
-    //   console.log(res);
-
-    // },(err: any) => {
-    //   console.log(err);
-    //   this.isLoadingResults = false;
-    // });
-
-
+   
   }
 
   async presentAlert(header:string,subheader:string, message:string) {
@@ -224,54 +228,53 @@ async fetchLocation(){
 }
 
 async validAttendance(current_date:any,current_time:any,email:any){
-
-  // here we will first fetch member using email id , 
-  this.memberApi.getMemberByEmail(email).subscribe((res:any)=>{
-    console.log((new Date(res.m_enddate)).getTime());  
-    // as Saved date taken from MControl is not in same format.. first we need to use universal same format 
-    // that is new.Date()
-    // console.log(res);
-    // console.log(res.email);
-    this.userEndDate = (new Date(res.m_enddate)).getTime();  
-    console.log((new Date(current_date)).getTime());  
+  // here we will first fetch member using email id as already doen in constructor use that data only 
+  
+    // console.log((new Date(current_date)).getTime());  // to get current date in unix 
+    this.unixCurrentDateTime = (new Date(current_date)).getTime();
     try {
-      if(((new Date(res.m_enddate)).getTime())>=((new Date(current_date)).getTime()))
+      if((this.memberEndDate)>=(this.unixCurrentDateTime))
         {
-            console.log("DB out time :", res.m_outtime, "current time:",current_time);
-            if(res.m_outtime>=current_time)
+        //  console.log("End Date is Greater than current Date");
+          // console.log("DB out time :", new Date(this.memberOutTime).getHours(), "current time:",new Date(this.unixCurrentDateTime).getHours());
+            if((new Date(this.memberOutTime).getHours()+1)>=new Date(this.unixCurrentDateTime).getHours()) // if in time 7:40 and out time 9:50, then it will chech 7 in time and 10 out time
             {
-              console.log("valid attendance add to DB");
-              this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
+              // console.log("valid attendance in term of Hourly time but chech in time");
+              if(new Date(this.memberInTime).getHours()<=new Date(this.unixCurrentDateTime).getHours())
+            {
+               this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
                 this.openLock(email); // iff attendance saved then only open the lock
               console.log(res);      
                   },(err: any) => {
-                    console.log(err);
+                    // console.log(err);
                     this.isLoadingResults = false;
                                   });
+              /* if this.attenAPI get member id and check in data is today is not eqaul to totoday
+              then only allow add attendance otherwise if we got data with query of member id and today date
+              then only update data
+              for this make query param member_id and checkin_date */
             }else{
-                  console.log("Not Allowed at this Time..Contact Admin");
-                  this.presentAlert("Not Allowed","Contact Admin","Access in Allowed Time Only");
+                  // console.log("Not Allowed at this Time..Contact Admin");
+                  this.presentAlert("Please Wait !","Contact Admin","Too Early");
+              }
+            }else{
+                  // console.log("Not Allowed at this Time..Contact Admin");
+                  this.presentAlert("Not Allowed !","Contact Admin","Too Late ");
                   }
 
         }else {
-              console.log("Time Expired Contact Admin to Increase Validity");
+              // console.log("Time Expired Contact Admin to Increase Validity");
               this.presentAlert("Validity Expired","Contact Admin","");
-              console.log("current date :", current_date, "DB End Date:",res.m_enddate);
               };
     } catch (error) {
       throw error;
     }
-  });
-   
-}
+  }
 
 openLock(email:any){
-  console.log("Lock Open Comand Given");
-  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
-    console.log(data);
+  console.log("Lock Open Comand Given");    
     try {
-      this.gymId = data.gym_id;
-      this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
+        this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
         try {
           this.lockId = data.lockId;
         } catch (error) {
@@ -281,8 +284,7 @@ openLock(email:any){
     } catch (error) {
       throw error;
     }
-    
-  });
+  
   this.lockApi.openLock(
     {
       topic:this.lockId,
@@ -330,7 +332,58 @@ let r = 6371;
 return(c * r);
 }
 
+//check if user exist as member or not ?
+// if he is not member or deleted by gym then page must route back to home page 
+isUserMember(email){
+  //search member DB for this email 
+  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
+    console.log(data);
+    if(!data){      
+      this.router.navigateByUrl('/home',{replaceUrl: true,});
+    }else{
+      this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
+      this.memberOutTime = data.m_outtime*1 // in Unix milisecond
+      this.memberInTime = data.m_intime*1// in unix milisecond
+      this.gymId = data.gym_id // get gym ID
+      this.lastDate = this.memberEndDate;
+      this.lastDate = new Date(this.lastDate);
+      const Time = (this.memberEndDate)-(new Date().getTime())
+      this.daysLeft = Math.floor(Time / (1000 * 3600 * 24)) + 1;
+      this.checkinTime = this.memberInTime;
+      this.checkinTime = new Date(this.checkinTime);
+      this.checkoutTime = this.memberOutTime;
+      this.checkoutTime  = new Date(this.checkoutTime);
 
+    }
+  });
+  
+}
+
+balanceDaysLeft(){
+  console.log(this.memberEndDate);
+  console.log(new Date().getTime());
+  console.log(this.unixCurrentDateTime);
+this.daysLeft = (this.memberEndDate)-(this.unixCurrentDateTime)
+console.log(this.daysLeft);
+}
+
+// async validDaysCalc() {
+//   console.log(this.Start_Date_UTC);
+//   console.log(this.End_Date);
+//   var _todayDate = moment(new Date());
+//   var _StartDate = moment(new Date(this.Start_Date_UTC));
+//   var _EndDate = moment(new Date(this.End_Date));
+
+//   var _todayModified = new Date();
+//   var _SDModified = new Date(this.Start_Date_UTC);
+//   var _EDModified = new Date(this.End_Date);
+
+//   const Time = _EDModified.getTime() - _SDModified.getTime();
+//   this.BalanceDays = Math.floor(Time / (1000 * 3600 * 24)) + 1;
+//   console.log('Duration Balance Days:', this.BalanceDays);
+//   localStorage.setItem('balanceDays', this.BalanceDays);
+
+// }
 
 memberActionSelected(){
   

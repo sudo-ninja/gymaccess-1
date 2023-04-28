@@ -32,6 +32,7 @@ import { StorageService } from 'src/app/services/storage.service';
 export class MemberListPage implements OnInit {
   // @ViewChildren(IonCard,{read:ElementRef})
   BalanceDays_ = localStorage.getItem('balanceDays');
+  isButtonSubmit:boolean=false;
 
   members: Member[] = [];
   mcontrols: Mcontrol[] =[];
@@ -226,6 +227,10 @@ async getMembers(){
   }
 
   async updateMemberControl(uid:string) {
+    // setTimeout(x => {
+    //   this.isButtonSubmit=true;
+    // },500)//.5 seconds
+    
     const modal = await this.modalCtrl.create({
     component: MembercontrolPage,
     componentProps:{id:uid},
@@ -236,6 +241,7 @@ async getMembers(){
     this.memberApi.getMember(res.id);
   });
   await modal.present();
+  this.isButtonSubmit=false;
 }
 
   async inviteMember(uid:string){
