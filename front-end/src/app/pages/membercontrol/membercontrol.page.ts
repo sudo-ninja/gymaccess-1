@@ -369,6 +369,7 @@ export class MembercontrolPage implements OnInit {
     this.Out_Time = new Date(this.Out_Time_UTC).toISOString();
   }
 
+  // convert date to ISO string with timezone
   toISOStringWithTimezone(date)
    {
     const tzOffset = -date.getTimezoneOffset();

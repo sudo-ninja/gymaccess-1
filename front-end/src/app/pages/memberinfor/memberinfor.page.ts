@@ -18,6 +18,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 // call member service
 import { MemberserviceService } from 'src/app/services/memberservice.service';
 
+
 // call gmap page for location update 
 import { GmapPage } from '../gmap/gmap.page';
 
@@ -45,11 +46,14 @@ export class MemberinforPage implements OnInit {
   memberID:any;
 // for gmap 
   @ViewChild(GmapPage, {static : true}) gmap : GmapPage;
+  memberId: any;
+  gymId: any;
+  lastDate: any;
 
   constructor(
     private AttendanceApi:AttendanceService,
     private RechargeApi: RechargeService,
-    private MemberApi:MemberserviceService,
+    private memberApi:MemberserviceService,
 
     public route :ActivatedRoute,
     public router :Router,
@@ -70,7 +74,7 @@ export class MemberinforPage implements OnInit {
      });
 
 // get member by email , get ID from here 
-this.getMemberAttendances(this.loggeduser._id);
+this.getMemberAttendances(this.memberID);
 // get member end date
 this.getMemberEndDate(this.loggeduser.email);
 // fetch member current location as soon as page is open
@@ -113,8 +117,8 @@ this.fetchLocation();
   // download data in CSV form , make function and get data from DB in CSV form
 
 // get members attendnace 
-getMemberAttendances(loggedUserID:any){
-this.AttendanceApi.getMemberAttendance(loggedUserID).subscribe((data:any)=>{
+getMemberAttendances(memberID:any){
+this.AttendanceApi.getMemberAttendance(memberID).subscribe((data:any)=>{
   try {
     if(data){
       console.log(data.length);
@@ -129,22 +133,47 @@ this.AttendanceApi.getMemberAttendance(loggedUserID).subscribe((data:any)=>{
 
 //get member end date
 getMemberEndDate(email:any){
-  this.MemberApi.getMemberByEmail(email).subscribe((data:any)=>{
+  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
     try {
       console.log(data);
       this.memberID= data._id;
-      if(data)
-      {
-      console.log(data.m_enddate);
-      this.memberEndDate = data.m_enddate;
-      }else {
-        console.log("no attendance yet");
-      }
+      
     } catch (error) {
       throw error;
       
     }
    });
+}
+
+// correct this page 
+
+//check if user exist as member or not ?
+// if he is not member or deleted by gym then page must route back to home page 
+isUserMember(email){
+  //search member DB for this email 
+  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
+    console.log(data);
+    if(!data){      
+      this.router.navigateByUrl('/home',{replaceUrl: true,});
+    }else{
+      this.memberId = data._id;
+      this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
+      // this.memberOutTime = data.m_outtime*1 // in Unix milisecond
+      // this.memberInTime = data.m_intime*1// in unix milisecond
+      this.gymId = data.gym_id // get gym ID
+      this.lastDate = this.memberEndDate;
+      this.lastDate = new Date(this.lastDate);
+      const Time = (this.memberEndDate)-(new Date().getTime())
+      // this.daysLeft = Math.floor(Time / (1000 * 3600 * 24)) + 1;
+      // this.checkinTime = this.memberInTime;
+      // this.checkinTime = new Date(this.checkinTime);
+      // this.checkoutTime = this.memberOutTime;
+      // this.checkoutTime  = new Date(this.checkoutTime);
+      // this.firstAttendance = data.isAttended;
+
+    }
+  });
+  
 }
 
 // ths need to be link with handle change even of toggle switch
@@ -167,7 +196,7 @@ setReminder(email:any,days:any){
   var toDay;
   const sevenDaysAgo: Date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
-  this.MemberApi.getMemberByEmail(email).subscribe((data:any)=>{
+  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
     try {
       console.log(data);
       if(data)

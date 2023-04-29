@@ -17,4 +17,5 @@ m_enddate?:string;
 m_validdays?:string;
 m_intime?:string;
 m_outtime?:string;
+isAttended?:boolean;
   }

@@ -39,9 +39,13 @@ export class MemberActionPage implements OnInit {
   attendanceForm!: FormGroup;
   isLoadingResults = false;
 
+  lastAttendance: any;
   attendance_lat:any;
   attendance_lon:any;
+  todayAttendance:boolean = false;
+  firstAttendance:boolean;
 
+  memberId:any;
   memberEndDate:any;
   memberOutTime:any;
   memberInTime:any
@@ -195,8 +199,8 @@ export class MemberActionPage implements OnInit {
   async attendance(){
     console.log("res");    
     this.attendanceForm = this.formBuilder.group({
-      'member_id' : this.loggeduser._id,
-      'checkin_date' : new Date().toString(),
+      'member_id' : this.memberId,
+      'checkin_date' : Date.now(),
       'checkin_time': new Date().toLocaleTimeString(),
       'lock_status' :['opened', [Validators.required ]] ,
       'att_lat': [this.attendance_lat, [Validators.required ]],
@@ -227,46 +231,90 @@ async fetchLocation(){
     this.attendance_lon=coordinates.coords.longitude;
 }
 
-async validAttendance(current_date:any,current_time:any,email:any){
-  // here we will first fetch member using email id as already doen in constructor use that data only 
-  
-    // console.log((new Date(current_date)).getTime());  // to get current date in unix 
+async validAttendance(current_date:any,current_time:any,email:any)
+{
+  // here we will first fetch member using email id as already done in constructor use that data only 
+      // console.log((new Date(current_date)).getTime());  // to get current date in unix 
     this.unixCurrentDateTime = (new Date(current_date)).getTime();
     try {
-      if((this.memberEndDate)>=(this.unixCurrentDateTime))
-        {
-        //  console.log("End Date is Greater than current Date");
-          // console.log("DB out time :", new Date(this.memberOutTime).getHours(), "current time:",new Date(this.unixCurrentDateTime).getHours());
-            if((new Date(this.memberOutTime).getHours()+1)>=new Date(this.unixCurrentDateTime).getHours()) // if in time 7:40 and out time 9:50, then it will chech 7 in time and 10 out time
+          if((this.memberEndDate)>=(this.unixCurrentDateTime))
             {
-              // console.log("valid attendance in term of Hourly time but chech in time");
-              if(new Date(this.memberInTime).getHours()<=new Date(this.unixCurrentDateTime).getHours())
-            {
-               this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
-                this.openLock(email); // iff attendance saved then only open the lock
-              console.log(res);      
-                  },(err: any) => {
-                    // console.log(err);
-                    this.isLoadingResults = false;
-                                  });
-              /* if this.attenAPI get member id and check in data is today is not eqaul to totoday
-              then only allow add attendance otherwise if we got data with query of member id and today date
-              then only update data
-              for this make query param member_id and checkin_date */
-            }else{
-                  // console.log("Not Allowed at this Time..Contact Admin");
-                  this.presentAlert("Please Wait !","Contact Admin","Too Early");
-              }
-            }else{
-                  // console.log("Not Allowed at this Time..Contact Admin");
-                  this.presentAlert("Not Allowed !","Contact Admin","Too Late ");
-                  }
+            // console.log("End Date is Greater than current Date");
+              // console.log("DB out time :", new Date(this.memberOutTime).getHours(), "current time:",new Date(this.unixCurrentDateTime).getHours());
+                if((new Date(this.memberOutTime).getHours()+1)>=new Date(this.unixCurrentDateTime).getHours()) // if in time 7:40 and out time 9:50, then it will chech 7 in time and 10 out time
+                {
+                    // console.log("valid attendance in term of Hourly time but chech in time");
+                    if(new Date(this.memberInTime).getHours()<=new Date(this.unixCurrentDateTime).getHours())
+                    {
+                      
+                      if(!this.firstAttendance)
+                      {
+                        console.log("First Attendance");                        
+                        this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
+                          console.log(res);      
+                          this.openLock(email); // iff attendance saved then only open the lock
+                            });
+                            this.firstAttendance = true;
+                            // once first attendenace made member updated as attended and every time it will b check
+                           this.memberApi.update(this.memberId,{"isAttended":true}).subscribe((res:any)=>{
+                            console.log(res);
+                           });
+                      }else{
+                        this.attenApi.getMemberAttendance(this.memberId).subscribe((data:any)=>{
+                          this.lastAttendance = data[data.length-1].checkin_date;
+                          this.lastAttendance = new Date(this.lastAttendance*1).getDate();
+                            if(this.lastAttendance === new Date(Date.now()).getDate()){
+                                  console.log("Today ");
+                                    this.todayAttendance = true;
+                            } 
+                            else{
+                              this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
+                              console.log(res);      
+                              this.openLock(email); // iff attendance saved then only open the lock
+                              
+                              });
+                            }
+                            if(this.todayAttendance){
+                                this.attenApi.update(data[data.length-1]._id,this.attendanceForm.value).subscribe((res:any)=>{
+                                console.log(res);
+                                this.openLock(email); // iff attendance saved then only open the lock
+                                    });
+                            }
+                            else{
+                                this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
+                                console.log(res);      
+                                this.openLock(email); // iff attendance saved then only open the lock
+                                }
+                        // ,(err: any) => {
+                        //   // console.log(err);
+                        //   this.isLoadingResults = false;
+                        //                 }
+                                );
+                                this.todayAttendance = true;
+                             }
+                      });
+                      }
 
-        }else {
-              // console.log("Time Expired Contact Admin to Increase Validity");
-              this.presentAlert("Validity Expired","Contact Admin","");
-              };
-    } catch (error) {
+                          
+                    
+                    /* if this.attenAPI get member id and check in data is today is not eqaul to ttoday
+                    then only allow add attendance otherwise if we got data with query of member id and today date
+                    then only update data
+                    for this make query param member_id and checkin_date */
+                  }else{
+                        // console.log("Not Allowed at this Time..Contact Admin");
+                        this.presentAlert("Please Wait !","Contact Admin","Too Early");
+                    }
+                }else{
+                      // console.log("Not Allowed at this Time..Contact Admin");
+                      this.presentAlert("Not Allowed !","Contact Admin","Too Late ");
+                      }
+
+            }else {
+                  // console.log("Time Expired Contact Admin to Increase Validity");
+                  this.presentAlert("Validity Expired","Contact Admin","");
+                  };
+        } catch (error) {
       throw error;
     }
   }
@@ -341,6 +389,7 @@ isUserMember(email){
     if(!data){      
       this.router.navigateByUrl('/home',{replaceUrl: true,});
     }else{
+      this.memberId = data._id;
       this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
       this.memberOutTime = data.m_outtime*1 // in Unix milisecond
       this.memberInTime = data.m_intime*1// in unix milisecond
@@ -353,6 +402,7 @@ isUserMember(email){
       this.checkinTime = new Date(this.checkinTime);
       this.checkoutTime = this.memberOutTime;
       this.checkoutTime  = new Date(this.checkoutTime);
+      this.firstAttendance = data.isAttended;
 
     }
   });
@@ -366,6 +416,22 @@ balanceDaysLeft(){
 this.daysLeft = (this.memberEndDate)-(this.unixCurrentDateTime)
 console.log(this.daysLeft);
 }
+
+ // convert date to ISO string with timezone
+ toISOStringWithTimezone(date)
+ {
+  const tzOffset = -date.getTimezoneOffset();
+  const diff = tzOffset >= 0 ? '+' : '-';
+  const pad = n => `${Math.floor(Math.abs(n))}`.padStart(2, '0');
+  return date.getFullYear() +
+    '-' + pad(date.getMonth() + 1) +
+    '-' + pad(date.getDate()) +
+    'T' + pad(date.getHours()) +
+    ':' + pad(date.getMinutes()) +
+    ':' + pad(date.getSeconds()) +
+    diff + pad(tzOffset / 60) +
+    ':' + pad(tzOffset % 60);
+};
 
 // async validDaysCalc() {
 //   console.log(this.Start_Date_UTC);
