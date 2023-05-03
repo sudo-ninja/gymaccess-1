@@ -4,19 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { MemberinforPageRoutingModule } from './memberinfor-routing.module';
+import { AboutPageRoutingModule } from './about-routing.module';
 
-import { MemberinforPage } from './memberinfor.page';
-// for ion date time
- 
+import { AboutPage } from './about.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    MemberinforPageRoutingModule
+    AboutPageRoutingModule
   ],
-  declarations: [MemberinforPage]
+  declarations: [AboutPage]
 })
-export class MemberinforPageModule {}
+export class AboutPageModule {}

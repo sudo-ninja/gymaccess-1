@@ -76,11 +76,13 @@ export class MePage implements OnInit {
          console.log(this.isloggedUserMember);
          if(!this.isloggedUserMember){
           this.loggeduserIsAdmin = true;
-          console.log("Logged Used is Admin");
+          console.log("Logged User is Admin");
+          localStorage.setItem('UserIsAdmin',this.loggeduserIsAdmin.toString())
          }else{
           this.isloggedUserMember=true;
           this.loggeduserIsAdmin = false;
-          console.log("Logged Used is Member");
+          console.log("Logged User is Member");
+          localStorage.setItem('UserIsMember',this.loggeduserIsAdmin.toString())
          }
        },
        error=>{
@@ -227,5 +229,16 @@ isUserMember(email){
     }
 
   });
+}
+
+gymLocation(){
+  //call member api to get gym_id 
+  // and then call gym api by ID to get gym lat long 
+  // use that lat long to save position and show them external link of google map 
+  // show alert message first this will take you to external link of google map  
+}
+
+settings(){
+  this.router.navigate(['../settings'],{replaceUrl:true});
 }
 }

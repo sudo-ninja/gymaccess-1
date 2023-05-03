@@ -329,7 +329,7 @@ export class MembercontrolPage implements OnInit {
      // if this is not touched then set old value as new value 
     // so that null can not be passed to DB
   
-    // console.log(event);
+    console.log(event.detail.value);
     // console.log('Return Value True', event.detail.value);
     this.Start_Date_UTC = Date.parse(event.detail.value);
     // this.StartDate = new Date(event.detail.value).getTime();

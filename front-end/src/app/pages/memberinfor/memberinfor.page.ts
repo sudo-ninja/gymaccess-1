@@ -37,16 +37,19 @@ export class MemberinforPage implements OnInit {
   memberAttendances:any;
   memberBalanceDays:any;
   memberEndDate:any;
+  memberStartDate:any;
   
 
   messageReminder:boolean = false;
+  isToggleOn:boolean;
 
 
   // member ID
+  memberId:string;
   memberID:any;
 // for gmap 
   @ViewChild(GmapPage, {static : true}) gmap : GmapPage;
-  memberId: any;
+  
   gymId: any;
   lastDate: any;
 
@@ -72,15 +75,14 @@ export class MemberinforPage implements OnInit {
      this.storageService.get('loggeduser_id').then((val)=>{
       console.log(val);
      });
+     this.isUserMember(this.loggeduser.email);
 
 // get member by email , get ID from here 
-this.getMemberAttendances(this.memberID);
+
 // get member end date
-this.getMemberEndDate(this.loggeduser.email);
+// this.getMemberEndDate(this.loggeduser.email);
 // fetch member current location as soon as page is open
 this.fetchLocation();
-
-
 
    
     // to update adress give link of google map and fetch lat long and pass them to update based on id.
@@ -100,69 +102,58 @@ this.fetchLocation();
   }
 
   ngOnInit() {
+    //get confirmation of user if he is member or not 
+// this.isUserMember(this.loggeduser.email);
+console.log(this.memberID);
+// this.getMemberAttendances(this.memberId);
   }
 
-  logs: string[] = [];
+  // logs: string[] = [];
 
-  pushLog(msg) {
-    this.logs.unshift(msg);
-  }
+  // pushLog(msg) {
+  //   this.logs.unshift(msg);
+  // }
 
-  handleChange(e) {
-    this.pushLog('ionChange fired with value: ' + e.detail.value);
-  }
+  // handleChange(e) {
+  //   this.pushLog('ionChange fired with value: ' + e.detail.value);
+  // }
 
   
   
   // download data in CSV form , make function and get data from DB in CSV form
 
-// get members attendnace 
-getMemberAttendances(memberID:any){
-this.AttendanceApi.getMemberAttendance(memberID).subscribe((data:any)=>{
-  try {
-    if(data){
-      console.log(data.length);
-      this.memberAttendances = data.length;
-    }
-  } catch (error) {
-    throw error;
-    
-  }
-});
-}
 
-//get member end date
-getMemberEndDate(email:any){
-  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
-    try {
-      console.log(data);
-      this.memberID= data._id;
-      
-    } catch (error) {
-      throw error;
-      
-    }
-   });
-}
 
-// correct this page 
 
+Start_Date:any;
+
+Start_Date_ISO:any;
 //check if user exist as member or not ?
 // if he is not member or deleted by gym then page must route back to home page 
 isUserMember(email){
   //search member DB for this email 
   this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
-    console.log(data);
+    console.log(new Date(data.m_startdate*1));
+    console.log(this.Start_Date);
+      console.log(this.Start_Date_ISO);
+      console.log(this.memberStartDate);
+    this.memberID = data._id;
     if(!data){      
       this.router.navigateByUrl('/home',{replaceUrl: true,});
     }else{
+      console.log(data._id);
       this.memberId = data._id;
       this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
       // this.memberOutTime = data.m_outtime*1 // in Unix milisecond
       // this.memberInTime = data.m_intime*1// in unix milisecond
       this.gymId = data.gym_id // get gym ID
       this.lastDate = this.memberEndDate;
-      this.lastDate = new Date(this.lastDate);
+      this.isToggleOn = data.isSetReminder;
+      this.memberStartDate = data.m_startdate;
+      this.Start_Date = this.toISOStringWithTimezone(new Date(this.memberStartDate*1));
+      this.Start_Date_ISO =  new Date(this.memberStartDate*1);
+       
+      this.lastDate = this.toISOStringWithTimezone(new Date(this.lastDate*1));
       const Time = (this.memberEndDate)-(new Date().getTime())
       // this.daysLeft = Math.floor(Time / (1000 * 3600 * 24)) + 1;
       // this.checkinTime = this.memberInTime;
@@ -171,19 +162,48 @@ isUserMember(email){
       // this.checkoutTime  = new Date(this.checkoutTime);
       // this.firstAttendance = data.isAttended;
 
+      this.getMemberAttendances(this.memberId);
+
     }
+      
   });
   
+      
 }
 
-// ths need to be link with handle change even of toggle switch
-isToggled = false;
-
-changeToggle(){
-  console.log("change toggle")
-  this.setReminder(this.loggeduser.email,7)
-
+// get members attendnace 
+getMemberAttendances(mId:any){
+  console.log(mId);
+this.AttendanceApi.getMemberAttendance(mId).subscribe((data:any)=>{
+  console.log(data.length);
+  this.memberAttendances = data.length;
+});
 }
+
+
+
+changeToggle(event:any){
+  console.log(event.detail.checked)
+  if(event.detail.checked){
+    
+    this.memberApi.update(this.memberID,{"isSetReminder":true}).subscribe((res)=>{
+      console.log(res);
+    });
+    // event.target.checked = false;
+  }else{
+    
+    this.memberApi.update(this.memberID,{"isSetReminder":false}).subscribe((res)=>{
+      console.log(res);
+    });
+  }
+}
+
+Reminder(){
+  if(this.isToggleOn){
+    this.setReminder(this.loggeduser.email,7)
+  }
+}
+
 setReminder(email:any,days:any){
   // Java code for date calculation
   var reminderDate ; 
@@ -194,30 +214,20 @@ setReminder(email:any,days:any){
   console.log(reminderDate);
   var dbEndDate;
   var toDay;
-  const sevenDaysAgo: Date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-
-  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
-    try {
-      console.log(data);
-      if(data)
-      {
-      
-      dbEndDate=  new Date(data.m_enddate).getTime();
+  const sevenDaysAgo: Date = new Date(Date.now() + days * 24 * 60 * 60 * 1000)
+  
+      dbEndDate=  new Date(this.memberEndDate).getTime();
       toDay= Date.now();
-      console.log(toDay);
-      console.log(dbEndDate);
       if(dbEndDate < sevenDaysAgo){
-        console.log(data.m_enddate,`End Date is less then remonder date`,);
+        console.log(this.memberEndDate,`End Date is less then reminder date`,);
         this.messageReminder = true;
-      }
+        console.log(this.messageReminder);
       }else {
-        console.log("End Date is far away from remonder date ");
+        console.log("End Date is far away from reminder date ");
       }
-    } catch (error) {
-      throw error;
-      
-    }
-   });
+     
+    
+  
 }
 
 async presentAlert(header:string,subheader:string, message:string) {
@@ -244,7 +254,7 @@ async fetchLocation(){
   localStorage.setItem('current_long',this.current_long);
 }
 
-
+// use to set google map location of user
 async getLocation()
       // this.router.navigateByUrl("/gmap",{replaceUrl:true});
 
@@ -268,7 +278,7 @@ async getLocation()
 
     // recharge request alert
 rechargeRequestAlert(){
-  this.RechargeApi.getRechargeRequestMadeByMemberId(this.memberID).subscribe((data) => {
+  this.RechargeApi.getRechargeRequestMadeByMemberId(this.memberId).subscribe((data) => {
     console.log(data.length);
    if(!data.length){
       this.rechargeRequestAlertFirst();
@@ -299,7 +309,7 @@ rechargeRequestAlert(){
                 text: 'Ok',
                 handler: (alertData) => { //takes the data 
                     console.log(alertData.recharge_days);
-                     this.RechargeApi.addRecharge({"member_id":this.memberID,"days":alertData.recharge_days,"isAccepted": "0"}).subscribe((data)=>{
+                     this.RechargeApi.addRecharge({"member_id":this.memberId,"days":alertData.recharge_days,"isAccepted": "0"}).subscribe((data)=>{
                       console.log(data);
                      });
                 }
@@ -319,5 +329,59 @@ rechargeRequestAlert(){
       });
       await alert.present();
     }
+
+
+    // async handleChange(e) {
+    //   if(e.detail.checked) {
+    //     this.presentPrompt(data => {
+    //       const todoName = data.todo;
+    //       console.log('Todo submitted:', todoName);
+    //       if(!todoName) {
+    //         e.target.checked = false;
+    //       }
+    //     }, () => {
+    //       console.log('Prompt cancelled');
+    //       e.target.checked = false;
+    //     });
+    //   }
+    // }
+     
+      highlightedDates = (isoString) => {
+        const date = new Date(isoString);
+        const utcDay = date.getUTCDate();
+    
+        if(utcDay % 5 === 0) {
+          return {
+            textColor: '#800080',
+            backgroundColor: '#ffc0cb',
+          };
+        }
+    
+        if(utcDay % 3 === 0) {
+          return {
+            textColor: 'var(--ion-color-secondary-contrast)',
+            backgroundColor: 'var(--ion-color-secondary)',
+          };
+        }
+    
+        return undefined;
+      };
+
+
+      // convert date to ISO string with timezone
+  toISOStringWithTimezone(date)
+  {
+   const tzOffset = -date.getTimezoneOffset();
+   const diff = tzOffset >= 0 ? '+' : '-';
+   const pad = n => `${Math.floor(Math.abs(n))}`.padStart(2, '0');
+   return date.getFullYear() +
+     '-' + pad(date.getMonth() + 1) +
+     '-' + pad(date.getDate()) +
+     'T' + pad(date.getHours()) +
+     ':' + pad(date.getMinutes()) +
+     ':' + pad(date.getSeconds()) +
+     diff + pad(tzOffset / 60) +
+     ':' + pad(tzOffset % 60);
+ };
 
 }

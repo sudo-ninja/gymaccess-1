@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="Back" defaultHref="settings"> </ion-back-button>
+    </ion-buttons>
+    <ion-title>About</ion-title>
+  </ion-toolbar>  
+</ion-header>
+
+<ion-content>
+  <ion-list [inset]="true" lines="none">
+    <ion-item>      
+        <ion-label>Rate Us</ion-label>
+        <ion-icon slot="end" name="chevron-forward-outline" ></ion-icon>     
+    </ion-item>
+
+    
+    <ion-item >     
+        <ion-label>Upload Log</ion-label>
+        <ion-icon slot="end" name="chevron-forward-outline" (click)="uploadlogAlert()"></ion-icon>      
+    </ion-item>
+    
+    <ion-item>      
+        <ion-label> Current Version </ion-label>     
+    </ion-item>
+
+  </ion-list>
+
+</ion-content>

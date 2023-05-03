@@ -4,19 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { MemberinforPageRoutingModule } from './memberinfor-routing.module';
+import { SettingsPageRoutingModule } from './settings-routing.module';
 
-import { MemberinforPage } from './memberinfor.page';
-// for ion date time
- 
+import { SettingsPage } from './settings.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    MemberinforPageRoutingModule
+    SettingsPageRoutingModule
   ],
-  declarations: [MemberinforPage]
+  declarations: [SettingsPage]
 })
-export class MemberinforPageModule {}
+export class SettingsPageModule {}

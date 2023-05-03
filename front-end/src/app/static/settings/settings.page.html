@@ -1,0 +1,58 @@
+<ion-header *ngIf="!this.loggeduserIsAdmin">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="Back" icon="caret-back" defaultHref="tabs/me"></ion-back-button>
+    </ion-buttons>
+    <ion-title><strong>Settings</strong></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-header *ngIf="this.loggeduserIsAdmin">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="Back" icon="caret-back" defaultHref="gymtabs/me"></ion-back-button>
+    </ion-buttons>
+    <ion-title><strong>Settings</strong></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+
+
+<ion-content>
+  <div >
+    <ion-list lines="none" [inset]="true">
+      <ion-item href="./personalinformation">
+        <ion-label>Personal Information</ion-label>
+      </ion-item>
+      <ion-item >
+        <ion-label>App Notifications...coming soon</ion-label>
+      </ion-item>
+      <ion-item >
+        <ion-label>More Features..comming soon</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+  
+  <div>
+    <ion-list lines="none" [inset]="true">
+      <ion-item href="./about">
+        <ion-label>About</ion-label>
+      </ion-item>
+
+      <ion-item href="./privacy-policy">
+        <ion-label>Privacy Settings</ion-label>
+      </ion-item>
+
+      <ion-item href="./terms-condition">
+        <ion-label>Term & Conditions</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-title color="danger"><strong>Log Out</strong></ion-title>
+  </ion-toolbar>
+</ion-footer>

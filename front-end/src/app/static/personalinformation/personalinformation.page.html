@@ -1,0 +1,92 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="Back" defaultHref="settings"> </ion-back-button>
+    </ion-buttons>
+    <ion-title>Personal Information</ion-title>
+  </ion-toolbar>  
+</ion-header>
+
+<ion-content>
+  <div *ngIf="!this.loggeduserIsAdmin">
+  <ion-list [inset]="true" lines="none">
+    <ion-item>
+      <ion-label>Roll : {{memberType | uppercase}} </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>User Name : {{memberName | uppercase}} </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Email : {{memberEmail | uppercase}}</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Mobile Number : {{memberMobile | uppercase}}</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Emergency Number : {{emergencyMobile | uppercase}}</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Location on Map </ion-label>
+      <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Gym Invitation Accepted : {{memberAcceptedinvitation | uppercase}} </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Data Entry Date : {{memberJoindate |date | uppercase}} </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Start Date : {{memberStartdate | date | uppercase}} </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Last Date : {{memberLastdate | date | uppercase}}</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Allowed In Time :{{memberIntime |date:'shortTime' | uppercase}} </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Allowed Out Time :{{memberOuttime |date:'shortTime' | uppercase}} </ion-label>
+    </ion-item>
+
+    
+
+    <ion-item>
+      <ion-label>Last Date Reminder Set : {{memberSetreminder}} </ion-label>
+    </ion-item>
+
+  </ion-list>
+</div>
+
+<div *ngIf="this.loggeduserIsAdmin">
+  <ion-list [inset]="true" lines="none">
+    <ion-item>
+      <ion-label>Roll : ADMIN </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>User Name : {{adminName | uppercase}} </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Email : {{adminEmail | uppercase}}</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Mobile Number : {{adminMobile | uppercase}}</ion-label>
+    </ion-item>
+
+       
+  </ion-list>
+</div>
+</ion-content>

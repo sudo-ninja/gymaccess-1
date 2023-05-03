@@ -102,7 +102,19 @@ const routes: Routes = [
   {
     path: 'gymtabs',
     loadChildren: () => import('./pages/gymtabs/gymtabs.module').then( m => m.GymtabsPageModule)
+  },  {
+    path: 'settings',
+    loadChildren: () => import('./static/settings/settings.module').then( m => m.SettingsPageModule)
   },
+  {
+    path: 'personalinformation',
+    loadChildren: () => import('./static/personalinformation/personalinformation.module').then( m => m.PersonalinformationPageModule)
+  },
+  {
+    path: 'about',
+    loadChildren: () => import('./static/about/about.module').then( m => m.AboutPageModule)
+  },
+
  
 ];
 

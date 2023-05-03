@@ -1,58 +1,58 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="end">
-      <ion-button fill="clear">
-        <ion-icon name="settings"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-   
-  </ion-toolbar>
+  
+    <ion-toolbar>
+      <ion-icon class="ion-icon-1" slot="end" name="settings" (click)="settings()"></ion-icon>              
+    </ion-toolbar>
+    
 </ion-header>
 
 <ion-content>
-  <div class="div-0">
-    <ion-item class= ".ion-item-0" href="#">
+  <div class= "ion-padding">
+    <ion-item href="/personalinformation">
+      <ion-label>         
+        <ion-text color="white"><strong>{{loggeduserUsername}}</strong></ion-text>
+      </ion-label>
       <ion-avatar slot="start">
         <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
       </ion-avatar>
-      <!-- <ion-icon slot="start" name="person-outline"></ion-icon> -->
-      <!-- <ion-img class=“profile-photo” (click)="getImage()" src=""></ion-img> -->
-      <ion-label color="dark">
-        <h2>{{loggeduserUsername}}</h2>
-      </ion-label>
-      <!-- <ion-icon slot="end"  name="chevron-forward-outline"></ion-icon> -->
-    </ion-item>
-
-    
+     
+    </ion-item>    
   </div>
-  <div class="div-1"  *ngIf="!this.loggeduserIsAdmin">     
-      <ion-label><ion-icon slot="start"  name="barbell-sharp"></ion-icon><h2>Gym Management</h2> 
-        </ion-label>
+
+  <div class="div-1"  *ngIf="!this.loggeduserIsAdmin"> 
+    <ion-item>      
+    <ion-label><h2>Gym Management</h2></ion-label>
+    <ion-icon slot="start"  name="barbell-sharp"></ion-icon>
+       
+    </ion-item> 
         <ion-list [inset]="true" lines="none">
           <ion-item>
             <ion-label>
-              <p>Gym Name : {{gymName}}</p>
+              <h2 color="primary">Gym Name : {{gymName}}</h2>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label >
+              <h2 color="primary">Gym Emergency Mobile No. : {{gymEmergencyMobile}}</h2>
             </ion-label>
           </ion-item>
 
           <ion-item>
             <ion-label>
-              <p>Gym Emergency Mobile No. : {{gymEmergencyMobile}}</p>
-            </ion-label>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>
-              <p>Gym Location on Google Map</p>
+              <ion-label><h2 color="primary">Gym Location on Map</h2></ion-label>     
+              <ion-icon slot="end"  name="chevron-forward-outline" (click)="gymLocation()"></ion-icon>
             </ion-label>
           </ion-item>
 
         </ion-list>
     </div>  
      
-    <div class="div-1"  *ngIf="this.loggeduserIsAdmin">     
-      <ion-label><ion-icon slot="start"  name="barbell-sharp"></ion-icon><h2>Gym Management</h2> 
-        </ion-label>
+    <div class="div-1"  *ngIf="this.loggeduserIsAdmin"> 
+      <ion-item>   
+      <ion-label><h2>Gym Management</h2></ion-label>
+      <ion-icon slot="start"  name="barbell-sharp"><h2 color="primary">New Message</h2></ion-icon>
+    </ion-item> 
         <ion-list [inset]="true" lines="none">
           <ion-item>
             <ion-label>
@@ -78,6 +78,7 @@
      
       <ion-icon slot="end"  name="chevron-forward-outline" (click)="alertForMemberMessage()"></ion-icon>
     </ion-item> 
+
     <ion-item *ngIf="isMessageFromAdmin">
       <ion-label><h2 color="primary">Message From Gym Admin</h2></ion-label>
       <ion-icon slot="start" name="mail-unread"> </ion-icon>
@@ -125,10 +126,6 @@
   </ion-item> -->
 
 </ion-content>
-<ion-footer>
-  <ion-toolbar>
-      <ion-button expand="block" (click)="logout()">Log Out</ion-button>
-  </ion-toolbar>
-</ion-footer>
+
 
 <!--  make Feedback page add whatsapp link in feedback page  -->

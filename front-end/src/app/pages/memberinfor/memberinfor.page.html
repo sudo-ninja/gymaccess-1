@@ -16,7 +16,7 @@ class="ion-no-border"
     <ion-label color="dark"> <h2>Report</h2> </ion-label>
    
       <ion-item >        
-        <ion-list>
+        <ion-list [inset]="true">
           
             <ion-item>
               <ion-icon name="calendar-outline"></ion-icon>
@@ -36,7 +36,7 @@ class="ion-no-border"
             <ion-item> 
               <ion-icon name="alert-outline"></ion-icon>
               <ion-label color="dark"><h2>Set Reminder(7 days)</h2> </ion-label>
-              <ion-toggle aria-label="Primary toggle" color="primary" (ionChange)="changeToggle()"></ion-toggle>
+              <ion-toggle aria-label="Primary toggle"  [(ngModel)]="isToggleOn" color="primary" (ionChange)="changeToggle($event)"></ion-toggle>
             </ion-item>
 
             <ion-item>
@@ -56,6 +56,21 @@ class="ion-no-border"
   </div>
 
   <div class="div-0">
+    <ion-label color="dark"><h2>My Performance</h2></ion-label>  
+         <!-- set min date as Start Date so that it start from that only -->
+      <ion-datetime
+       [min]="Start_Date"
+        [max]="lastDate" 
+         
+      [showDefaultButtons]="false"
+      presentation="date"
+      ></ion-datetime>
+     
+    
+  </div> 
+
+
+  <div class="div-0">
     <ion-label color="dark"><h2>Recharge</h2></ion-label>  
     <ion-item>        
       <ion-button fill="solid"  expand="block" (click)="rechargeRequestAlert()">Recharge Request</ion-button>
@@ -65,4 +80,3 @@ class="ion-no-border"
 
   
 </ion-content>
- 
