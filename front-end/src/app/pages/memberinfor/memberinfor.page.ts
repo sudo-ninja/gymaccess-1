@@ -38,6 +38,8 @@ export class MemberinforPage implements OnInit {
   memberBalanceDays:any;
   memberEndDate:any;
   memberStartDate:any;
+  // to store dates of gym accessed
+  attendedDates:[];
   
 
   messageReminder:boolean = false;
@@ -57,8 +59,6 @@ export class MemberinforPage implements OnInit {
     private AttendanceApi:AttendanceService,
     private RechargeApi: RechargeService,
     private memberApi:MemberserviceService,
-
-    public route :ActivatedRoute,
     public router :Router,
     public loadingController:LoadingController,
     private alertController: AlertController,
@@ -108,15 +108,7 @@ console.log(this.memberID);
 // this.getMemberAttendances(this.memberId);
   }
 
-  // logs: string[] = [];
-
-  // pushLog(msg) {
-  //   this.logs.unshift(msg);
-  // }
-
-  // handleChange(e) {
-  //   this.pushLog('ionChange fired with value: ' + e.detail.value);
-  // }
+ 
 
   
   
@@ -176,6 +168,11 @@ getMemberAttendances(mId:any){
   console.log(mId);
 this.AttendanceApi.getMemberAttendance(mId).subscribe((data:any)=>{
   console.log(data.length);
+  for (let i = 0; i < data.length; i++) {
+    console.log(i);
+  }
+  this.attendedDates = data[0].checkin_date;
+  console.log(this.attendedDates);
   this.memberAttendances = data.length;
 });
 }
@@ -272,8 +269,22 @@ async getLocation()
     if (role === 'confirm') {
       // this.message = `Hello, ${data}!`;
     }
+    this.updatememberLocation(this.memberId);
     }
 
+   
+  
+  memberLat:any;
+  memberLng:any;
+    updatememberLocation(id:any){
+      this.memberLat = localStorage.getItem('gymLat');
+      this.memberLng = localStorage.getItem('gymLng');
+      console.log(this.memberLat,this.memberLng);
+      this.memberApi.update(id,{"m_address_lat":this.memberLat,"m_address_long":this.memberLng}).subscribe((res)=>{
+        console.log(res);
+      })
+      
+    }
 
 
     // recharge request alert
@@ -383,5 +394,7 @@ rechargeRequestAlert(){
      diff + pad(tzOffset / 60) +
      ':' + pad(tzOffset % 60);
  };
+
+
 
 }

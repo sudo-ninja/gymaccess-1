@@ -230,7 +230,7 @@ export class MembercontrolPage implements OnInit {
         // localStorage.setItem('ID', JSON.stringify(this.id));
         this.isLoadingResults = false;
 
-        this.router.navigateByUrl('/member-list', { replaceUrl: true });
+        this.router.navigateByUrl('/gymtabs/member-list', { replaceUrl: true });
         this.modalCtrl.dismiss();
       },
       (err: any) => {

@@ -1,58 +1,76 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>member-details</ion-title>
+    <ion-buttons slot="start">
+      <!-- <ion-back-button default-href="/member-list"></ion-back-button> -->
+      <ion-button slot="start" (click)="BacktoList()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>      
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button slot="end" (click)="deleteMember(member._id)">
+        <ion-icon slot="end" name="remove-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Member-Details</ion-title>
+    <!-- <ion-progress-bar  type="indeterminate" ></ion-progress-bar> -->
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <div *ngIf="isLoadingResults">
-    <ion-spinner *ngIf="isLoadingResults" ></ion-spinner>
+    <ion-spinner slot= "center" *ngIf="isLoadingResults" ></ion-spinner>
   </div>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title><h2><ion-icon name="person-circle-outline"></ion-icon>{{member.m_name}}</h2></ion-card-title>
-      <ion-card-subtitle><ion-icon name="call-outline"></ion-icon>Mobile No.- {{member.mobile}}</ion-card-subtitle>
-    </ion-card-header>
+  <ion-list lines="none" [inset]="true">
+    <ion-list-header>
+      <ion-icon name="person-circle-outline"></ion-icon>
+      <ion-label class="ion-padding">{{member.m_name}}</ion-label>
+      
+    </ion-list-header>
+    <ion-item>
+      <ion-icon name="call-outline"></ion-icon>
+      <ion-label class="ion-padding">Mobile No.: - {{member.mobile}}</ion-label>
+      
+    </ion-item>
+    <ion-item>
+      <ion-icon name="mail-open-outline"></ion-icon>
+      <ion-label class="ion-padding"> Invitation : {{member.isInviteAccepted}} Accepted </ion-label>
+      
+    </ion-item>
+    <ion-item>
+      <ion-icon name="key-outline"></ion-icon>
+      <ion-label class="ion-padding">Access Type :{{member.m_accesstype}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="people-outline"></ion-icon>
+      <ion-label class="ion-padding">Member Type :{{member.memberType}}</ion-label>
+    </ion-item>
 
-    <ion-card-content>
-      <dl>
-        <!-- <dt><ion-icon name="calendar-outline"></ion-icon>Subscription Expiry Date:</dt>
-        <dd>{{member.m_enddate}}</dd>
+    <ion-item>
+      <ion-icon name="people-outline"></ion-icon>
+      <ion-label class="ion-padding">Email id :{{member.email}}</ion-label>
+    </ion-item>
+    
 
-        <dt><ion-icon name="timer-outline"></ion-icon>Allowed Time In:</dt>
-        <dd>{{member.m_intime}}</dd>
-
-        <dt><ion-icon name="time-outline"></ion-icon>Allowed Time Out:</dt>
-        <dd>{{member.m_outtime}}</dd> -->
-
-        <dt><ion-icon name="mail-open-outline"></ion-icon>Invitation Status:</dt>
-        <dd>{{member.isInviteAccepted}} Accepted </dd>
-
-        <dt><ion-icon name="key-outline"></ion-icon>Access Type Paid/Free:</dt>
-        <dd>{{member.m_accesstype}}</dd>
-
-        <dt><ion-icon name="people-outline"></ion-icon>Member Type Member/Staff:</dt>
-        <dd>{{member.memberType}}</dd>
-         </dl>
-    </ion-card-content>
-
-    <ion-button (click)="BacktoList()">
-      <ion-icon slot="icon-only" name="arrow-back"></ion-icon> BACK
-    </ion-button>
+    
          
-      <ion-button (click)="editMember(member._id)">
+      <ion-button expand="block" (click)="editMember(member._id)">
         <ion-icon slot="icon-only" name="create"></ion-icon> EDIT
       </ion-button>
 
-      <ion-button (click)="deleteMember(member._id)">
-        <ion-icon slot="icon-only" name="remove-circle"></ion-icon> DELETE
-      </ion-button>
+      
 
-      <ion-button (click)="AddMore()">
-        <ion-icon slot ="end" name="arrow-forward"></ion-icon> ADD..
-      </ion-button>
+      
+  </ion-list>
 
-   </ion-card>
-
+ 
 </ion-content>
+
+<ion-footer [translucent]="true">
+  <ion-toolbar>
+    <!-- <ion-title>Footer</ion-title> -->
+    <ion-button expand="block" fill="outline" (click)="AddMore()">
+      <ion-icon  slot ="end" name="arrow-forward"></ion-icon> <strong> Add More Members</strong>
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

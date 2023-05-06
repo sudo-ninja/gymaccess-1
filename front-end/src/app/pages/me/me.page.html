@@ -1,21 +1,20 @@
-<ion-header>
-  
-    <ion-toolbar>
-      <ion-icon class="ion-icon-1" slot="end" name="settings" (click)="settings()"></ion-icon>              
-    </ion-toolbar>
-    
-</ion-header>
-
+ 
 <ion-content>
+  <ion-list lines="none">
+
+  <ion-item>
+    <ion-icon class="ion-icon-1" slot="end" name="settings" (click)="settings()"></ion-icon>              
+  </ion-item>
+
   <div class= "ion-padding">
-    <ion-item href="/personalinformation">
+    <ion-item class="ion-item" href="/personalinformation">
       <ion-label>         
         <ion-text color="white"><strong>{{loggeduserUsername}}</strong></ion-text>
       </ion-label>
       <ion-avatar slot="start">
         <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
       </ion-avatar>
-     
+      <ion-icon name="chevron-forward-outline"></ion-icon>
     </ion-item>    
   </div>
 
@@ -34,15 +33,13 @@
 
           <ion-item>
             <ion-label >
-              <h2 color="primary">Gym Emergency Mobile No. : {{gymEmergencyMobile}}</h2>
+              <h2 (click)="CallTel(gymEmergencyMobile)" color="primary">Gym Mobile No. : {{gymEmergencyMobile}}</h2>
             </ion-label>
           </ion-item>
 
           <ion-item>
-            <ion-label>
-              <ion-label><h2 color="primary">Gym Location on Map</h2></ion-label>     
+              <ion-label> Gym Location on Map</ion-label>              
               <ion-icon slot="end"  name="chevron-forward-outline" (click)="gymLocation()"></ion-icon>
-            </ion-label>
           </ion-item>
 
         </ion-list>
@@ -108,15 +105,14 @@
 </div>
 
 
-<div class="div-1">
-    <ion-item color="primary" class="ion-item-1"  href="#">
+<div class= "ion-padding">
+    <ion-item class="ion-item">
+      <ion-label > Feedback or Query About App</ion-label>
       <ion-icon slot="start" name="reader-outline"></ion-icon>
-      <ion-label color="dark">
-        <h2  >FAQ & Feedback </h2>
-      </ion-label>
-      <!-- <ion-icon slot="end"  name="chevron-forward-outline"></ion-icon> -->
+      <ion-icon slot="end"  name="chevron-forward-outline" (click)="feedbackAlert()"></ion-icon>
     </ion-item> 
-  </div>
+</div>
+  
 
  
 
@@ -124,7 +120,7 @@
     <ion-label>Toggle</ion-label>
     <ion-toggle slot="end"></ion-toggle>
   </ion-item> -->
-
+</ion-list>
 </ion-content>
 
 

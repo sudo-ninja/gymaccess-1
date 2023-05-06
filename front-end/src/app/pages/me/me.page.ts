@@ -1,10 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
 import { Recharge } from 'src/app/models/recharge';
 import { GymService } from 'src/app/services/gym.service';
 import { MemberserviceService } from 'src/app/services/memberservice.service';
+
+// loading control and modal controller 
+import { AlertController, LoadingController, ModalController, NavController, ToastController } from '@ionic/angular';
+
 
 //call member service to get all information about logged user Membrs
 
@@ -55,7 +58,7 @@ export class MePage implements OnInit {
     private gymApi: GymService,
     private rechargeApi :RechargeService,
     // for ionic alert
-    private alertCtrl: AlertController,
+    private alertController: AlertController,
     // logged user API 
     private userApi:UserService,
   ) { 
@@ -193,7 +196,7 @@ export class MePage implements OnInit {
 }
 
   async presentAlert(header:string,  message:string) {
-    const alert = await this.alertCtrl.create({
+    const alert = await this.alertController.create({
       header:header,
        message:message,
       buttons: ['OK'],
@@ -231,14 +234,69 @@ isUserMember(email){
   });
 }
 
-gymLocation(){
-  //call member api to get gym_id 
-  // and then call gym api by ID to get gym lat long 
-  // use that lat long to save position and show them external link of google map 
-  // show alert message first this will take you to external link of google map  
+  gymLat:any;
+  gymLng:any;
+async gymLocation(){
+    
+    this.gymLat = this.gymLocation_lat;
+    this.gymLng = this.gymLocation_lng;
+    window.location.href =`https://www.google.com/maps/@${this.gymLat},${this.gymLng},17z`;
+    // https://www.google.com/maps/@26.8539768,75.7255187,15z
+   
+}
+
+CallTel(tel) {
+  window.location.href = 'tel:'+ tel;
+}
+
+myText:any;
+textarea(event){
+  console.log(event);
+}
+
+customCounterFormatter(inputLength: number, maxLength: number) {
+  return `${maxLength - inputLength} characters remaining`;
+}
+
+async feedbackAlert(){  
+  const alert = await this.alertController.create({
+    header :'Feedback or Query About App',
+    inputs: [
+    {
+        name: 'feedback',
+        type: 'textarea',
+        placeholder: 'Text Limit 250 nos. Only',
+        attributes: {
+          maxlength: 250,
+        },
+    }],    
+    buttons: [
+        {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {
+                console.log('Confirm Cancel');
+            }
+        }, 
+        {
+            text: 'Send',
+            handler: (alertData) => { //takes the data 
+                console.log(alertData.feedback);
+                //  this.RechargeApi.addRecharge({"member_id":this.memberId,"days":alertData.recharge_days,"isAccepted": "0"}).subscribe((data)=>{
+                //   console.log(data);
+                //  });
+            }
+        }
+    ]
+});
+await alert.present();
 }
 
 settings(){
   this.router.navigate(['../settings'],{replaceUrl:true});
 }
+
+//fetch Location so that if user want to update can update his location 
+
 }

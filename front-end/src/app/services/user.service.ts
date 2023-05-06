@@ -9,24 +9,26 @@ import{Users} from '../models/user.model'
 export class UserService {
   url:string= 'http://localhost:3000'
 
-constructor(private _http:HttpClient,
+constructor(private http:HttpClient,
             // private _user:Users,
             ) { }
 
   register(body:any){
-    return this._http.post('this.url/register',body,{
+    return this.http.post('this.url/register',body,{
       observe:'body',
       headers:new HttpHeaders().append('Content-Type','application/json')
     });
   }
 
-  update(Id:any, data: any): Observable<any> {
-    return this._http.put(`http://localhost:3000/users/register/${Id}`,data).pipe(tap((dat:any)=>console.log(`updated with ID =${Id}`)),
+  update(Id:any, data: any){
+    console.log(Id);
+    console.log(data);
+    return this.http.put(`http://localhost:3000/users/register/${Id}`,data).pipe(tap((dat:any)=>console.log(`updated with ID =${Id}`)),
     catchError(this.errorMgmt));
   }
   
   login(body:any){
-    return this._http.post('this.url/users/login',body,{
+    return this.http.post('this.url/users/login',body,{
       observe:'body',
       withCredentials:true,
       headers:new HttpHeaders().append('Content-Type','application/json')
@@ -34,7 +36,7 @@ constructor(private _http:HttpClient,
   }
 
   user(){
-    return this._http.get('http://localhost:3000/users/user',{
+    return this.http.get('http://localhost:3000/users/user',{
       observe:'body',
       withCredentials:true,
       headers:new HttpHeaders().append('Content-Type','application/json')
@@ -43,11 +45,11 @@ constructor(private _http:HttpClient,
 
   getUserbyEmail(_Email:any): Observable<Users> {
     console.log("i m in get  by emailloop");
-    return this._http.get(`http://localhost:3000/users/user/email/${_Email}`);
+    return this.http.get(`http://localhost:3000/users/user/email/${_Email}`);
   }
 
   logout(){
-    return this._http.get('/users/logout',{
+    return this.http.get('/users/logout',{
       observe:'body',
       withCredentials:true,
       headers:new HttpHeaders().append('Content-Type','application/json')

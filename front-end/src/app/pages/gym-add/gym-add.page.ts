@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { GymService } from './../../services/gym.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+
 import { UserService } from 'src/app/services/user.service';
 
 //to get current location Lattitude and Longitude
@@ -12,7 +13,10 @@ import { Geolocation } from '@capacitor/geolocation';
 import { GmapPage } from '../gmap/gmap.page';
 
 // to set login user as admin if he added gym
+// change isAdmin to true in user type also so next login will lead to him direct member list page or gym add page
 import {MemberserviceService} from 'src/app/services/memberservice.service';
+import { GymadminService } from 'src/app/services/gymadmin.service';
+
 import { AlertController, ModalController } from '@ionic/angular';
 
 
@@ -34,17 +38,20 @@ export class GymAddPage implements OnInit {
 
   loggedUserId:any;
   loggedUserName:any;
-  loggedUserEmail:any;   
+  loggedUserEmail:any;  
+  
+  gymId:any;
 // for modal controller
   @ViewChild(GmapPage, {static : true}) gmap : GmapPage;
 
   constructor(
     private router: Router,
     public fb: FormBuilder,
-    private apiService: GymService,
+    private gymApi: GymService,
     public memberApi:MemberserviceService,
+    private gymadminApi:GymadminService,
     private http:HttpClient,
-    private _user:UserService,
+    private userApi:UserService,
     private alertCtrl: AlertController, 
     private modalCtrl: ModalController,
 
@@ -151,52 +158,71 @@ export class GymAddPage implements OnInit {
       this.findInvalidControls();
       return false;
     } else {
-      return this.apiService.addGym(this.gymForm.value).subscribe((res: any) => {
-        const id = res._id;
+      return this.gymApi.addGym(this.gymForm.value).subscribe((res: any) => {
+        this.gymId = res._id;
         // localStorage.setItem('ID',JSON.stringify(id));
         // this.isLoadingResults = false;
       localStorage.setItem('GYM',JSON.stringify(res)) // trick use to transfer added gym info gym list page
       /********************************************************* */
       // logic added if any login user add GYM it means he is admin for that gym 
-      // if gym successfully added with gym ID then user detail to be added in members
-      //as Admin with Free access and with gym ID , so first member to
-      // by defualt user is admin as "ismember" = false is already set ..
+      // if gym successfully added with gym ID then user detail to be added in Gym Admin
+      //as Gym Admin with Free access and with linked gym ID without any scan 
+      //just using access button,
       /********************************************************** */
-      if(!this.memberApi.getMemberByEmail(this.loggeduser.email)){
-      this.adminAdd();
-      this._user.update(this.loggeduser._id,{"isMember":false});
      
-      this.adminForm.patchValue({
-        gym_id :res._id,
-        m_name : this.loggeduser.username ,
-        Emergency_mobile : res.gym_emergency,
-        mobile : this.loggeduser.mobile,
-        aadhar: '0000.0000.0000.0000',
-        email: this.loggeduser.email,
-        m_address_lat : res.gym_address_lat,
-        m_address_long: res.gym_address_long,
-        memberType :'Admin',
-        m_joindate: Date.now(),
-        m_accesstype: 'free',
-        isInviteAccepted : true,
-        m_startdate: Date.now(),
-        m_enddate: Date.now(),
-        m_validdays:'',
-        m_intime:'00:01',
-        m_outtime:'23:59',
-      });
-      this.memberApi.addMember (this.adminForm.value).subscribe((res: any) => {
-                  const id = res._id;
-                  console.log('Added as Admin member Type=',res.memberType);
-                  // here also we need to set user type as ADMIN also so that next time if he login then dirctly
-                  // got to add gym page .. not stay at home page
-                }, (err: any) => {
-                  console.log(err)
-                });
-      this.router.navigateByUrl("/gym-list",{replaceUrl:true});  
-      }else{
-        this.router.navigateByUrl("/gym-list",{replaceUrl:true}); 
-      }
+      this.gymadminApi.getGymadminByEmail(this.loggedUserEmail).subscribe((res)=>{
+        console.log(res);
+        // as of now in both case if first time gym add or next time gym add , seprate
+        //sepratedata being enterded with all 3 field same but with diffferent gym id.
+        if(res==null){
+          // first set logged user as Admin
+          this.updateUserToAdmin();
+          console.log("Null response");
+          //call admin add form
+         this.adminAdd();      
+      // patch value to admin form
+       this.adminForm.patchValue({
+         gym_id : this.gymId,
+         user_id : this.loggeduser._id,
+         mobile : this.loggeduser.mobile,
+         email: this.loggeduser.email,
+       });
+       console.log(this.adminForm);
+          console.log(this.adminForm.value);
+          this.gymadminApi.addGymadmin(this.adminForm.value).subscribe((res)=>{
+            console.log(res);
+          });
+          this.router.navigateByUrl("/gym-list",{replaceUrl:true});
+        }else{
+          this.updateUserToAdmin();
+          this.adminAdd();      
+          // patch value to admin form
+           this.adminForm.patchValue({
+             gym_id : this.gymId,
+             user_id : this.loggeduser._id,
+             mobile : this.loggeduser.mobile,
+             email: this.loggeduser.email,
+           });
+          this.gymadminApi.addGymadmin(this.adminForm.value).subscribe((res)=>{
+            console.log(res);
+          });
+          this.router.navigateByUrl("/gym-list",{replaceUrl:true}); 
+        }
+      })
+      // if(!this.memberApi.getMemberByEmail(this.loggeduser.email)){
+      
+      // this.memberApi.addMember (this.adminForm.value).subscribe((res: any) => {
+      //             const id = res._id;
+      //             console.log('Added as Admin member Type=',res.memberType);
+      //             // here also we need to set user type as ADMIN also so that next time if he login then dirctly
+      //             // got to add gym page .. not stay at home page
+      //           }, (err: any) => {
+      //             console.log(err)
+      //           });
+        
+      // }else{
+       
+      // }
        },(err: any) => {
           console.log(err);
           // this.isLoadingResults = false;
@@ -207,13 +233,7 @@ export class GymAddPage implements OnInit {
   async adminAdd(){
           this.adminForm = this.fb.group({
         'gym_id' : ['', Validators.required],
-        'm_name' : ['', [Validators.required]],
-        'Emergency_mobile': [null, [
-          Validators.required,
-          // Validators.minLength(10),
-          // Validators.maxLength(13),
-          // Validators.pattern('^[0-9]*$')
-        ]],
+        'user_id' : ['', [Validators.required]],
         'mobile': ['', [
           Validators.required,
           // Validators.minLength(10),
@@ -221,30 +241,26 @@ export class GymAddPage implements OnInit {
           // Validators.pattern('^[0-9]*$')
         ]
         ],
-        'aadhar':['', Validators.required],
         'email':['', [
           Validators.required,
           // Validators.minLength(5),
           // Validators.maxLength(80),
           // Validators.pattern("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")
         ]],
-        'memberType': ['',Validators.required],
-        'm_joindate': ['', Validators.required],
-        'm_accesstype': ['',Validators.required],
-
-        'm_address_lat': [''],
-        'm_address_long': [''],
-
-          'm_startdate':[''],
-          'm_enddate':[''],
-          'm_validdays':[''],
-          'm_intime':[''],
-          'm_outtime':[''],
-
-          })
+        
+         })
       }
 
 
+
+      updateUserToAdmin(){     
+        this.userApi.update(this.loggedUserId,{"isAdmin":true}).subscribe((res:any)=>{
+          console.log(" in update ",res._id);
+        },
+        (err: any) => {
+          console.log(err);
+        });
+      }
 
 async LoggedUserInfo(){
 

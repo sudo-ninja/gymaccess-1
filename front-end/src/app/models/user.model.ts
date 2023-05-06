@@ -5,4 +5,5 @@ export class Users {
     mobile?:string;
     username?:string;
     isMember?:boolean;
+    isAdmin?:boolean;
 }

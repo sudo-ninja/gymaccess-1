@@ -197,7 +197,7 @@ export class MemberActionPage implements OnInit {
   }
 
   async attendance(){
-    console.log("res");    
+      
     this.attendanceForm = this.formBuilder.group({
       'member_id' : this.memberId,
       'checkin_date' : Date.now(),
@@ -260,12 +260,27 @@ async validAttendance(current_date:any,current_time:any,email:any)
                             console.log(res);
                            });
                       }else{
+                        console.log("Second Attendance"); 
+                        // pass two query param , member id and today date and fetch data 
+                        //if any data comes from DB then check its checkin date 
+                        // if check it date same as today 
+                        // update the data
+                        // else add attendnace 
+                        this.attenApi.getMemberAttendance(this.memberId).subscribe((res)=>{
+                          console.log(res);
+                            
+                        })
                         this.attenApi.getMemberAttendance(this.memberId).subscribe((data:any)=>{
                           this.lastAttendance = data[data.length-1].checkin_date;
+                          // get date in last attendance 
                           this.lastAttendance = new Date(this.lastAttendance*1).getDate();
+                          // compare that day with today 
                             if(this.lastAttendance === new Date(Date.now()).getDate()){
-                                  console.log("Today ");
+
+                                  console.log("Today again attendnace ");
                                     this.todayAttendance = true;
+                                    // console.log(data[data.length-1]._id);
+                                    this.todaySecondAttendance(data[data.length-1]._id,email);
                             } 
                             else{
                               this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
@@ -274,24 +289,24 @@ async validAttendance(current_date:any,current_time:any,email:any)
                               
                               });
                             }
-                            if(this.todayAttendance){
-                                this.attenApi.update(data[data.length-1]._id,this.attendanceForm.value).subscribe((res:any)=>{
-                                console.log(res);
-                                this.openLock(email); // iff attendance saved then only open the lock
-                                    });
-                            }
-                            else{
-                                this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
-                                console.log(res);      
-                                this.openLock(email); // iff attendance saved then only open the lock
-                                }
-                        // ,(err: any) => {
-                        //   // console.log(err);
-                        //   this.isLoadingResults = false;
-                        //                 }
-                                );
-                                this.todayAttendance = true;
-                             }
+                        //     if(this.todayAttendance){
+                        //         this.attenApi.update(data[data.length]._id,this.attendanceForm.value).subscribe((res:any)=>{
+                        //         console.log(res);
+                        //         this.openLock(email); // iff attendance saved then only open the lock
+                        //             });
+                        //     }
+                        //     else{
+                        //         this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
+                        //         console.log(res);      
+                        //         this.openLock(email); // iff attendance saved then only open the lock
+                        //         }
+                        // // ,(err: any) => {
+                        // //   // console.log(err);
+                        // //   this.isLoadingResults = false;
+                        // //                 }
+                        //         );
+                        //         this.todayAttendance = true;
+                        //      }
                       });
                       }
 
@@ -318,6 +333,14 @@ async validAttendance(current_date:any,current_time:any,email:any)
       throw error;
     }
   }
+
+todaySecondAttendance(data:any,email:any){
+  this.attenApi.update(data,this.attendanceForm.value).subscribe((res:any)=>{
+            console.log(res);
+            this.openLock(email); // iff attendance saved then only open the lock
+                });
+
+}
 
 openLock(email:any){
   console.log("Lock Open Comand Given");    

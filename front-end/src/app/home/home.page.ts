@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-
+// to check if logged user is admin or member or none
 import { UserService } from '../services/user.service';
 
 import{ Router} from '@angular/router';
@@ -21,6 +21,7 @@ import { JsonPipe } from '@angular/common';
 //to make member as admin or member by setting isMembertype as True from false;
 // To make sure if GYM already added by user then neviagte to gym list page
 import {GymService} from './../services/gym.service';
+
 import { MemberserviceService } from '../services/memberservice.service';
 
 
@@ -99,39 +100,29 @@ export class HomePage implements OnInit{
         (res) => {
           console.log(res);
           this.isloggedUserMember = res.isMember;
+          this.loggeduserIsAdmin = res.isAdmin;
           console.log(this.isloggedUserMember);
-          if (!this.isloggedUserMember) {
-            this.loggeduserIsAdmin = true;
+
+          if(this.isloggedUserMember){
+            console.log('Logged User is Member');
+            this.router.navigateByUrl('/tabs/member-action', {replaceUrl: true});
+          } else{
+          if(this.loggeduserIsAdmin){
             console.log('Logged User is Admin');
-            this.gymApi
-              .wildSearch(JSON.parse(user!)._id)
-              .subscribe((res: any) => {
-                try {
-                  console.log(res.length);
-                  if (res.length < 1) {
-                    console.log('No gym Add by this persom Gym Please');
+            this.router.navigateByUrl('/gym-list', {
+              replaceUrl: true,
+            });
+            } else{
+            //he may be member or may be first time user only 
+            // so let him decide the roll of him self
+            console.log('No gym Add by this persom Gym Please');
                     this.loggedUserRoleaAlert(
                       'Welcome to Gym Access Control',
                       "let's start by ."
                     );
-                    // this.presentAlert("Welcome to Gym Acceess Control !!","Kindly Choose your role.","If you Want to Add Gym then click on My GYM to Add Gym or Please Ask Gym Owner to Invite you to Join Gym")
-                  } else {
-                    this.router.navigateByUrl('/gym-list', {
-                      replaceUrl: true,
-                    });
-                  }
-                } catch (error) {
-                  throw error;
                 }
-              });
-          } else {
-            this.isloggedUserMember = true;
-            this.loggeduserIsAdmin = false;
-            console.log('Logged User is Member');
-            this.router.navigateByUrl('/tabs/member-action', {
-              replaceUrl: true,
-            });
           }
+        
         },
         (error) => {
           console.log(error);
@@ -139,22 +130,14 @@ export class HomePage implements OnInit{
       );
        
      
-      if(this.isloggedUserMember)
-      {  
-        console.log()         
-        this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true});
-      }
-      else
-      {
-      
-  }
+   
   
   }
 
-    addName(data:any){
-      this.username = data.username;
-      console.log(this.username);
-    }
+    // addName(data:any){
+    //   this.username = data.username;
+    //   console.log(this.username);
+    // }
 
 logs: string[] = [];
 
@@ -211,25 +194,27 @@ logs: string[] = [];
 
       //here check if logged user is member then switch direct to member action page 
       // if logged user is not member then direct to gym list page .
-      if(this.loggeduser.isMembertype===true){
-        console.log("User Is Member as member Type True ");
-        this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true}); 
-        localStorage.setItem('User',JSON.stringify(this.loggeduser));
-      }
+      // if(this.loggeduser.isMembertype===true){
+      //   console.log("User Is Member as member Type True ");
+      //   this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true}); 
+      //   localStorage.setItem('User',JSON.stringify(this.loggeduser));
+      // }
 
       
 
       //once member leave gym he has to again enter invitaion code as his status for member will be false, 
       //if admin leave the gym then check if there is any other admin or not , if admin is there then only allow 
       // to leave him gym 
-      this.username=this.loggeduser.username;
-       console.warn(this.loggeduserEmail);
-      this.http.get(this.usersUrl).subscribe(res=>{
-        console.log(res)
-        this.serviceProviders=res;
-        this.originalserviceProvider=res;
-      },error=>{
-        console.log(error)});
+      // this.username=this.loggeduser.username;
+      //  console.warn(this.loggeduserEmail);
+      // this.http.get(this.usersUrl).subscribe(res=>{
+      //   console.log(res)
+      //   this.serviceProviders=res;
+      //   this.originalserviceProvider=res;
+      // },error=>{
+      //   console.log(error)}
+      //   );
+
     }
       
     }
@@ -353,13 +338,6 @@ logs: string[] = [];
   }
 
   updateUserToMember(){
-    this.userApi.getUserbyEmail(this.loggeduserEmail).subscribe((res:any)=>{
-      try {
-        console.log(res);
-      } catch (error) {
-        console.log(error);                              
-      }
-    });
     this.userApi.update(this.loggeduserId,{"isMember":true}).subscribe((res:any)=>{
       console.log(" in update ",res._id);
     },
