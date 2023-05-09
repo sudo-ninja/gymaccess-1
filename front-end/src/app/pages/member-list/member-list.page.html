@@ -1,4 +1,17 @@
   <ion-header>
+    <ion-item>
+      <ion-select 
+        aria-label="Gym"
+        placeholder="Select Gym"
+        interface="popover"
+        (ionChange)="selecthandleChange($event)"
+        [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
+        slot="end">
+        <!-- <ion-select-option *ngFor="let mt of MemberType" [value]="mt">{{ mt.name }}</ion-select-option> -->
+          <ion-select-option *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
+          
+      </ion-select>
+    </ion-item>
     <ion-searchbar         
         placeholder ='Search Member'
         [(ngModel)]="searchTerm"
@@ -6,19 +19,7 @@
         animated   
         >    
       </ion-searchbar>
-      <ion-item>
-        <ion-select 
-          aria-label="Gym"
-          placeholder="Select Gym"
-          interface="popover"
-          (ionChange)="selecthandleChange($event)"
-          [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
-          slot="end">
-          <!-- <ion-select-option *ngFor="let mt of MemberType" [value]="mt">{{ mt.name }}</ion-select-option> -->
-            <ion-select-option *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
-            
-        </ion-select>
-      </ion-item> 
+      
      
   </ion-header>
 
@@ -31,7 +32,45 @@
           <ion-refresher-content></ion-refresher-content>
         </ion-refresher>
 
-       
+       <ion-list lines="none" *ngFor="let m of members | filter:searchTerm" lines="">
+        <ion-div >
+          <ion-grid>
+            <ion-row>
+              <ion-col size="10">              
+                <ion-item>              
+                  <ion-avatar slot="start">
+                    <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img> 
+                    <ion-badge>{{m.memberType}}</ion-badge> 
+                  </ion-avatar>
+            
+                <ion-row></ion-row>
+                  <!-- <ion-badge>{{m.memberType}}</ion-badge>  -->
+                <ion-list>
+                  <ion-label>
+                  <h3>{{m.m_name}}</h3>
+                  <p (click)="CallTel(m.mobile)"><ion-icon name="call"></ion-icon>{{m.mobile}}</p>                  
+                  <p><ion-icon name="calendar"></ion-icon> Last Date:{{m.m_enddate | date }}</p>
+                </ion-label>
+                </ion-list>                
+              </ion-item>
+            </ion-col>
+
+            <ion-col debounceTime="700" (click)="presentModal(m._id)" size="1" [ngClass]="m.m_enddate < today_ ? 'div-vertical-red' : 'div-vertical-green'">
+              <!-- <ion-div [ngClass]="m.m_enddate < today_ ? 'div-vertical-red' : 'div-vertical-green'">
+              </ion-div> -->
+            </ion-col>
+
+            </ion-row>
+            <ion-button class="button-round" *ngIf="m.isInviteAccepted === 'Yes'" [disabled]="isButtonSubmit" color="primary" shape="round" fill="outline" expand="block" (click)="updateMemberControl(m._id)"><ion-icon name="create"></ion-icon>Validity</ion-button>
+            <ion-button *ngIf="m.isInviteAccepted === 'Not'" [disabled]="isButtonSubmit" color="primary" shape="round" fill="outline" expand="block" (click)="inviteMember(m._id)"><ion-icon name="create"></ion-icon>Invite</ion-button>
+            <ion-button *ngIf="m.isInviteAccepted === 'Pending'" [disabled]="isButtonSubmit" color="success" shape="round" fill="outline" expand="block" (click)="inviteMember(m._id)"><ion-icon name="create"></ion-icon>Invited</ion-button>
+  
+          </ion-grid>
+         
+        
+      </ion-div>
+       </ion-list>
+
   
       <ion-card class="ion-margin"         
       *ngFor="let m of members | filter:searchTerm">
@@ -50,6 +89,8 @@
                       <h2>{{m.m_name}}</h2>                      
                       <ion-badge>{{m.memberType}}</ion-badge>                       
                       <p (click)="CallTel(m.mobile)"><ion-icon name="call"></ion-icon>{{m.mobile}}</p>
+                      <!-- presentModal -->
+                      
                     </ion-label>
                     
                     <ion-icon slot="end"  name="chevron-back-outline" (click)="updateMember(m._id)"></ion-icon>

@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import { ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Share } from '@capacitor/share';
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
@@ -21,9 +22,13 @@ import { UserService } from 'src/app/services/user.service';
 // to get storage
 import { StorageService } from 'src/app/services/storage.service';
  
+// animation from right to left for modal open 
+import { AnimationController } from '@ionic/angular';
+import { createAnimation } from '@ionic/core';
 
 
 
+ 
 @Component({
   selector: 'app-member-list',
   templateUrl: './member-list.page.html',
@@ -76,6 +81,9 @@ export class MemberListPage implements OnInit {
   tempDuration:any;
   tempEmail:any;
   memberId:any;
+  memberLastdate:any;
+  isSevenDayslefts:boolean = false;
+  today_ = Date.now();
 
   gyms:Gym[]=[];
   currentGym :any;
@@ -93,6 +101,7 @@ export class MemberListPage implements OnInit {
 
 
   constructor(
+    private animationCtrl: AnimationController, // for animation control 
     public loadingController:LoadingController,
     public router :Router,
     public route :ActivatedRoute,
@@ -108,6 +117,9 @@ export class MemberListPage implements OnInit {
 
     // to store data
     private storageService :StorageService, // storage service is used insted of get set method
+
+    // to get native element 
+    private elementRef:ElementRef,
 
 
   ) { 
@@ -135,6 +147,9 @@ export class MemberListPage implements OnInit {
         throw error;
       }
     });
+
+    this.today_ = this.today_*1+604800000;
+    console.log(this.today_);
   }
 
   ngOnInit() {
@@ -147,10 +162,13 @@ export class MemberListPage implements OnInit {
     this.memberControl(); // here its call so that patch value can work
     // to get default gym value
     // this.MyDefaultGymValue = "GYM NAME here"
-    this.compareWith = this.compareWithFn;
+    this.compareWith = this.compareWithFn; 
+       
+   }
 
-    
-    
+   // if end date of memeber is less than 7 days then set alert and change color to RED
+   checkMemberlastingtime(id:any){
+
    }
 
    handleChange(event) {
@@ -195,6 +213,7 @@ async getMembers(){
   await this.memberApi.wildSearch(this._gym_id)
   .subscribe(res=>{
     this.members=res;
+    // this.memberLastdate = res.m_enddate;
     console.log(this.members);
     localStorage.setItem('thisMember',JSON.stringify(res));
     this.storageService.store('membersList',res);
@@ -214,18 +233,67 @@ async getMembers(){
     this.router.navigate(['/member-add']);
   }
 
+  ///////////////////for animation ///////////////
+  async presentModal(mid:string) {
+    const enterAnimation = (baseEl: any) => {
+      const root = baseEl.shadowRoot;
+
+      const backdropAnimation = this.animationCtrl.create()
+        .addElement(root.querySelector('ion-backdrop')!)
+        .fromTo('opacity', '0.01', 'var(--backdrop-opacity)');
+
+      const wrapperAnimation = this.animationCtrl.create()
+        .addElement(root.querySelector('.modal-wrapper')!)
+        .keyframes([
+          { offset: 0, opacity: '0', transform: 'scale(0)' },
+          { offset: 1, opacity: '0.99', transform: 'scale(1)' }
+        ]);
+
+      return this.animationCtrl.create()
+        .addElement(baseEl)
+        .easing('ease-out')
+        .duration(500)
+        .addAnimation([backdropAnimation, wrapperAnimation]);
+    }
+
+    const leaveAnimation = (baseEl: any) => {
+      return enterAnimation(baseEl).direction('reverse');
+    }
+
+    const modal = await this.modalCtrl.create({
+      component: MemberUpdatePage,
+      componentProps:{id:mid},
+      breakpoints: [0, 0.5, 0.8],
+      initialBreakpoint: 0.8, 
+      showBackdrop: false,
+      enterAnimation,
+      leaveAnimation   
+      }
+    );
+    console.log(res => {
+      this.memberApi.getMember(res.id);});
+    await modal.present();
+
+
+  }
+
+// to update member information 
   async updateMember(mid:string) {
       const modal = await this.modalCtrl.create({
       component: MemberUpdatePage,
       componentProps:{id:mid},
       breakpoints: [0, 0.5, 0.8],
-      initialBreakpoint: 0.8,      
-    });
+      initialBreakpoint: 0.8, 
+      showBackdrop: false,
+           
+      }
+    );
     console.log(res => {
       this.memberApi.getMember(res.id);});
     await modal.present();
   }
 
+  /// Validity Controller by update member control
   async updateMemberControl(uid:string) {
     // setTimeout(x => {
     //   this.isButtonSubmit=true;
@@ -506,6 +574,7 @@ async getMembers(){
     window.location.href = 'tel:'+ tel;
 }
 
+
 rangeValue(endate:any,balanceDays:any){
   let currentDate = new Date();
   endate = new Date(endate);
@@ -557,5 +626,23 @@ deletAllMembers(){
 // if 2 days then 2 step with red
 // if 1 day then 1 step with red and some flash and red border to member card
 // if Zero day then show more thick red border and all card text to red color 
+
+// to slide member ifnormation from right to left
+// angular.module('app', ['ionic'])
+
+// .controller('appCtrl', function($scope, $ionicModal) {
+//   $ionicModal.fromTemplateUrl('templates/modal.html', {
+//     scope: $scope,
+//     animation: 'slide-in-right'
+//   }).then(function(modal) {
+//     $scope.modal = modal;
+//   });
+//   $scope.openModal = function() {
+//     $scope.modal.show();
+//   }
+//   $scope.closeModal = function() {
+//     $scope.modal.hide();
+//   }
+// })
 
 }

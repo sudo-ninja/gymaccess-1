@@ -1,6 +1,9 @@
 <ion-header>
-  <ion-toolbar class="ios hydrated">
-    <ion-title class="ios title-ios hydrated">Update Details</ion-title>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()" [strong]="true" >Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Update Member Info.</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -125,10 +128,11 @@
           type="submit" 
           [disabled]="!memberForm.valid" 
           color="primary" 
-          shape="full" 
+          shape="round"
           expand="block"
+          [strong]="true"
           >
-        Save 
+        Update
         </ion-button>
     </div>
 

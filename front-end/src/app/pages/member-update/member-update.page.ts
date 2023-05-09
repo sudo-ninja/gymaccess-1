@@ -7,6 +7,10 @@ import { Member } from 'src/app/models/member.model';
 
 
 import { ModalController } from '@ionic/angular';
+// to make this page as modal 
+import { ViewChild } from '@angular/core';
+import { IonModal } from '@ionic/angular';
+import { OverlayEventDetail } from '@ionic/core/components';
 
 @Component({
   selector: 'app-member-update',
@@ -14,6 +18,8 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./member-update.page.scss'],
 })
 export class MemberUpdatePage implements OnInit {
+  // to make this page as modal
+  @ViewChild(IonModal) modal: IonModal;
 
   MemberType = [
     {name:'Member'},{name: 'Staff'}, {name:'Phyiotherepist'}, {name:'Utilities Staff'},{name:'Manager'}];
@@ -164,6 +170,16 @@ export class MemberUpdatePage implements OnInit {
     //   onlySelf: true,
     //   })
   }
+
+ 
+// as modal can be dismiss only cant go back to page so use this
+cancel() {
+  return this.modalCtrl.dismiss(null, 'cancel');
+}
+
+confirm() {
+  return this.modalCtrl.dismiss(this.onFormSubmit, 'confirm');
+}
 
 }
 

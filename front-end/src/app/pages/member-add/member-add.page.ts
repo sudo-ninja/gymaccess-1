@@ -205,5 +205,8 @@ export class MemberAddPage implements OnInit {
           this._textValue = evt.toLowerCase();
         }
        
+        BacktoList(){
+          this.router.navigate(['/gymtabs/member-list'],{replaceUrl:true});
+        }
         
 }

@@ -86,17 +86,41 @@ isLoadingResults = false;
     await alert.present();
   }
 
+// delet alert 
+async presentAlertDelete(msg:string, id:any){
+  const alert = await this.alertController.create({
+    header :'Warning!',
+    message: msg,
+    buttons:[
+      {
+        text : 'Okay',
+        handler:async ()=>{
+                  console.log("delet",id);
+            this.isLoadingResults= true;
+            await this.memberApi.delete(id)
+            .subscribe(res=>{
+            this.isLoadingResults= false;
+            this.router.navigate(['/gymtabs/member-list']);
+            },err=>{
+              console.log(err);
+            this.isLoadingResults= false;
+            });
+        }
+      },
+      {
+        text : 'Cancel',
+        handler:async ()=>{
+            this.router.navigate(['/gymtabs/member-list']);
+        }
+      }
+    ]
+  });
+  await alert.present();
+}
+
   async deleteMember(id:any){
-    console.log("delet",id);
-    this.isLoadingResults= true;
-    await this.memberApi.delete(id)
-    .subscribe(res=>{
-    this.isLoadingResults= false;
-    this.router.navigate(['/gymtabs/member-list']);
-    },err=>{
-      console.log(err);
-    this.isLoadingResults= false;
-    });
+    this.presentAlertDelete("Do you really want to Delete?",id)
+    
   }
 
   editMember(id){
