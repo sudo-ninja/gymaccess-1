@@ -645,4 +645,14 @@ deletAllMembers(){
 //   }
 // })
 
+// to get intial of name as avatar
+getInitials(firstName:string) {
+  return firstName[0].toUpperCase();
+}
+
+// // to get intial of name as avatar
+// getInitials(firstName:string, lastName:string) {
+//   return firstName[0].toUpperCase() + lastName[0].toUpperCase();
+// }
+
 }

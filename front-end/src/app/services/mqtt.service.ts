@@ -6,7 +6,7 @@ import { catchError, Observable, throwError,tap } from 'rxjs';
   providedIn: 'root'
 })
 export class MqttService {
-  baseUrl: string = 'http://localhost:3000/mqtt';
+  baseUrl: string = 'http://localhost:3000/api/v1/mqtt';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
   constructor(private http: HttpClient) { }

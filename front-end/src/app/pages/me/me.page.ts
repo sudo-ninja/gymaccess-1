@@ -297,6 +297,10 @@ settings(){
   this.router.navigate(['../settings'],{replaceUrl:true});
 }
 
+// get initials of name as avatar look 
+getInitials(firstName:string) {
+  return firstName[0].toUpperCase();
+}
 //fetch Location so that if user want to update can update his location 
 
 }

@@ -5,8 +5,8 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 // import model
 import { Recharge } from '../models/recharge';
 
-const baseUrl = 'http://localhost:3000/recharges';
-const searchUrl = 'http://localhost:3000/Recharges/search/';
+const baseUrl = 'http://localhost:3000/api/v1/recharges';
+const searchUrl = 'http://localhost:3000/api/v1/Recharges/search/';
 
 
 
@@ -14,7 +14,7 @@ const searchUrl = 'http://localhost:3000/Recharges/search/';
   providedIn: 'root'
 })
 export class RechargeService {
-  baseUri :string = 'http://localhost:3000';
+  baseUri :string = 'http://localhost:3000/api/v1';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
 

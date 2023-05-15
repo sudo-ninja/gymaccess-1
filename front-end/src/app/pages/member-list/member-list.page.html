@@ -37,17 +37,19 @@
           <ion-grid>
             <ion-row>
               <ion-col size="10">              
-                <ion-item>              
-                  <ion-avatar slot="start">
+                <ion-item>  
+                  <div class="avatar"> {{getInitials(m.m_name)}}</div>            
+                  <!-- <ion-avatar slot="start">
                     <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img> 
-                    <ion-badge>{{m.memberType}}</ion-badge> 
-                  </ion-avatar>
-            
+                    
+                  </ion-avatar> -->
+                  
                 <ion-row></ion-row>
                   <!-- <ion-badge>{{m.memberType}}</ion-badge>  -->
                 <ion-list>
                   <ion-label>
                   <h3>{{m.m_name}}</h3>
+                  <ion-badge>{{m.memberType}}</ion-badge> 
                   <p (click)="CallTel(m.mobile)"><ion-icon name="call"></ion-icon>{{m.mobile}}</p>                  
                   <p><ion-icon name="calendar"></ion-icon> Last Date:{{m.m_enddate | date }}</p>
                 </ion-label>

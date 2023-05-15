@@ -4,15 +4,15 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 
 import{Gym} from '../models/gym.model';
 
-const baseUrl = 'http://localhost:3000/gyms';
-const searchUrl = 'http://localhost:3000/gyms/search';
+const baseUrl = 'http://localhost:3000/api/v1/gyms';
+const searchUrl = 'http://localhost:3000/api/v1/gyms/search';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class GymService {
-  baseUri :string = 'http://localhost:3000';
+  baseUri :string = 'http://localhost:3000/api/v1';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
 
@@ -32,7 +32,9 @@ export class GymService {
 
   addGym(data: any): Observable<any> {
     console.log("i m in add member loop");
+    console.log(data);
     let url = `${this.baseUri}/gyms`;
+    console.log(url);
     return this.http.post(url, data).pipe(tap((dat:any)=>console.log(`Added with ID =${dat._id}`)),
     catchError(this.errorMgmt));
   }

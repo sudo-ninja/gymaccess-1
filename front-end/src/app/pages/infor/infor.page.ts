@@ -154,15 +154,15 @@ gymIdQrCodeDownload(){
     }
 
 // lock ID toggle 
-lockIdToggle($event){
-  console.log("i m in lock id toggle method");
-    this.lockIDinputAlert();
+lockIdToggle($event:any){
+  // console.log("i m in lock id toggle method")
+    this.lockIDinputAlert(this._gym_id);
     this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
 
 }
 
 // alert controller for Lock ID input 
-async lockIDinputAlert(){  
+async lockIDinputAlert(gymid:any){  
   const alert = await this.alertController.create({
     header :'Enter New Lock ID',
     inputs: [
@@ -183,7 +183,7 @@ async lockIDinputAlert(){
             text: 'Ok',
             handler: (alertData) => { //takes the data 
                 console.log(alertData.lock_id);
-                this.gymApi.update(this._gym_id,{"gym_lockId":alertData.lock_id}).subscribe((data)=>{
+                this.gymApi.update(gymid,{"gym_lockId":alertData.lock_id}).subscribe((data)=>{
                   console.log("Lock Id Updated as",data.gym_lockId );
                 });
             }
@@ -193,11 +193,16 @@ async lockIDinputAlert(){
 await alert.present();
 }
 
-QrCodeDownLoad(gymid:any){
-  this.router.navigate(['/qrlabel/',gymid]);
+QrCodeDownLoad(){
+  this.router.navigate(['/qrlabel/',this._gym_id]);
 }
 
 addmoregym(){
   this.router.navigate(['/gym-add/']),{replaceurl:true};}
+
+gymUpdate(){
+  console.log(this._gym_id);
+  // here user modal controller to update gym data
+}
 
 }

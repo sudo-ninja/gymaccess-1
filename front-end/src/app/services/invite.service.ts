@@ -4,15 +4,15 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 
 import{ Invite } from '../models/invite';
 
-const baseUrl = 'http://localhost:3000/invite';
-const searchUrl = 'http://localhost:3000/invite/search/';
+const baseUrl = 'http://localhost:3000/api/v1/invite';
+const searchUrl = 'http://localhost:3000/api/v1/invite/search/';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class InviteService {
-  baseUri :string = 'http://localhost:3000';
+  baseUri :string = 'http://localhost:3000/api/v1';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
 

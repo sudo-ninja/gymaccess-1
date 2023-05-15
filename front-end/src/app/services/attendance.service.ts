@@ -6,8 +6,8 @@ import{ Attendance_ } from '../models/attendance.model';
 
 
 
-const baseUrl = 'http://localhost:3000/attendances';
-const searchUrl = 'http://localhost:3000/attendances/search/';
+const baseUrl = 'http://localhost:3000/api/v1/attendances';
+const searchUrl = 'http://localhost:3000/api/v1/attendances/search/';
 
 
 @Injectable({
@@ -15,7 +15,7 @@ const searchUrl = 'http://localhost:3000/attendances/search/';
 })
 
 export class AttendanceService {
-  baseUri :string = 'http://localhost:3000';
+  baseUri :string = 'http://localhost:3000//api/v1';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
 

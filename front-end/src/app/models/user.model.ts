@@ -4,6 +4,7 @@ export class Users {
     password?:string;
     mobile?:string;
     username?:string;
+    verified?:boolean;
     isMember?:boolean;
     isAdmin?:boolean;
 }

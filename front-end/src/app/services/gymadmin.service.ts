@@ -4,8 +4,8 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 
 import { Gymadmin } from '../models/gymadmin.model';
 
-const baseUrl = 'http://localhost:3000/gymadmins';
-const searchUrl = 'http://localhost:3000/gymadmins/search/';
+const baseUrl = 'http://localhost:3000/api/v1/gymadmins';
+const searchUrl = 'http://localhost:3000/api/v1/gymadmins/search/';
 
 
 @Injectable({
@@ -13,7 +13,7 @@ const searchUrl = 'http://localhost:3000/gymadmins/search/';
 })
 export class GymadminService {
 
-  baseUri :string = 'http://localhost:3000';
+  baseUri :string = 'http://localhost:3000/api/v1';
   
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 

@@ -63,7 +63,7 @@ export class MemberActionPage implements OnInit {
 
   serviceProviders: any; // serviceprovider means admin as he is providing service to members.
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
-  usersUrl:string='http://localhost:3000/users';// URL at postman from where all user are fetched
+  usersUrl:string='http://localhost:3000/api/v1/users';// URL at postman from where all user are fetched
   originalserviceProvider:any;
   selectedService:any;
 

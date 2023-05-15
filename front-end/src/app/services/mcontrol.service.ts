@@ -4,15 +4,15 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 
 import {Mcontrol} from '../models/mcontrol';
 
-const baseUrl = 'http://localhost:3000/membercontrols';
-const searchUrl = 'http://localhost:3000/mcontrol/search/';
+const baseUrl = 'http://localhost:3000/api/v1/membercontrols';
+const searchUrl = 'http://localhost:3000/api/v1/mcontrol/search/';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class McontrolService {
-  baseUri :string = 'http://localhost:3000';
+  baseUri :string = 'http://localhost:3000/api/v1';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
 

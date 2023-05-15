@@ -17,7 +17,7 @@ export class LoginPage implements OnInit {
   password!:string;
   isLoading: boolean=false;
 
-  url: string = "http://localhost:3000/users/login";
+  url: string = "http://localhost:3000/api/v1/user/login";
 
 
   constructor(
@@ -46,8 +46,8 @@ export class LoginPage implements OnInit {
       this.isLoading=true;
     },error =>{
       this.isLoading=false;
-      console.log(error);
-      this.presentAlert('Login Failed',error.error.message,'try again');
+      console.log(error.error);
+      this.presentAlert('Login Failed',error.error,'try again');
     });
 
     console.log(credentials);
@@ -62,11 +62,11 @@ export class LoginPage implements OnInit {
       buttons: ['OK'],
     });
     await alert.present();
-    const {role}=await alert.onDidDismiss();
-    // console.log('onDidDismiss resolved with role',role);
+  
   }
 //  
  
+
 
 }
 

@@ -33,7 +33,7 @@ export class GymAddPage implements OnInit {
   gymForm!: FormGroup;
 
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
-  usersUrl:string='http://localhost:3000/users';// URL at postman from where all user are fetched
+  usersUrl:string='http://localhost:3000/api/v1/users';// URL at postman from where all user are fetched
   _id :string; // This is an observable
 
   loggedUserId:any;
@@ -282,6 +282,10 @@ public findInvalidControls()
         }     
   return invalid;
         }
+}
+
+gyminformation(){
+  this.router.navigate(['../gymtabs/infor'],{replaceUrl:true});
 }
 
 

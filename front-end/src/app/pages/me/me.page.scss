@@ -157,3 +157,23 @@ ion-content{
     color: #373737;
   }
   
+  $colors: #2f60ca,#6b5b95,#feb236, #d64161, #ff7b25, #b2ad7f,  #878f99;
+
+.avatar {
+  color: #eb7575;
+  padding: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  width: 40px;
+  // height: 60px;
+  font-weight: 800;
+  font-size: 40px;
+  }
+
+  @for $i from 1 through length($colors) {
+    .avatar:nth-child(#{length($colors)}n+#{$i}) {
+        background: lighten(nth($colors, $i), 20%);
+    }
+}

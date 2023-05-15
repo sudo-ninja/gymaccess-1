@@ -26,21 +26,36 @@
     required placeholder="Enter Valid Email Address"></ion-input>
   </ion-item>
 
-  <ion-item>
+  <!-- <ion-item>
     <ion-label position="floating">Password</ion-label>
     <ion-input [(ngModel)]="password" type="password" name="password" placeholder="Password"
     type="Password"     
     required placeholder="Enter Password"> </ion-input>
-  </ion-item>
+  </ion-item> -->
 
-  <ion-button 
+<ion-list>
+  <!-- <ion-button 
   expand="block" 
   class="ion-padding" 
   color="light" (click)="register()">
   Register 
+  </ion-button> -->
+
+  <ion-button 
+  expand="block" 
+  class="ion-padding" 
+  color="light" (click)="sendVerificationCode()">
+  Get Verification Code
   </ion-button>
+
+ 
+</ion-list>
+ 
+
   <p class="ion-text-center" *ngIf="isLoading"> <ion-spinner></ion-spinner> </p>
+  <!-- once verified email then use ngif to pop up new block for username and mobile and password using form builder -->
   <p class="ion-text-right">already have an account?<strong routerLink="/login">login</strong></p>
+
 
   <ion-item  *ngIf="userexist" class="ion-padding" >
     <ion-button type="button" expand="block" color="secondary" >Forget Password</ion-button>

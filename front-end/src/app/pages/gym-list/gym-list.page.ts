@@ -40,7 +40,7 @@ export class GymListPage implements OnInit {
   // Used to store the retrieved documents from the 
   // MongoDB database
 //   public items : Array<any>;
-//   private _HOST : string = "http://localhost:3000/" || "http://ENTER-YOUR-NETWORK-IP-ADDRESS-HERE:8080/";
+//   private _HOST : string = "http://localhost:3000/api/v1/" || "http://ENTER-YOUR-NETWORK-IP-ADDRESS-HERE:8080/";
 
   constructor(
    public navCtrl       : NavController,

@@ -4,8 +4,8 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rxjs';
 import { Member } from '../models/member.model';
 
-const baseUrl = 'http://localhost:3000/members';
-const searchUrl = 'http://localhost:3000/members/search/';
+const baseUrl = 'http://localhost:3000/api/v1/members';
+const searchUrl = 'http://localhost:3000/api/v1/members/search/';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ const searchUrl = 'http://localhost:3000/members/search/';
 
 export class MemberserviceService {
 
-  baseUri :string = 'http://localhost:3000';
+  baseUri :string = 'http://localhost:3000/api/v1';
   
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
