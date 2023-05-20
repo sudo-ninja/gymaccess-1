@@ -7,7 +7,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import {HttpClientModule } from '@angular/common/http';
+import {HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http'; // HTTP_INTERCEPTORS added here 
 import { ReactiveFormsModule } from '@angular/forms';
 
 import {MemberserviceService} from './services/memberservice.service';
@@ -20,6 +20,13 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 // custom schema for swiper js
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
+// import HTTP_INTERCEPTORS here so that can be used gloablly 
+// import { HttpConfigInterceptor } from '../app/interceptors/httpConfig.interceptor';
+import { AuthInterceptor } from './guards/auth.interceptors';
+
+// import auth guard
+import { AuthGuard } from './guards/auth.guard';
+import { UserService } from './services/user.service';
 
 
 @NgModule({
@@ -32,11 +39,21 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     IonicStorageModule.forRoot(), 
     ReactiveFormsModule,
   ],
-  providers: [Storage,
+  providers: [AuthGuard,UserService,Storage,
     MemberserviceService,
     { 
     provide: RouteReuseStrategy, 
     useClass: IonicRouteStrategy 
+    },
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: HttpConfigInterceptor,
+    //   multi: true
+    // },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
     }
     ],
   bootstrap: [AppComponent],

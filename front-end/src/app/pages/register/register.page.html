@@ -5,6 +5,10 @@
 </ion-header>
 
 <ion-content>
+  <div class="ion-align-items-center" *ngIf="isLoadingResults">
+    <ion-spinner name="crescent" color="success" ></ion-spinner>
+  </div>
+  <div *ngIf="!userVerified">
   <ion-item>
     <ion-label position="floating">User Name </ion-label>
     <ion-input [(ngModel)]="username" type="username" name="username" placeholder="user name"
@@ -33,25 +37,44 @@
     required placeholder="Enter Password"> </ion-input>
   </ion-item> -->
 
-<ion-list>
-  <!-- <ion-button 
-  expand="block" 
-  class="ion-padding" 
-  color="light" (click)="register()">
-  Register 
-  </ion-button> -->
-
   <ion-button 
   expand="block" 
   class="ion-padding" 
-  color="light" (click)="sendVerificationCode()">
+  color="light" (click)="sendVerificationCodeSignup()">
   Get Verification Code
   </ion-button>
+</div>
 
- 
-</ion-list>
- 
+<div *ngIf="userVerified">
+  <form [formGroup] = "registerForm" (ngSubmit)="register()">
+    <ion-list>
+    <ion-item>
+      <ion-label position="floating">Name</ion-label>
+      <ion-input formControlName="username" type="text" required></ion-input>
+    </ion-item>
 
+  <ion-item>
+      <ion-label position="floating">Mobile N0.</ion-label>
+      <ion-input formControlName="mobile" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Password</ion-label>
+      <ion-input formControlName="password" type="password" required>
+      </ion-input>
+    </ion-item>
+
+    <div>
+        <ion-button 
+        type="submit" 
+        [disabled]="!registerForm.valid"
+        color="primary" 
+        shape="full" 
+        expand="block">Register</ion-button>
+    </div>
+  </ion-list>
+  </form> 
+</div>
   <p class="ion-text-center" *ngIf="isLoading"> <ion-spinner></ion-spinner> </p>
   <!-- once verified email then use ngif to pop up new block for username and mobile and password using form builder -->
   <p class="ion-text-right">already have an account?<strong routerLink="/login">login</strong></p>

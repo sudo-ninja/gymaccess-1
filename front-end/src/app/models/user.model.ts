@@ -7,4 +7,5 @@ export class Users {
     verified?:boolean;
     isMember?:boolean;
     isAdmin?:boolean;
+    token?:string;
 }

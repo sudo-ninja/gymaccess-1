@@ -6,21 +6,45 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+
+  <form [formGroup] = "authForm" (ngSubmit)="signIn()">
+    <ion-list>
+    <ion-item>
+      <ion-label position="floating"> Email ID </ion-label>
+      <ion-input formControlName="email" type="email" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Password</ion-label>
+      <ion-input formControlName="password" type="password" required>
+      </ion-input>
+    </ion-item>
+
+    <div>
+        <ion-button 
+        type="submit" 
+        [disabled]="!authForm.valid"
+        color="primary" 
+        shape="full" 
+        expand="block">Login</ion-button>
+    </div>
+  </ion-list>
+</form> 
   
-  <form>
+  <!-- <form>
   <div> 
   <ion-item>
     <ion-label position="floating">e-mail</ion-label>
-    <!-- <ion-input type="email" required placeholder="Enter Valid Email Address"></ion-input> --> 
+    <!-- <ion-input type="email" required placeholder="Enter Valid Email Address"></ion-input> --
     <ion-input [(ngModel)]="email" type="email" name="email" placeholder="email" ></ion-input>
-		<!-- <ion-note slot="error" *ngIf="(email.dirty || email.touched) && email.errors">Email is invalid</ion-note> -->
+		<!-- <ion-note slot="error" *ngIf="(email.dirty || email.touched) && email.errors">Email is invalid</ion-note>
   </ion-item>
 
   <ion-item>
     <ion-label position="floating">Password</ion-label>
-    <!-- <ion-input type="Password" required placeholder="Enter Password"> </ion-input> -->
+    <!-- <ion-input type="Password" required placeholder="Enter Password"> </ion-input> -
     <ion-input [(ngModel)]="password" type="password" name="password" placeholder="Password" ></ion-input>
-			<!-- <ion-note slot="error" *ngIf="(password.dirty || password.touched) && password.errors">Password needs to be 6 characters</ion-note> -->
+			<!-- <ion-note slot="error" *ngIf="(password.dirty || password.touched) && password.errors">Password needs to be 6 characters</ion-note> 
   </ion-item>
 </div>
 
@@ -32,16 +56,22 @@
   color="light" 
   [routerLink]="['/register']">
   Register 
-  </ion-button> -->
+  </ion-button> --
 <div>
-  <ion-button type="submit" expand="block" color ="primary" (click)="login()">Log in</ion-button>
-		<!-- <ion-button type="button" expand="block" color="secondary" (click)="register">Create account</ion-button> -->
-		<!-- <ion-button type="button" expand="block" color="secondary" (click)="forgetpassword">Forget Password</ion-button> -->
+  <!-- <ion-button type="submit" expand="block" color ="primary" (click)="login()">Log in</ion-button> --
+		<!-- <ion-button type="button" expand="block" color="secondary" (click)="register">Create account</ion-button> --
+		<!-- <ion-button type="button" expand="block" color="secondary" (click)="forgetpassword">Forget Password</ion-button> --
   </div>
-</form>
+</form> -->
 <p class="ion-text-right"> Don't have an account?<strong routerLink="/register"> Register</strong></p>
 <p class="ion-text-left"><strong> Forgot Password </strong></p>
 <p class="ion-text-center" *ngIf="isLoading"> <ion-spinner></ion-spinner> </p>
+
+<!-- insted of this we can use alert controller -->
+<div *ngIf = "serverErrorMessage">
+  {{serverErrorMessage}}
+</div>
+
 </ion-content>
 
 

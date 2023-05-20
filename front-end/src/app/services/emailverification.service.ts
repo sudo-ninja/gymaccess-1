@@ -15,6 +15,13 @@ export class EmailverificationService {
     private http:HttpClient,
     private alertCtrl: AlertController,) { }
 
+    signupEmail(body:any): Observable<any>{
+      console.log(body);
+      let url = `${this.url}/email_verification/signup`;
+      return this.http.post(url,body).pipe(tap((dat:any)=>console.log(`Verified =${dat.verified }`)),
+      catchError(this.errorMgmt));
+    }  
+
   verifyEmail(body:any): Observable<any>{
     console.log(body);
     let url = `${this.url}/email_verification/verify`;

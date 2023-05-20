@@ -221,11 +221,8 @@ logs: string[] = [];
     // 
     
     logout(){
-      this.userApi.logout()
-      .subscribe(
-        data=>{console.log(data);this.router.navigate(['/login'])},
-        error=>console.error(error)
-      )
+      this.userApi.deleteToken();
+      this.router.navigate(['/login'],{replaceUrl:true});
     }
 // onServiceSelected(e){
 //   this.serviceProviders=this.originalserviceProvider;

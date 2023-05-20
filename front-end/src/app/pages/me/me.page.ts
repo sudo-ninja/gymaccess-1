@@ -28,6 +28,7 @@ export class MePage implements OnInit {
 
   loggedUserGymId:any;
 
+  userDetails;
 
   gymName:any;
   gymLocation_lat:any;
@@ -62,6 +63,14 @@ export class MePage implements OnInit {
     // logged user API 
     private userApi:UserService,
   ) { 
+
+    this.userApi.getUserProfile().subscribe({
+      next:(res)=>{
+        console.log(res);
+        // this.userDetails = res['user']
+      },
+      error:(err)=>{}
+    });
 
     const user = localStorage.getItem('User')
      
@@ -130,6 +139,7 @@ export class MePage implements OnInit {
    */
 
   ngOnInit() {
+
     if(!this.loggeduserIsAdmin){
     this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{        
       this.memberId = data._id;

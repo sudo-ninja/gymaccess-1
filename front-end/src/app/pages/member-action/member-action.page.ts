@@ -81,15 +81,15 @@ export class MemberActionPage implements OnInit {
     private gymApi:GymService
 
   ) {
-    this._user.user().subscribe(
-      res=>{
-        this.addName(res),
-        console.log(res);
-      },
-      error=>{
-        // this.router.navigate(['/login'])
-        console.log(error)
-      });
+    // this._user.user().subscribe(
+    //   res=>{
+    //     this.addName(res),
+    //     console.log(res);
+    //   },
+    //   error=>{
+    //     // this.router.navigate(['/login'])
+    //     console.log(error)
+    //   });
 
       // to know the status of logged user if he is member or admin
       const user = localStorage.getItem('User')
