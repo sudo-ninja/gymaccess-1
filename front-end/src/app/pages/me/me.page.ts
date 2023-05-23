@@ -15,6 +15,16 @@ import { AlertController, LoadingController, ModalController, NavController, Toa
 import { RechargeService } from 'src/app/services/recharge.service';
 import { UserService } from 'src/app/services/user.service';
 
+// for feedback service email composer cordova
+import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
+
+// for camera image captring 
+// import { Camera, CameraResultType } from '@capacitor/camera';
+
+
+
+
+
 
 @Component({
   selector: 'app-me',
@@ -62,6 +72,8 @@ export class MePage implements OnInit {
     private alertController: AlertController,
     // logged user API 
     private userApi:UserService,
+    //email compo
+    private emailComposer: EmailComposer,
   ) { 
 
     this.userApi.getUserProfile().subscribe({
@@ -311,6 +323,25 @@ settings(){
 getInitials(firstName:string) {
   return firstName[0].toUpperCase();
 }
-//fetch Location so that if user want to update can update his location 
+//fetch Location so that if user want to update can update his location
+
+
+// feedback email composer
+async checkAccount(){
+
+}
+
+async OpenMail(){
+
+}
+
+// async captureImage(){
+  
+//   const image = await Camera.getPhoto({
+//       quality: 90,
+//       allowEditing: true,
+//       resultType: CameraResultType.Uri
+//     });
+// }
 
 }

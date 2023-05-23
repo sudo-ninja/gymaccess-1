@@ -28,6 +28,9 @@ import { AuthInterceptor } from './guards/auth.interceptors';
 import { AuthGuard } from './guards/auth.guard';
 import { UserService } from './services/user.service';
 
+//cordova plugin import and then inject in providers
+import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -54,7 +57,8 @@ import { UserService } from './services/user.service';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    // EmailComposer,
     ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

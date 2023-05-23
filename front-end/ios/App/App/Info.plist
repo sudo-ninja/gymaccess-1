@@ -10,6 +10,7 @@
 <!--  -->
 	<key>NSCameraUsageDescription</key>
 	<string>Please allow us camera access to scan QR codes</string>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -53,5 +54,23 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	
+	<!-- for mail to -->
+	<key>LSApplicationQueriesSchemes</key>
+		<array>
+                <string>mailto</string>
+                <string>googlegmail</string>
+        </array>
+
+<!-- for camera permission all 3 keys-->
+<key>NSCameraUsageDescription</key>
+<string>To Capture Image</string>
+
+<key>NSPhotoLibraryAddUsageDescription<key>
+<string>To Store Image</string>
+
+<key>NSPhotoLibraryUsageDescription<key>
+<string>To get All Images<string>
+
 </dict>
 </plist>
