@@ -46,13 +46,14 @@ export class LoginPage implements OnInit {
     private emailVerifyAPI: EmailverificationService
   ) {
     if(this.userAPI.isLoggedIn())
-    {this.router.navigateByUrl('/home')};
+    {this.router.navigateByUrl('/home',{replaceUrl:true})};
   }
 
   ngOnInit() {
       this.authForm  =  this.fb.group({
-      email: ['', Validators.required],
-      password: ['', Validators.required]
+        email: ['',[ Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),],],
+        password: ['', [Validators.required,
+          Validators.minLength(8),]],
   });
   }
 

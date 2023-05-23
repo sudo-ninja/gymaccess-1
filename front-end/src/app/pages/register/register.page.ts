@@ -33,8 +33,9 @@ export class RegisterPage implements OnInit {
   otpsent: boolean = false;
 
   errMsg: any;
+  serverErrorMessage:string;
 
-  url: string = 'http://localhost:3000/api/v1/user/register';
+  // url: string = 'http://localhost:3000/api/v1/user/register';
 
   isLoadingResults = false;
 
@@ -52,10 +53,14 @@ export class RegisterPage implements OnInit {
 
   registration(email_: any) {
     this.registerForm = this.fb.group({
-      email: email_,
-      username: ['', Validators.required],
-      mobile: ['', Validators.required],
-      password: ['', Validators.required],
+      email: [email_,[ Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),],],
+      username: ['', [Validators.required,Validators.minLength(3),]],
+      mobile: ['', [Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(13),
+        Validators.pattern('^[0-9]*$')]],
+      password: ['', [Validators.required,
+        Validators.minLength(8),]],
     });
   }
 
@@ -98,46 +103,11 @@ export class RegisterPage implements OnInit {
   
       }
           );
-    // this.presentAlert('Registration Failed',this.errMsg,'try again')
-
-    // this.userAPI.register(user).subscribe((res)=>{
-    //   try {
-    //     this.isLoading=true;
-    //     console.log(res);
-    //     // this.verifyAlert();
-    //   } catch (error) {
-    //     this.isLoading=false;
-    //   this.userexist=true;
-    //   this.usertest();
-    //   console.log(res);
-    //   console.log(error);
-    //   this.presentAlert('Registration Failed',error.error.message,'try again')
-
-    //   }
-
-    // } );
-
-    // this.http.post(this.url,user).subscribe(res =>{
-    //   localStorage.setItem('User',JSON.stringify(res)) // trick use to transfer login user data to home page by get and set method
-    //   this.router.navigateByUrl('',{replaceUrl:true}) // url is replaces so that use cant go back to login page without logout
-    //   this.isLoading=true;
-    // },error =>{
-    //   this.userexist=true;
-    //   this.isLoading=false;
-    //   this.usertest();
-    //   console.log(error)
-    //   this.presentAlert('Registration Failed',error.error.message,'try again')
-    // });
-
     // console.log(user);
     await loading.dismiss();
   }
 
-  // async usertest(){
-  //   if(this.userexist){
-  //     console.log("User Email Exist try Forget Password")
-  //   }
-  // }
+  
 
   async presentAlert(header: string, subheader: string, message: string) {
     const alert = await this.alertCtrl.create({

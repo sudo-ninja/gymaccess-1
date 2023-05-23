@@ -94,29 +94,29 @@ export class MemberAddPage implements OnInit {
         'gym_id' : [localStorage.getItem('gymID'), Validators.required],
         'm_name' : [null, [
           Validators.required,
-          // Validators.minLength(3),
-          // Validators.maxLength(30)
+          Validators.minLength(3),
+          Validators.maxLength(30)
         ]],
         'Emergency_mobile': [null, [
           Validators.required,
-          // Validators.minLength(10),
-          // Validators.maxLength(13),
-          // Validators.pattern('^[0-9]*$')
+          Validators.minLength(10),
+          Validators.maxLength(13),
+          Validators.pattern('^[0-9]*$')
         ]],
         'mobile': [null, [
           Validators.required,
-          // Validators.minLength(10),
-          // Validators.maxLength(13),
-          // Validators.pattern('^[0-9]*$')
+          Validators.minLength(10),
+          Validators.maxLength(13),
+          Validators.pattern('^[0-9]*$')
         ]
         ],
         'aadhar':[null, Validators.required],
         'email':[null, [
           Validators.required,
           // Validators.toLowerCase(),
-          // Validators.minLength(5),
-          // Validators.maxLength(80),
-          // Validators.pattern("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")
+          Validators.minLength(5),
+          Validators.maxLength(80),
+          Validators.pattern("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")
         ]],
         'memberType': ['Member',Validators.required],
         'm_joindate': [Date.now(), Validators.required],

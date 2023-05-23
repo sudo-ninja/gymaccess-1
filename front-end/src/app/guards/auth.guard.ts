@@ -12,7 +12,6 @@ import { UserService } from '../services/user.service';
 })
 export class AuthGuard implements CanActivate {
   constructor(
-              private authService: AuthGuardService,
               private userService :UserService,
               private router :Router,
                ){}

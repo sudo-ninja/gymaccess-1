@@ -29,7 +29,8 @@ constructor(private http:HttpClient,
   update(Id:any, data: any): Observable<any> {
     console.log(Id);
     console.log(data);
-    return this.http.put(`http://localhost:3000/api/v1/user/register/${Id}`,data,this.noAuthHeader).pipe(tap((dat:any)=>console.log(`updated with ID =${Id}`)),
+    let url = `${this.url}/user/register/${Id}`
+    return this.http.put(url,data,this.noAuthHeader).pipe(tap((dat:any)=>console.log(`updated with ID =${Id}`)),
     catchError(this.errorMgmt));
   }
   
@@ -85,13 +86,13 @@ constructor(private http:HttpClient,
 
   
 
-  user(){
-    return this.http.get('http://localhost:3000/api/v1/user/user',{
-      observe:'body',
-      withCredentials:true,
-      headers:new HttpHeaders().append('Content-Type','application/json')
-    })
-  }
+  // user(){
+  //   return this.http.get('http://localhost:3000/api/v1/user/user',{
+  //     observe:'body',
+  //     withCredentials:true,
+  //     headers:new HttpHeaders().append('Content-Type','application/json')
+  //   })
+  // }
 
   getUserbyEmail(_Email:any): Observable<Users> {
     console.log("i m in get  by emailloop");
@@ -126,8 +127,25 @@ constructor(private http:HttpClient,
 
   getUserProfile(){
     return this.http.get(this.url+'/user/private_data');
+    // here we can use to get user detail also as encrpted data
   }
 
+
+forgetPassword(body:any): Observable<any> {
+  console.log(body);
+    let url = `${this.url}/forgot_password`;
+    console.log(url);
+    return this.http.post(url,body,this.noAuthHeader).pipe(tap((dat:any)=>console.log(`Added with ID =${dat._id}`)),
+    catchError(this.errorMgmt));
+}
+
+forgetPasswordReset(body:any): Observable<any> {
+  console.log(body);
+    let url = `${this.url}/forgot_password/reset`;
+    console.log(url);
+    return this.http.post(url,body,this.noAuthHeader).pipe(tap((dat:any)=>console.log(`Added with ID =${dat._id}`)),
+    catchError(this.errorMgmt));
+}
 
 
 }

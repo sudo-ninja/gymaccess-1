@@ -85,14 +85,8 @@ export class GymDetailsPage implements OnInit {
       gym_gstin:['', Validators.required],
       gym_address_lat:[localStorage.getItem('gymLat'), Validators.required],
       gym_address_long: [this.new_lng, Validators.required],
-      'gym_lockId': ['', Validators.required],
-      //   email: [
-      //   '',
-      //   [
-      //     Validators.required,
-      //     Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
-      //   ],
-      // ],
+      gym_lockId: ['', Validators.required],
+      //   
     });
   }
 
