@@ -10,11 +10,8 @@ import { format, parseISO } from 'date-fns';
 // for modal controller
 import { LoadingController, ModalController } from '@ionic/angular';
 //moment from Java package for all date calculations;
-import * as moment from 'moment';
+// import * as moment from 'moment';
 
-import * as TimeUnit from 'timeunit';
-import { parse } from 'path';
-import { AnyRecord } from 'dns';
 
 
 @Component({
@@ -283,9 +280,9 @@ export class MembercontrolPage implements OnInit {
   async validDaysCalc() {
     console.log(this.Start_Date_UTC);
     console.log(this.End_Date);
-    var _todayDate = moment(new Date());
-    var _StartDate = moment(new Date(this.Start_Date_UTC));
-    var _EndDate = moment(new Date(this.End_Date));
+    // var _todayDate = moment(new Date());
+    // var _StartDate = moment(new Date(this.Start_Date_UTC));
+    // var _EndDate = moment(new Date(this.End_Date));
 
     var _todayModified = new Date();
     var _SDModified = new Date(this.Start_Date_UTC);
