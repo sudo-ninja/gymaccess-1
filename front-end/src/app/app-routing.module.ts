@@ -131,7 +131,11 @@ const routes: Routes = [
   {
     path: 'about',
     loadChildren: () => import('./static/about/about.module').then( m => m.AboutPageModule)
+  },  {
+    path: 'chathome',
+    loadChildren: () => import('./chatpages/chathome/chathome.module').then( m => m.ChathomePageModule)
   },
+
 
  
 ];

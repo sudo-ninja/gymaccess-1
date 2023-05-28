@@ -1,0 +1,45 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/chathome"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{name}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [scrollEvents]="true">
+<ion-list 
+lines="none"
+*ngIf="(chats) as chat$">
+<ion-item-group class= "chats-group" *ngFor="let chat of chat$">
+  <app-chat-box [chat]="chat" [current_user_id]="currentUserId"></app-chat-box>
+  <!-- here pass current user id using Service -->
+</ion-item-group>
+
+
+</ion-list>
+
+  
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar color="light">
+    <ion-textarea
+    autoGrow
+    row="1"
+    placeholder="Send Message"
+    class="ion-text-center"
+    [(ngModel)]="message">
+  </ion-textarea>
+
+    <ion-buttons slot="end">
+      <ion-fab-button slot="end" *ngIf="!isLoading" size="small" color="primary" (click)="sendMessage()">
+        <ion-icon name="send" ></ion-icon>
+      </ion-fab-button>
+    <ion-fab-button *ngIf="isLoading" size="small" color="primary">
+      <ion-spinner name="crescent" color="success"></ion-spinner>
+    </ion-fab-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-footer>
