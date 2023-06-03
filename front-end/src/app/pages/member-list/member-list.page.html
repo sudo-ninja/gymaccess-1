@@ -32,7 +32,9 @@
           <ion-refresher-content></ion-refresher-content>
         </ion-refresher>
 
-       <ion-list lines="none" *ngFor="let m of members | filter:searchTerm" lines="">
+        <!-- <ion-list lines="none" *ngFor="let m of members |customFilter:searchTerm" lines=""></ion-list> -->
+
+       <ion-list lines="none" *ngFor="let m of members " lines="">
         <ion-div >
           <ion-grid>
             <ion-row>
@@ -57,7 +59,7 @@
               </ion-item>
             </ion-col>
 
-            <ion-col debounceTime="700" (click)="presentModal(m._id)" size="1" [ngClass]="m.m_enddate < today_ ? 'div-vertical-red' : 'div-vertical-green'">
+            <ion-col debounceTime="700" (click)="presentModal(m._id)" size="1" [ngClass]="+m.m_enddate < today_ ? 'div-vertical-red' : 'div-vertical-green'">
               <!-- <ion-div [ngClass]="m.m_enddate < today_ ? 'div-vertical-red' : 'div-vertical-green'">
               </ion-div> -->
             </ion-col>
@@ -75,7 +77,7 @@
 
   
       <ion-card class="ion-margin"         
-      *ngFor="let m of members | filter:searchTerm">
+      *ngFor="let m of members">
               <ion-card-header appSwipe
               (swipe)="onSwipe(m._id,$event)"
               SWIPE GESTURE>                          

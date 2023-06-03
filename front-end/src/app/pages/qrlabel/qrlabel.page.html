@@ -1,25 +1,33 @@
-<ion-content class="pagebg" [fullscreen]="true">
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button></ion-back-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content class="pagebg" [fullscreen]="true"  >
     <div id="bg">
             <ion-label ><h1 class="p">WELCOME</h1>
-                        <h1 class="p">TO</h1>
+                        <h2 class="p">TO</h2>
                         <h1 class="p">{{gymname | uppercase }}</h1>
             </ion-label>
     </div>
-    <div class="div-1">
+    <div class="div-1" id="pdfTable" #pdfTable >
         <ion-list  lines="none" class="ion-margin">
         <ion-label><h1 class="p1">SCAN ME</h1></ion-label>
         <ion-item >
             <div class="center">
             <!-- <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img> -->
-            <!-- <qrcode 
+            <qrcode
+            id="qr_code img" 
             [qrdata]= 'gymIdforQRcode'
             [width]="225" 
             [cssClass]="'center'"
             [errorCorrectionLevel]="'M'">
-                            </qrcode> -->
+            </qrcode>
             </div>
         </ion-item>
-        <ion-text ><h2 class="p2">TO GET GYM ACCESS</h2></ion-text>          
+        <ion-text ><h2 class="p2">TO GET PROPERTY ACCESS</h2></ion-text>          
         </ion-list>
 
                 
@@ -34,11 +42,11 @@
         </ion-item> -->
     </div>
 
-
   </ion-content>
+
   <ion-footer>
     <ion-toolbar>
-        <ion-button expand = "block" shape="round" strong="true" class="ion-margin-end" color="primary">
+        <ion-button (click)= "downloadQrCode()" expand = "block" shape="round" strong="true" class="ion-margin-end" color="primary">
             DOWNLOAD NOW
             <ion-icon slot="end" name="cloud-download"></ion-icon>
           </ion-button>

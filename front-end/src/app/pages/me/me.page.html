@@ -86,7 +86,16 @@
 
 <div class="div-1" *ngIf="this.loggeduserIsAdmin">
   <ion-item>
-    <ion-label><h2 color="primary">Message Center</h2></ion-label>
+    <ion-label><h2 color="primary"><strong>Message Center</strong></h2></ion-label>
+    <ion-item button detail="true" detail-icon="caret-forward-outline">
+      <ion-label>
+        <h3>Button Item</h3>
+        <p>Detail set to true - detail arrow displays on both modes</p>
+        <p>Detail icon set to caret-forward-outline</p>
+      </ion-label>
+    </ion-item>
+    
+
     <ion-badge color="success" slot="end">10</ion-badge>
     <ion-badge color="danger" slot="end"*ngIf="anyMessage">1</ion-badge>
     
@@ -108,7 +117,7 @@
 
 <div class= "ion-padding">
     <ion-item class="ion-item">
-      <ion-label > Feedback or Query About App</ion-label>
+      <ion-label > Feedback or Suggestions</ion-label>
       <ion-icon slot="start" name="reader-outline"></ion-icon>
       <ion-icon slot="end"  name="chevron-forward-outline" (click)="feedbackAlert()"></ion-icon>
     </ion-item> 

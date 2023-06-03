@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonTabs } from '@ionic/angular';
-import { IonTab } from '@ionic/core/components';
+// import { IonTab } from '@ionic/core/components';
+import {AlertButton} from "@ionic/core";
 
 @Component({
   selector: 'app-gymtabs',

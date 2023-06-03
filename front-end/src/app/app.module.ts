@@ -30,10 +30,14 @@ import { UserService } from './services/user.service';
 
 //cordova plugin import and then inject in providers
 import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
+import { CustomFilterPipe } from './custom-filter-pipe.pipe';
 
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent, 
+    CustomFilterPipe
+  ],
   imports: [BrowserModule, 
     IonicModule.forRoot(),
     HttpClientModule,
@@ -60,6 +64,10 @@ import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
     },
     // EmailComposer,
     ],
+
+    // exports: [
+    //   CustomFilterPipe
+    // ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

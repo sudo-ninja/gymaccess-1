@@ -135,6 +135,10 @@ const routes: Routes = [
     path: 'chathome',
     loadChildren: () => import('./chatpages/chathome/chathome.module').then( m => m.ChathomePageModule)
   },
+  {
+    path: 'feedback-alert',
+    loadChildren: () => import('./pages/feedback-alert/feedback-alert.module').then( m => m.FeedbackAlertPageModule)
+  },
 
 
  

@@ -19,7 +19,9 @@
 </ion-refresher>
 
   <ion-list>
-    <div class="div-0" *ngFor="let gym of gyms | filter:searchTerm" class="ion-padding" 
+
+   
+    <div class="div-0" *ngFor="let gym of gyms " class="ion-padding" 
                  appTap
                  (doubleTap)="onDoubleTap(gym._id,$event)" >
       <ion-label color="dark"> <h1>{{gym.gym_name}}</h1> </ion-label>     

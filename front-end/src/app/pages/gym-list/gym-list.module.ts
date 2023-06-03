@@ -8,22 +8,22 @@ import { GymListPageRoutingModule } from './gym-list-routing.module';
 
 import { GymListPage } from './gym-list.page';
 import { QRCodeModule } from 'angularx-qrcode';
-// filter on list page 
-import { Ng2SearchPipeModule } from 'ng2-search-filter';
-// Call Directive Module for gesture , tap , swipe and long press control 
+
 import{DirectivesModule} from './../../directives/directives.module';
+// import { AppModule } from "../../app.module";
 
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    DirectivesModule,
-    IonicModule,
-    GymListPageRoutingModule,
-    Ng2SearchPipeModule,
-    QRCodeModule
-  ],
-  declarations: [GymListPage]
+    declarations: [GymListPage],
+    imports: [
+        CommonModule,
+        FormsModule,
+        DirectivesModule,
+        IonicModule,
+        GymListPageRoutingModule,
+        // Ng2SearchPipeModule,
+        QRCodeModule,
+        // AppModule
+    ]
 })
 export class GymListPageModule {}

@@ -5,6 +5,10 @@ const config: CapacitorConfig = {
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"],
     },
+    LocalNotifications: {
+      iconColor: "#FF7F50",
+      sound: "beep.wav",
+    },
   },
   appId: 'com.jenixindia.gymaccess',
   appName: 'gym access',

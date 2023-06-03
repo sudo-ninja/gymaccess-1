@@ -18,6 +18,10 @@ import { AlertController, ModalController } from '@ionic/angular';
 import { MqttService } from 'src/app/services/mqtt.service';
 // call service of gym for gym lock id
 import { GymService } from 'src/app/services/gym.service';
+import { CancelOptions, Channel, LocalNotifications, ScheduleOptions } from '@capacitor/local-notifications';
+
+//call fedback service to send subscription expiry alert
+import { FeedbackserviceService } from 'src/app/services/feedbackservice.service';
 
 // call recharge request services
 
@@ -78,7 +82,8 @@ export class MemberActionPage implements OnInit {
     private _user:UserService,
     private memberApi:MemberserviceService,
     private lockApi:MqttService,
-    private gymApi:GymService
+    private gymApi:GymService,
+    private feedbackApi:FeedbackserviceService,
 
   ) {
     // this._user.user().subscribe(
@@ -327,6 +332,9 @@ async validAttendance(current_date:any,current_time:any,email:any)
 
             }else {
                   // console.log("Time Expired Contact Admin to Increase Validity");
+                  this.feedbackApi.addFeedback({"sender_id":this.memberId,"message":"Validity Expired","isFeedback":false,"isExpiryAlert":true}).subscribe((res)=>{
+                    console.log(res);
+                  });
                   this.presentAlert("Validity Expired","Contact Admin","");
                   };
         } catch (error) {
@@ -473,6 +481,94 @@ console.log(this.daysLeft);
 //   localStorage.setItem('balanceDays', this.BalanceDays);
 
 // }
+
+//https://www.youtube.com/watch?v=A3X0-ZgU-KI
+// follow this video to know more about notifiction 
+
+async isscheduleNotification(){
+  let options:ScheduleOptions={
+    notifications:[
+      {
+        id:111,
+        title:"Reminder Notification",
+        body:"Explore new offers",
+        largeBody:"Get 30% Discount",
+        summaryText:"Exciting Offers !!!!",
+        largeIcon:'res://drawable/splash.png',
+        smallIcon:'res://drawable/splash.png',
+        channelId:"channel2",
+        schedule:{every:'second'}
+      },
+      {
+        id:222,
+        title:"Upgrade Notification",
+        body:"Upgrade Member Subscription",
+        largeBody:"Get Discount on Long Period Subscription",
+        summaryText:"required action !!!!",
+        // largeIcon:'res://drawable/splash.png',
+        // smallIcon:'res://drawable/splash.png',
+        channelId:"channel1",
+        schedule:{every:'second'}
+      }
+    ]
+  }
+  try{
+    await LocalNotifications.schedule(options);
+  }
+  catch(ex)
+  {
+    alert(JSON.stringify(ex));
+  }
+}
+
+async cancelNotification(){
+    let op:CancelOptions={
+      notifications:[{id:222}]
+    }
+    await LocalNotifications.cancel(op);
+}
+
+async removeAllDeliveredNotifications(){
+   await LocalNotifications.removeAllDeliveredNotifications();
+}
+
+
+async getDeliveredNotifications(){
+  LocalNotifications.getDeliveredNotifications().then((res)=>{
+    alert(JSON.stringify(res));
+  })
+}
+
+async createChannel(){
+
+  let channel1:Channel={
+    id:"channel1",
+    description:"first channel",
+    name:"Channel 1",
+    visibility:1,
+  }
+
+  let channel2:Channel={
+    id:"channel2",
+    description:"first channel",
+    name:"Channel 2",
+    visibility:1,
+  }
+
+  try{
+    await LocalNotifications.createChannel(channel1);
+    await LocalNotifications.createChannel(channel2);
+  }
+  catch (exp){
+    alert(exp)
+  }
+}
+
+async listChannel(){
+  await LocalNotifications.listChannels().then((res)=>{
+    alert(JSON.stringify(res));
+  })
+}
 
 memberActionSelected(){
   

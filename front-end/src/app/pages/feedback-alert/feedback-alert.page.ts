@@ -26,16 +26,13 @@ import { StorageService } from 'src/app/services/storage.service';
 import { AnimationController } from '@ionic/angular';
 import { createAnimation } from '@ionic/core';
 
-
-
- 
 @Component({
-  selector: 'app-member-list',
-  templateUrl: './member-list.page.html',
-  styleUrls: ['./member-list.page.scss'],
+  selector: 'app-feedback-alert',
+  templateUrl: './feedback-alert.page.html',
+  styleUrls: ['./feedback-alert.page.scss'],
 })
-export class MemberListPage implements OnInit {
-  // @ViewChildren(IonCard,{read:ElementRef})
+export class FeedbackAlertPage implements OnInit {
+
   BalanceDays_ = localStorage.getItem('balanceDays');
   isButtonSubmit:boolean=false;
 
@@ -656,3 +653,4 @@ getInitials(firstName:string) {
 // }
 
 }
+

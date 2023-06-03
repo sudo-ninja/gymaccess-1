@@ -15,6 +15,7 @@
   <ion-content class="ion-padding">
 
       <div class="div-0">
+        <ion-button (click)="isscheduleNotification()">Scheduled Notification </ion-button>
           <!-- <ion-card class="ion-text-center">
             <ion-card-content>
               <ion-datetime-button datetime="datetime" displayFormat="MMM DD, YYYY HH:mm" ></ion-datetime-button>
@@ -30,7 +31,7 @@
      
 
       <div class="div-0">
-        <ion-label class="ion-text-center"><h1>Scan the QR code to access Gym</h1></ion-label>
+        <ion-label class="ion-text-center" color="dark"><strong><h1>Scan QR code to access Gym</h1></strong></ion-label>
        
             <ion-button
             class="ion-text-center"
@@ -43,7 +44,7 @@
       </div>
 
       <div class="div-0">
-        <ion-label color="dark"><h2>My Account</h2></ion-label>
+        <ion-label color="dark"><strong><h2>My Account</h2></strong></ion-label>
         <ion-grid [fixed]="true">
           <ion-row>
             <ion-col> 
@@ -52,7 +53,7 @@
                   <ion-label color="dark"><h2>Allowed Days</h2> </ion-label>                   
                 </ion-item>
               <ion-item>
-                <ion-label color="dark"><h2>Days Left : {{daysLeft}} Day(s)</h2> </ion-label>                   
+                <ion-label color="dark"><h2 [ngClass]="daysLeft < 0 ? 'red' : 'green'">Days Left : {{daysLeft}} Day(s)</h2> </ion-label>                   
               </ion-item>
 
               <ion-item>

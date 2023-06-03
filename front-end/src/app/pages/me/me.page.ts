@@ -14,10 +14,10 @@ import { AlertController, LoadingController, ModalController, NavController, Toa
 // call recharge request api to get information about recharge
 import { RechargeService } from 'src/app/services/recharge.service';
 import { UserService } from 'src/app/services/user.service';
+import { FeedbackserviceService } from 'src/app/services/feedbackservice.service';
+import { Feedback } from 'src/app/models/feedback';
 
-// for feedback service email composer cordova
-import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
-
+ 
 // for camera image captring 
 // import { Camera, CameraResultType } from '@capacitor/camera';
 
@@ -35,6 +35,7 @@ export class MePage implements OnInit {
   loggeduserUsername:any;
   loggeduserEmail:any;
   loggeduserIsAdmin:boolean;
+  loggeduserID:any;
 
   loggedUserGymId:any;
 
@@ -56,6 +57,8 @@ export class MePage implements OnInit {
 
    
    recharges:Recharge[]=[];
+   feedbacks:Feedback[]=[];
+   
   loggeduser: any;
   isloggedUserMember: boolean;
 
@@ -72,17 +75,17 @@ export class MePage implements OnInit {
     private alertController: AlertController,
     // logged user API 
     private userApi:UserService,
-    //email compo
-    private emailComposer: EmailComposer,
+    //feedback api
+    private feedbackApi:FeedbackserviceService,
   ) { 
 
-    this.userApi.getUserProfile().subscribe({
-      next:(res)=>{
-        console.log(res);
-        // this.userDetails = res['user']
-      },
-      error:(err)=>{}
-    });
+    // this.userApi.getUserProfile().subscribe({
+    //   next:(res)=>{
+    //     console.log(res);
+    //     // this.userDetails = res['user']
+    //   },
+    //   error:(err)=>{}
+    // });
 
     const user = localStorage.getItem('User')
      
@@ -92,6 +95,7 @@ export class MePage implements OnInit {
 
      // to know the status of logged user if he is member or admin      
      this.loggeduser=JSON.parse(user);
+     this.loggeduserID = this.loggeduser._id;
      this.loggeduserEmail = this.loggeduser.email;
      this.userApi.getUserbyEmail(this.loggeduserEmail).subscribe(
        res=>{
@@ -152,7 +156,7 @@ export class MePage implements OnInit {
 
   ngOnInit() {
 
-    if(!this.loggeduserIsAdmin){
+    if(this.isloggedUserMember){
     this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{        
       this.memberId = data._id;
       this.memberGymId = data.gym_id;
@@ -171,6 +175,7 @@ export class MePage implements OnInit {
   gymManagement(admin:boolean){
     if(admin){
       console.log("Admin Execution")
+      return;
     }else {   // means member if it false
       console.log("Member Execution")    
         
@@ -282,7 +287,7 @@ customCounterFormatter(inputLength: number, maxLength: number) {
 
 async feedbackAlert(){  
   const alert = await this.alertController.create({
-    header :'Feedback or Query About App',
+    header :'Suggestions or Query About App',
     inputs: [
     {
         name: 'feedback',
@@ -305,6 +310,9 @@ async feedbackAlert(){
             text: 'Send',
             handler: (alertData) => { //takes the data 
                 console.log(alertData.feedback);
+                this.feedbackApi.addFeedback({"sender_id":this.loggeduserID,"message":alertData.feedback}).subscribe((res)=>{
+                  console.log(res);
+                });
                 //  this.RechargeApi.addRecharge({"member_id":this.memberId,"days":alertData.recharge_days,"isAccepted": "0"}).subscribe((data)=>{
                 //   console.log(data);
                 //  });

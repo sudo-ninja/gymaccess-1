@@ -2,46 +2,48 @@ import { Injectable } from '@angular/core';
 
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rxjs';
-import{ Attendance_ } from '../models/attendance.model';
+import { Feedback } from '../models/feedback';
 
-
-
-const baseUrl = 'http://localhost:3000/api/v1/attendances';
-const searchUrl = 'http://localhost:3000/api/v1/attendances/search/';
+const baseUrl = 'http://localhost:3000/api/v1/feedbacks';
+const searchUrl = 'http://localhost:3000/api/v1/feedbacks/search/';
 
 
 @Injectable({
   providedIn: 'root'
 })
+export class FeedbackserviceService {
 
-export class AttendanceService {
   baseUri :string = 'http://localhost:3000/api/v1';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
 
   constructor(private http: HttpClient) { }
-  selectedMember:Attendance_;
-  attendances:Attendance_[];
+  selectedMember:Feedback;
+  feedbacks:Feedback[];
 
-  getAll(): Observable<Attendance_[]> {
+  getAll(): Observable<Feedback[]> {
     console.log("i m in get all loop");
-    return this.http.get<Attendance_[]>(baseUrl);
+    return this.http.get<Feedback[]>(baseUrl);
   }
 
-  getAttendance(id: any): Observable<Attendance_> {
+  getFeedbackById(id: any): Observable<Feedback> {
     console.log("i m in get  by ID Method");
     return this.http.get(`${baseUrl}/findone?id=${id}`);
   }
 
-  getMemberAttendance(member_id: any): Observable<Attendance_> {
+  getFeedbackBySenderId(member_id: any): Observable<Feedback> {
     console.log("i m in get  by ID Method");
     return this.http.get(`${baseUrl}/findallid?member_id=${member_id}`);
   }
 
+  getFeedbackByChatroom(room: any): Observable<Feedback> {
+    console.log("i m in get  by room ");
+    return this.http.get(`${baseUrl}/chatroom?chatroom=${room}`);
+  }
 
-  addAttendance(data: any): Observable<any> {
+  addFeedback(data: any): Observable<any> {
     console.log("i m in add member loop");
-    let url = `${this.baseUri}/attendances`;
+    let url = `${this.baseUri}/feedbacks`;
     return this.http.post(url, data).pipe(tap((dat:any)=>console.log(`Added with ID =${dat._id}`)),
     catchError(this.errorMgmt));
   }
@@ -59,9 +61,14 @@ export class AttendanceService {
     return this.http.delete(baseUrl).pipe(catchError(this.errorMgmt));
   }
 
-  wildSearch(mobile: any): Observable<Attendance_[]> {
+  wildSearch(keyword: any): Observable<Feedback[]> {
     console.log("i m in wild search loop");
-    return this.http.get<Attendance_[]>(`${searchUrl}=${mobile}`).pipe(catchError(this.errorMgmt));
+    return this.http.get<Feedback[]>(`${searchUrl}=${keyword}`).pipe(catchError(this.errorMgmt));
+  }
+
+  searchBymemberId(member_id:any): Observable<Feedback[]> {
+    console.log("i m in search by member ID");
+    return this.http.get<Feedback[]>(`${searchUrl}=${member_id}`).pipe(catchError(this.errorMgmt));
   }
 
   // Error handling
@@ -79,6 +86,7 @@ export class AttendanceService {
       return errorMessage;
     });
   }
-}
 
+
+}
 

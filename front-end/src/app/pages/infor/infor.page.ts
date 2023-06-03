@@ -11,6 +11,8 @@ import { SafeUrl } from '@angular/platform-browser';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
+import { ToastController } from '@ionic/angular';
+
 
 
 @Component({
@@ -52,7 +54,9 @@ export class InforPage implements OnInit {
     // for alert controller
     public alertController :AlertController,
     // to navigate page to qr code page
-    private router: Router
+    private router: Router,
+    //tostcontrole
+    private toastCtrl: ToastController
 
     ) { 
     // for select default gym in gym selector
@@ -177,15 +181,23 @@ async lockIDinputAlert(gymid:any){
             cssClass: 'secondary',
             handler: () => {
                 console.log('Confirm Cancel');
+                this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
             }
         }, 
         {
             text: 'Ok',
             handler: (alertData) => { //takes the data 
-                console.log(alertData.lock_id);
+              // let validateObj = this.validateEmail(data);
+              if(!alertData.lock_id){
+                this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
+                return;
+              }else{
+                // console.log(alertData.lock_id);
                 this.gymApi.update(gymid,{"gym_lockId":alertData.lock_id}).subscribe((data)=>{
                   console.log("Lock Id Updated as",data.gym_lockId );
                 });
+              };
+                this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
             }
         }
     ]
@@ -204,5 +216,19 @@ gymUpdate(){
   console.log(this._gym_id);
   // here user modal controller to update gym data
 }
+
+
+async showErrorToast(data: any) {
+  let toast = await this.toastCtrl.create({
+    message: data,
+    duration: 3000,
+    position: 'top'
+  });
+
+  toast.onDidDismiss();
+
+  await toast.present();
+}
+
 
 }

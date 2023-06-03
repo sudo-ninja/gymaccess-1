@@ -14,29 +14,27 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ReactiveFormsModule } from '@angular/forms';
-import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
-// import{ScrollingModule} from '@angular/cdk/scrolling';
-// import{DragDropModule} from '@angular/cdk/drag-drop';
-// swiper module
-// import {SwiperModule} from 'swiper/angular';
-// custom schema for swiper js
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+// import { AppModule } from "../../app.module";
+
+
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    DirectivesModule,
-    Ng2SearchPipeModule,
-    RouterModule,
-    ReactiveFormsModule,
-    MemberListPageRoutingModule,
-    QRCodeModule
-  ],
-  declarations: [MemberListPage],
-  // exports:[MemberListPage], // to use footer tab at this page
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    declarations: [MemberListPage],
+    // exports:[MemberListPage], // to use footer tab at this page
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        DirectivesModule,
+        // Ng2SearchPipeModule,
+        RouterModule,
+        ReactiveFormsModule,
+        MemberListPageRoutingModule,
+        QRCodeModule,
+        // AppModule
+    ]
 })
 export class MemberListPageModule {}
