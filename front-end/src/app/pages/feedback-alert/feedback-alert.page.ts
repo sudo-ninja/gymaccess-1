@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Share } from '@capacitor/share';
@@ -25,6 +25,13 @@ import { StorageService } from 'src/app/services/storage.service';
 // animation from right to left for modal open 
 import { AnimationController } from '@ionic/angular';
 import { createAnimation } from '@ionic/core';
+import { Feedback } from 'src/app/models/feedback';
+import { FeedbackserviceService } from 'src/app/services/feedbackservice.service';
+import { RechargeService } from 'src/app/services/recharge.service';
+
+// for local notification 
+import { CancelOptions, Channel, LocalNotifications, ScheduleOptions } from '@capacitor/local-notifications';
+
 
 @Component({
   selector: 'app-feedback-alert',
@@ -36,8 +43,15 @@ export class FeedbackAlertPage implements OnInit {
   BalanceDays_ = localStorage.getItem('balanceDays');
   isButtonSubmit:boolean=false;
 
+  feedbacks:Feedback[]=[];
+  expry_members:Member[]=[]; // to store expiry member data coming from loop of feedback
+  valid_members:Member[]=[]; // to store validity extension member data coming from loop of feedback
+  feed_members:Member[]=[]; // to store feedback of member data coming from loop of feedback
+  
+
+
   members: Member[] = [];
-  mcontrols: Mcontrol[] =[];
+   
   _id :string; // This is an observable
   _email:any;
   _memberid:any;
@@ -47,11 +61,7 @@ export class FeedbackAlertPage implements OnInit {
 
   searchField: FormControl;
 
-  //range value for slider bar to show how much % left 
-  RangeValue:Number;
-  
-
-
+ 
   inviteControlForm!: FormGroup;
   memberForm!:FormGroup;
   isLoadingResults = false;
@@ -98,6 +108,9 @@ export class FeedbackAlertPage implements OnInit {
 
 
   constructor(
+    private feedbackApi :FeedbackserviceService,
+    private rechargeApi :RechargeService,
+
     private animationCtrl: AnimationController, // for animation control 
     public loadingController:LoadingController,
     public router :Router,
@@ -128,6 +141,57 @@ export class FeedbackAlertPage implements OnInit {
     
     this.searchField = new FormControl(''); // for search bar
 
+    this.feedbackApi.getFeedbackByExpiryMember(this._gym_id,true).subscribe((res)=>{
+      console.log(res);
+      if(res){
+        for (let i = 0; i < [res].length; i++) {
+          if(res[i].isExpiryAlert){
+            console.log(res[i]);
+            this.memberApi.getMember(res[i].sender_id).subscribe((data)=>{
+              if(+data.m_enddate < Date.now()){
+                console.log("Member Date Gone");
+                this.expry_members[i] = data; // to store data of expiry members
+              this.getLocalNotification(111,"expiry alert","member subscription expired",11,"Member Expiry Alert",data.m_name,`${data.m_name} had Expiry Date on ${data.m_enddate
+                }`,"Name Last Date");
+              }return;              
+            }) ;           
+            }
+          //now trigger notification with this data with channel i and i. name , i. expiry date , i . mobile,
+          // as soon as notification triggered delete i.id from DB .
+          // check possibility to do this on member list page 
+          //check posibilty if click on notification and nevigate to feedback page .
+        }
+      } return;
+    });
+      // for feedback validty request sent by some user 
+      this.feedbackApi.getFeedbackByValidityReq(this._gym_id,true).subscribe((res)=>{
+        console.log(res);
+        if(res){
+          for (let i = 0; i < [res].length; i++) {
+            if(res[i].isValidityRequestAlert){
+              console.log(res[i]);
+              this.memberApi.getMember(res[i].sender_id).subscribe((data)=>{
+                if(+data.m_enddate < Date.now()){
+                  console.log("Member Date Gone");
+                  this.expry_members[i] = data; // to store data of expiry members
+                this.getLocalNotification(222,"Validity alert","member validity extension alert",i+100,"Request for Extension",data.m_name,`${data.m_name} had Expiry Date on ${data.m_enddate
+                  }`,data.memberType);
+                }return;              
+              }) ;           
+              }
+            //now trigger notification with this data with channel i and i. name , i. expiry date , i . mobile,
+            // as soon as notification triggered delete i.id from DB .
+            // check possibility to do this on member list page 
+            //check posibilty if click on notification and nevigate to feedback page .
+          }
+        } return;
+      });
+        // for pure feedback 
+
+        this.feedbackApi.getFeedbackByFeedback(this._gym_id,true).subscribe((res)=>{
+          
+    });
+
     const user = localStorage.getItem('User'); // collected user detail from login
     this.loggeduser=JSON.parse(user!);
     console.log(this.loggeduser._id);
@@ -136,8 +200,7 @@ export class FeedbackAlertPage implements OnInit {
       try {
         if(data){
           console.log(data.length,"GYM ID==..",data);
-           this.gyms = data; // from here passing data to gym selector
-           
+           this.gyms = data; // from here passing data to gym selector         
 
         }      
       } catch (error) {
@@ -149,86 +212,26 @@ export class FeedbackAlertPage implements OnInit {
     console.log(this.today_);
   }
 
+  async changeValidity(member_id){
+    this.updateMemberControl(member_id); // modal for validity change
+  }
+
+  //notification 
+
   ngOnInit() {
     
-    // get member associated with this gym only
-    this.getMembers();
-    // const searchTerm = this.searchField.valueChanges.pipe(
-    //   startWith(this.searchField.value));
     console.log(this.searchTerm);
-    this.memberControl(); // here its call so that patch value can work
-    // to get default gym value
-    // this.MyDefaultGymValue = "GYM NAME here"
     this.compareWith = this.compareWithFn; 
        
    }
 
-   // if end date of memeber is less than 7 days then set alert and change color to RED
-   checkMemberlastingtime(id:any){
-
-   }
-
+   
    handleChange(event) {
     const query = event.target.value.toLowerCase();
     console.log(query);
     // this.results = this.members.filter(d => d.indexOf(query) > -1);
   }
 
-
-async inviteControl(){
-  this.inviteControlForm = this.formBuilder.group({
-    'member_id' : ['', Validators.required],
-    'email' : ['', Validators.required],
-    'mobile': ['', [
-      Validators.required,
-      // Validators.minLength(10),
-      // Validators.maxLength(13),
-      // Validators.pattern('^[0-9]*$')
-    ]
-    ],
-    'inviteCode':['', Validators.required],
-    'duration':['',Validators.required],
-    }); 
-} 
-
-async memberControl(){
-    this.memberForm=this.formBuilder.group({
-      'isInviteAccepted':[]
-      /// was planning to get three state varibale .. like invite accepted , true , false , pending..
-    });
-}
-
-async getMembers(){
-  const loading = await this.loadingController.create({
-    message: 'Loading....'
-  });
-  await loading.present();
-  // to store gym id as same will be used to add member page to add member in perticular gym
-  this.storageService.store('defaultGymId',this._gym_id);
-  localStorage.setItem('gymID',this._gym_id);
-  console.log(this._gym_id);
-  await this.memberApi.wildSearch(this._gym_id)
-  .subscribe(res=>{
-    this.members=res;
-    // this.memberLastdate = res.m_enddate;
-    console.log(this.members);
-    localStorage.setItem('thisMember',JSON.stringify(res));
-    this.storageService.store('membersList',res);
-    loading.dismiss();
-  }),err=>{
-    console.log(err);
-    loading.dismiss();
-    }
-    
-  }
-
-  // drop(event:CdkDragDrop<string[]>){
-  //   moveItemInArray(this.members,event.previousIndex,event.currentIndex);
-  // }
-
-  addProduct() {
-    this.router.navigate(['/member-add']);
-  }
 
   ///////////////////for animation ///////////////
   async presentModal(mid:string) {
@@ -270,8 +273,6 @@ async getMembers(){
     console.log(res => {
       this.memberApi.getMember(res.id);});
     await modal.present();
-
-
   }
 
 // to update member information 
@@ -309,54 +310,6 @@ async getMembers(){
   this.isButtonSubmit=false;
 }
 
-  async inviteMember(uid:string){
-   console.log(uid);
-   this.memberApi.getMember(uid).subscribe((data)=>{
-    try {
-      console.log(data);
-      console.log(data.isInviteAccepted);
-      console.log(data.email); // this email will search in member control DB if already this exist 
-      // once invite accepted or time passed lets delet this from DB so one time only one code is there
-      this.invitaionAccepted = data.isInviteAccepted;
-
-    if(this.invitaionAccepted==="Yes"){
-        this.presentAlert('Invitation Accepted','Already Member','');
-        
-        console.log("disable invitation button");
-        this.invitaionButtonDisabled=true;
-     }else if(this.invitaionAccepted==="Pending")
-     {
-        console.log("call function to get alreay generated code");
-        this.CheckIfInvited(uid);
-     }
-     else{  
-          this.CodeAlert(uid,'Invitation Code','Please Ask Member to Enter this code in JOIN GYM input *** Code Valid for 3 Days *** ');
-      };
-      } catch (error) {
-      throw error;
-    }    
-   });
-   
-
-  //  if(this.mcontrol_s.getMcontrolEmail(this.inviteMemberMail)){
-    
-  //   this.inviteContolAlertSubHeaderMessage = "iCode";
-  //   this.inviteControlHeaderMessage = "Invitaion Code";
-  //   this.inviteContolAlertMessage = 'Please ask member to enter this code in "JOIN GYM", ***Valid For 1 Hours***';
-  //  }else{
-  //   this.inviteControlHeaderMessage = "Invitaion Acceptance Pending !";
-  //   this.inviteContolAlertSubHeaderMessage = 'Already Invitaion Code Generted';
-  //   this.inviteContolAlertMessage = "Please Ask Member to Enter Code after Clicking in JOIN GYM";
-  //   this.invitaionCodeGenerated = true;
-  //  }
-  //   if(this.invitaionCodeGenerated){
-  //     console.log("in 164 loop");
-  //   }
-      
-
-  }
-
-
 
   async presentAlert(header:string,subheader:string, message:string) {
     const alert = await this.alertCtrl.create({
@@ -368,88 +321,15 @@ async getMembers(){
     await alert.present();
   }
 
-  async CodeAlert(uid:any,header:string,message:string){
-
-    var iCode = Math.floor(1000000*Math.random());
-    console.log(iCode);
-    this._invitationcode = iCode;
-    const alert = await this.alertCtrl.create({
-      header: header,
-      subHeader: this._invitationcode.toString(),
-      message: message,
-      buttons: [
-        {
-        text: 'OK',
-        role: 'confirm',
-        handler: () => {
-          this.inviteControl(); // invite control form from FB
-          this.memberApi.getMember(uid).subscribe(res=>
-            {
-            this.member=res;
-            console.log(this.member);
-            this._duration=Date.now()+(3*60*60*1000);
-            console.log('in handelr = ',this._email,this._duration,this._invitationcode,this._memberid,this._mobile)
-            this.inviteControlForm.patchValue({
-              member_id : this.member._id,
-              email : this.member.email,
-              mobile: this.member.mobile,
-              inviteCode:this._invitationcode,
-              duration:this._duration,
-            }); 
-
-            // this.memberForm.patchValue({
-            //   isInviteAccepted:"Pending"
-            // });
-
-            this.inviteControlApi.addMcontrol (this.inviteControlForm.value)
-            .subscribe((res: any) => {
-                console.log('Added invitation code');
-                console.log(this.member.email);
-                this.setInvitaion(this.member.email,"Pending");
-              }, (err: any) => {
-                console.log(err)
-              });
-              
-            }),err=>{
-          console.log(err);   
-           } },
-      }
-      ],
-      
-    });    
- 
-    await alert.present();
-
-  }
- 
+   
   handleRefresh(event) {
     setTimeout(() => {
-      this.getMembers();
+      // this.getMembers();
       event.target.complete();
     }, 2000);
   };
 
-  setInvitaion(email:any,pending:any){  
-    console.log("in invitaion code setup")
-    this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
-      this.memberId = data._id
-      // console.log(this.memberId);
-      this.memberForm.patchValue(
-        {
-          isInviteAccepted:pending // Status Change to Pending
-        });
-
-    // some error as update PUT not getting ID
-    console.log(this.memberId);
-    this.memberApi.update(this.memberId,this.memberForm.value).subscribe((res: any) => {
-      console.log('invitaion type change to =',res.isInviteAccepted);
-    }, (err: any) => {
-      console.log(err)
-    });
-        
-    });    
-    
-  }
+ 
 
   async basicShare(){
     await Share.share({
@@ -458,76 +338,9 @@ async getMembers(){
       url:'url link from here '
     });
   }
-
-  CheckIfInvited(uID:any)
-  {
-    this.memberApi.getMember(uID).subscribe((res:any)=>{
-      try {
-        this.tempEmail = res.email;
-        console.log(this.tempEmail);
-        this.inviteControlApi.getMcontrolEmail(this.tempEmail).subscribe((res:any)=>{
-          try {
-          console.log(res);
-          if(res.inviteCode)
-          {
-            console.log("already invited..get invitaion code from DB only")
-            console.log(res.inviteCode);
-            this.presentAlert(res.inviteCode,"Already Invited","Invitaion Acceptance is Still Pending!!");
-            // return res.invitationCode;
-          }else
-          {
-            console.log("not yet invited or invitation expired");
-            // this.CodeAlert(uID,'Invitation Code','Please Ask Member to Enter this code in JOIN GYM input *** Code Valid for 3 Days *** ');
-    
-            // return false;
-          }
-          } catch (error) {
-            throw error;
-          }
-        });
-      } catch (error) {
-        throw error;
-      }
-    });       
-
-    
-  }
-
-  deleteCodeIfacceptedOrExpired(email:any,ifAccepted:boolean){    
-    this.inviteControlApi.getMcontrolEmail(email).subscribe((res:any)=>{
-      try {
-        this.tempid=res._id;
-        this.tempDuration = res.duration;
-      } catch (error) {
-        throw error;
-      }
-    });
-    if(ifAccepted){
-      this.inviteControlApi.delete(this.tempid);      
-    }else{
-      if(Date.now()>this.tempDuration){
-        this.inviteControlApi.delete(this.tempid);
-      }return;
-    }
-  }
  
-  //set user as member if invite accepted
-  setUserasMember(loggedUserId:any){
-    this.userApi.update(loggedUserId,{"isMember":"true"}).subscribe((data)=>{
-      console.log(data);
-    });
+ 
   
-
-  }
-
-  onTap(event: any) {
-    console.log('tap: ', event);
-  }
-
-  onDoubleTap(event: any) {
-    console.log('double tap: ', event);
-  }
-
   onPress(event: any) {
     console.log('press: ', event);
 
@@ -542,7 +355,7 @@ async getMembers(){
     if(event.dirX=="right" && event.swipeType=="moveend"){
       console.log(event.dirX);
       console.log(uid);
-      this.inviteMember(uid); 
+      // this.inviteMember(uid); 
      
     }
     if(event.dirX=="left" && event.swipeType=="moveend"){
@@ -572,16 +385,7 @@ async getMembers(){
 }
 
 
-rangeValue(endate:any,balanceDays:any){
-  let currentDate = new Date();
-  endate = new Date(endate);
-  return  Math.floor((Math.floor((Date.UTC(endate.getFullYear(), endate.getMonth(), endate.getDate())-Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())) /(1000 * 60 * 60 * 24)))/balanceDays);
 
-  // console.log();
-    // console.log(((new Date(endate)).getTime()-Date.now()));
-    // console.log(balanceDays);
-
-}
 
 
 selecthandleChange(ev){
@@ -590,67 +394,143 @@ this.MyDefaultGymValue = ev.target.value;
 // console.log(this.currentGym);
 this._gym_id = this.currentGym;
 console.log(this._gym_id);
-this.getMembers();
+// this.getMembers();
 this.compareWithFn(this._gym_id,ev.target.value);
 }
-
-customPopoverOptions = {
-  header: 'My GYM(s)',
-  // subHeader: 'Select Specific Gym',
-  message: 'Select Specific Gym',
-};
-
-// compareFn(g1:Gym,g2:Gym) : boolean{
-//   return g1 && g2 ? g1.gym_name == g2.gym_name : g1 == g2;
-
-// }
-
 
 
 compareWithFn(o1, o2) {
   return o1 === o2;
 };
 
-deletAllMembers(){
-  this.memberApi.deleteAll();
-}
-// may use inbuilt icon https://fontawesomeicons.com/Ionic/icons?search=bar
-// if memmber expiry date from current date is less then 5 only then show some image like
-// if more then 5 days then full 5 step with green color and thick green border 
-// battery full with 5 steps with red color 
-//if remain 4 then with 4 step with red
-// if 3 steps with 3 step with red
-// if 2 days then 2 step with red
-// if 1 day then 1 step with red and some flash and red border to member card
-// if Zero day then show more thick red border and all card text to red color 
-
-// to slide member ifnormation from right to left
-// angular.module('app', ['ionic'])
-
-// .controller('appCtrl', function($scope, $ionicModal) {
-//   $ionicModal.fromTemplateUrl('templates/modal.html', {
-//     scope: $scope,
-//     animation: 'slide-in-right'
-//   }).then(function(modal) {
-//     $scope.modal = modal;
-//   });
-//   $scope.openModal = function() {
-//     $scope.modal.show();
-//   }
-//   $scope.closeModal = function() {
-//     $scope.modal.hide();
-//   }
-// })
 
 // to get intial of name as avatar
 getInitials(firstName:string) {
   return firstName[0].toUpperCase();
 }
 
-// // to get intial of name as avatar
-// getInitials(firstName:string, lastName:string) {
-//   return firstName[0].toUpperCase() + lastName[0].toUpperCase();
-// }
+
+//to get local notification on unique channel 
+async getLocalNotification(channelId,channelName,channelDesc,noti_id,noti_title,noti_body,
+  noti_largeBody,noti_summary,){
+
+    let channelId_:Channel={
+      id: channelId,
+      description:channelDesc,
+      name:channelName,
+      visibility:1,
+    };
+    let options:ScheduleOptions={
+      notifications:[
+        {
+          id:+noti_id,
+          title:noti_title,
+          body:noti_body,
+          largeBody:noti_largeBody,
+          summaryText:noti_summary,
+          largeIcon:'res://drawable/splash.png',
+          smallIcon:'res://drawable/splash.png',
+          channelId:channelId,
+          schedule:{every:'day'}
+        }
+      ]};
+
+      try{
+        await LocalNotifications.createChannel(channelId_);
+        await LocalNotifications.schedule(options);
+      }
+      catch (exp){
+        alert(exp)
+      }
+}
+
+//https://www.youtube.com/watch?v=A3X0-ZgU-KI
+// follow this video to know more about notifiction 
+
+async isscheduleNotification(){
+  let options:ScheduleOptions={
+    notifications:[
+      {
+        id:111,
+        title:"Reminder Notification",
+        body:"Explore new offers",
+        largeBody:"Get 30% Discount",
+        summaryText:"Exciting Offers !!!!",
+        largeIcon:'res://drawable/splash.png',
+        smallIcon:'res://drawable/splash.png',
+        channelId:"channel2",
+        schedule:{every:'second'}
+      },
+      {
+        id:222,
+        title:"Upgrade Notification",
+        body:"Upgrade Member Subscription",
+        largeBody:"Get Discount on Long Period Subscription",
+        summaryText:"required action !!!!",
+        // largeIcon:'res://drawable/splash.png',
+        // smallIcon:'res://drawable/splash.png',
+        channelId:"channel1",
+        schedule:{every:'second'}
+      }
+    ]
+  }
+  try{
+    await LocalNotifications.schedule(options);
+  }
+  catch(ex)
+  {
+    alert(JSON.stringify(ex));
+  }
+}
+
+async cancelNotification(){
+    let op:CancelOptions={
+      notifications:[{id:222}]
+    }
+    await LocalNotifications.cancel(op);
+}
+
+async removeAllDeliveredNotifications(){
+   await LocalNotifications.removeAllDeliveredNotifications();
+}
+
+
+async getDeliveredNotifications(){
+  LocalNotifications.getDeliveredNotifications().then((res)=>{
+    alert(JSON.stringify(res));
+  })
+}
+
+async createChannel(){
+
+  let channel1:Channel={
+    id:"channel1",
+    description:"first channel",
+    name:"Channel 1",
+    visibility:1,
+  }
+
+  let channel2:Channel={
+    id:"channel2",
+    description:"first channel",
+    name:"Channel 2",
+    visibility:1,
+  }
+
+  try{
+    await LocalNotifications.createChannel(channel1);
+    await LocalNotifications.createChannel(channel2);
+  }
+  catch (exp){
+    alert(exp)
+  }
+}
+
+async listChannel(){
+  await LocalNotifications.listChannels().then((res)=>{
+    alert(JSON.stringify(res));
+  })
+}
 
 }
 

@@ -31,15 +31,7 @@ export class FeedbackserviceService {
     return this.http.get(`${baseUrl}/findone?id=${id}`);
   }
 
-  getFeedbackBySenderId(member_id: any): Observable<Feedback> {
-    console.log("i m in get  by ID Method");
-    return this.http.get(`${baseUrl}/findallid?member_id=${member_id}`);
-  }
-
-  getFeedbackByChatroom(room: any): Observable<Feedback> {
-    console.log("i m in get  by room ");
-    return this.http.get(`${baseUrl}/chatroom?chatroom=${room}`);
-  }
+  
 
   addFeedback(data: any): Observable<any> {
     console.log("i m in add member loop");
@@ -69,6 +61,31 @@ export class FeedbackserviceService {
   searchBymemberId(member_id:any): Observable<Feedback[]> {
     console.log("i m in search by member ID");
     return this.http.get<Feedback[]>(`${searchUrl}=${member_id}`).pipe(catchError(this.errorMgmt));
+  }
+
+  getFeedbackBySenderId(gymId:any,member_id: any): Observable<Feedback> {
+    console.log("i m in get  by ID Method");
+    return this.http.get(`${baseUrl}/findallid?member_id=${member_id}&gym_id=${gymId}`);
+  }                                          
+
+  getFeedbackByChatroom(gymId:any,room: any): Observable<Feedback> {
+    console.log("i m in get  by room ");
+    return this.http.get(`${baseUrl}/chatroom?chatroom=${room}&gym_id=${gymId}`);
+  }
+
+  getFeedbackByExpiryMember(gymId:any,_isExpiry: any): Observable<Feedback> {
+    console.log("i m in get  by ID Method");
+    return this.http.get(`${baseUrl}/ByExpiry?isExpiryAlert=${_isExpiry}&gym_id=${gymId}`);
+  }
+
+  getFeedbackByValidityReq(gymId:any,_isExpiry: any): Observable<Feedback> {
+    console.log("i m in get  by ID Method");
+    return this.http.get(`${baseUrl}/ByValidityRequest?isValidityRequestAlert=${_isExpiry}&gym_id=${gymId}`);
+  }
+
+  getFeedbackByFeedback(gymId:any,senderId: any): Observable<Feedback> {
+    console.log("i m in get  by ID Method");
+    return this.http.get(`${baseUrl}/ByFeedback?sender_id=${senderId}&gym_id=${gymId}`);
   }
 
   // Error handling

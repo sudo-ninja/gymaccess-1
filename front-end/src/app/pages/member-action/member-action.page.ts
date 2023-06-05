@@ -332,7 +332,7 @@ async validAttendance(current_date:any,current_time:any,email:any)
 
             }else {
                   // console.log("Time Expired Contact Admin to Increase Validity");
-                  this.feedbackApi.addFeedback({"sender_id":this.memberId,"message":"Validity Expired","isFeedback":false,"isExpiryAlert":true}).subscribe((res)=>{
+                  this.feedbackApi.addFeedback({"gym_id":this.gymId ,"sender_id":this.memberId,"message":"Validity Expired","isFeedback":false,"isExpiryAlert":true}).subscribe((res)=>{
                     console.log(res);
                   });
                   this.presentAlert("Validity Expired","Contact Admin","");

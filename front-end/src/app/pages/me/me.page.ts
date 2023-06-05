@@ -32,10 +32,10 @@ import { Feedback } from 'src/app/models/feedback';
   styleUrls: ['./me.page.scss'],
 })
 export class MePage implements OnInit {
-  loggeduserUsername:any;
+  // loggeduserUsername:any;
   loggeduserEmail:any;
   loggeduserIsAdmin:boolean;
-  loggeduserID:any;
+  // loggeduserID:any;
 
   loggedUserGymId:any;
 
@@ -61,6 +61,8 @@ export class MePage implements OnInit {
    
   loggeduser: any;
   isloggedUserMember: boolean;
+  memberName: string;
+  loggeduserUsername: any;
 
 
   
@@ -79,15 +81,7 @@ export class MePage implements OnInit {
     private feedbackApi:FeedbackserviceService,
   ) { 
 
-    // this.userApi.getUserProfile().subscribe({
-    //   next:(res)=>{
-    //     console.log(res);
-    //     // this.userDetails = res['user']
-    //   },
-    //   error:(err)=>{}
-    // });
-
-    const user = localStorage.getItem('User')
+     const user = localStorage.getItem('User')
      
      console.log(JSON.parse(user!).email );
      console.log(JSON.parse(user!)._id);
@@ -95,7 +89,7 @@ export class MePage implements OnInit {
 
      // to know the status of logged user if he is member or admin      
      this.loggeduser=JSON.parse(user);
-     this.loggeduserID = this.loggeduser._id;
+    //  this.loggeduserID = this.loggeduser._id;
      this.loggeduserEmail = this.loggeduser.email;
      this.userApi.getUserbyEmail(this.loggeduserEmail).subscribe(
        res=>{
@@ -118,8 +112,13 @@ export class MePage implements OnInit {
        }
       )
      
-     this.loggeduserUsername = JSON.parse(user!).username;
-     this.loggeduserEmail = JSON.parse(user!).email;     
+     this.loggeduserUsername = JSON.parse(user!).username; // if admin is loggedin then there is no other way to know his name except username
+     this.loggeduserEmail = JSON.parse(user!).email;  
+     this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((res)=>{
+      this.memberGymId = res.gym_id;
+      this.memberId = res._id;
+      this.memberName = res.m_name;
+     });   
      
   }
 
@@ -157,12 +156,12 @@ export class MePage implements OnInit {
   ngOnInit() {
 
     if(this.isloggedUserMember){
-    this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{        
-      this.memberId = data._id;
-      this.memberGymId = data.gym_id;
+    // this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{        
+    //   this.memberId = data._id;
+    //   this.memberGymId = data.gym_id;
       this.gymManagement(this.loggeduserIsAdmin);
       this.rechargeRequestMessage(this.memberId);
-    });
+    // });
   }
 
   if(this.loggeduserIsAdmin){
@@ -203,6 +202,7 @@ export class MePage implements OnInit {
   // Recharge Request Accepted .. Pending 
   rechargeDays:any;
   isAccepted:any;
+
   async rechargeRequestMessage(md:any){
     console.log(md);
     this.rechargeApi.getRechargeRequestMadeByMemberId(md).subscribe((data) => {
@@ -244,22 +244,22 @@ export class MePage implements OnInit {
 
   //check if user exist as member or not ?
 // if he is not member or deleted by gym then page must route back to home page 
-isUserMember(email){
-  //search member DB for this email 
-  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
-    console.log(data);
-    if(!data){
+// isUserMember(email){
+//   //search member DB for this email 
+//   this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
+//     console.log(data);
+//     if(!data){
       
-      this.router.navigateByUrl('/home',{replaceUrl: true,});
-    }else{
-      // this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
-      // this.memberOutTime = data.m_outtime*1 // in Unix milisecond
-      // this.memberInTime = data.m_intime*1// in unix milisecond
-      // this.gymId = data.gym_id // get gym ID
-    }
+//       this.router.navigateByUrl('/home',{replaceUrl: true,});
+//     }else{
+//       // this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
+//       // this.memberOutTime = data.m_outtime*1 // in Unix milisecond
+//       // this.memberInTime = data.m_intime*1// in unix milisecond
+//       // this.gymId = data.gym_id // get gym ID
+//     }
 
-  });
-}
+//   });
+// }
 
   gymLat:any;
   gymLng:any;
@@ -304,20 +304,30 @@ async feedbackAlert(){
             cssClass: 'secondary',
             handler: () => {
                 console.log('Confirm Cancel');
+                return;
             }
         }, 
         {
             text: 'Send',
             handler: (alertData) => { //takes the data 
-                console.log(alertData.feedback);
-                this.feedbackApi.addFeedback({"sender_id":this.loggeduserID,"message":alertData.feedback}).subscribe((res)=>{
-                  console.log(res);
+                // console.log(alertData.feedback);
+                // first check if already feedback is there or not by this member of gym 
+                //if not then only allow to send 
+                this.feedbackApi.getFeedbackByFeedback(this.memberGymId,this.memberId).subscribe((res)=>{
+                  console.log([res].length);
+                  if([res].length){
+                    // console.log("previous feedback still not responded wait for response")
+                    this.presentAlert("Earlier Feddback Made !!","Action Still Pending");
+                  }else{
+                    this.feedbackApi.addFeedback({"gym_id":this.memberGymId,"sender_id":this.memberId,"message":alertData.feedback,"isFeedback":true}).subscribe((res)=>{
+                      console.log(res);
+                    });
+                  };
                 });
-                //  this.RechargeApi.addRecharge({"member_id":this.memberId,"days":alertData.recharge_days,"isAccepted": "0"}).subscribe((data)=>{
-                //   console.log(data);
-                //  });
-            }
+                // console.log({"gym_id":this.memberGymId,"sender_id":this.memberId,"message":alertData.feedback,"isFeedback":true});
+                              
         }
+      }
     ]
 });
 await alert.present();
@@ -329,19 +339,11 @@ settings(){
 
 // get initials of name as avatar look 
 getInitials(firstName:string) {
-  return firstName[0].toUpperCase();
+  return firstName[+0].toUpperCase();
 }
 //fetch Location so that if user want to update can update his location
 
 
-// feedback email composer
-async checkAccount(){
-
-}
-
-async OpenMail(){
-
-}
 
 // async captureImage(){
   

@@ -22,6 +22,10 @@ import { MemberserviceService } from 'src/app/services/memberservice.service';
 // call gmap page for location update 
 import { GmapPage } from '../gmap/gmap.page';
 
+// add recharge request in feedback service 
+import { FeedbackserviceService } from 'src/app/services/feedbackservice.service';
+import { Feedback } from 'src/app/models/feedback';
+
  
 
 @Component({
@@ -58,6 +62,7 @@ export class MemberinforPage implements OnInit {
   constructor(
     private AttendanceApi:AttendanceService,
     private RechargeApi: RechargeService,
+    private feedbackApi : FeedbackserviceService,
     private memberApi:MemberserviceService,
     public router :Router,
     public loadingController:LoadingController,
@@ -320,6 +325,10 @@ rechargeRequestAlert(){
                 text: 'Ok',
                 handler: (alertData) => { //takes the data 
                     console.log(alertData.recharge_days);
+                    this.feedbackApi.addFeedback({"gym_id":this.gymId,"sender_id":this.memberId,"message":`Extention Request for ${alertData.recharge_days} Days`,"isValidityRequestAlert":true}).subscribe((res)=>{
+                      console.log(res);
+                    });
+        
                      this.RechargeApi.addRecharge({"member_id":this.memberId,"days":alertData.recharge_days,"isAccepted": "0"}).subscribe((data)=>{
                       console.log(data);
                      });
