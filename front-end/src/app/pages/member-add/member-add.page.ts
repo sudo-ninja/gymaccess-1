@@ -9,6 +9,8 @@ import { parseISO } from 'date-fns';
 // to get storage
 import { StorageService } from 'src/app/services/storage.service';
 
+import {FormControl} from '@angular/forms';
+
 
 
 // import { ErrorStateMatcher } from '@angular/material/core';
@@ -183,6 +185,11 @@ export class MemberAddPage implements OnInit {
                 // });
              
         }
+
+         value: string = '';
+            change(value: string) {
+              this.value = value;
+                  }
 
           handleChange_AT(e) {
           // this.pushLog('ionChange fired with value: ' + e.detail.value);

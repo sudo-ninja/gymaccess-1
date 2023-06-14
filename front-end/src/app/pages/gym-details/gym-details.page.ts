@@ -155,22 +155,21 @@ export class GymDetailsPage implements OnInit {
     if (!this.gymForm.valid) {
       return false;
     } else {
-      if (window.confirm('Are you sure?')) 
-      {
         console.log(this.gymForm.value);
         this.gymApi.update(this.id, this.gymForm.value).subscribe((res:any)=>{});
-      }
-    }
-    this.modalCtrl.dismiss(this.onSubmit, 'confirm');
+        }
+
+     this.router.navigate(['/gymtabs/infor'],{replaceUrl:true});   
   }
 
   cancel() {
-    return this.modalCtrl.dismiss(null, 'cancel');
+    // return this.modalCtrl.dismiss(null, 'cancel');
+    return this.router.navigate(['/gymtabs/infor'],{replaceUrl:true}); 
   }
 
-  confirm() {
-    return this.modalCtrl.dismiss(this.onSubmit, 'confirm');
-  }
+  // confirm() {
+  //   return this.modalCtrl.dismiss(this.onSubmit, 'confirm');
+  // }
 
   // to fetch gym location from page and use this info to open google map for this default location
   current_lat:any

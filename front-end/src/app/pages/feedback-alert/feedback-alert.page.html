@@ -1,34 +1,35 @@
 <ion-header>
-  <ion-item>
-    <ion-select 
-      label="Select Gym"
-      placeholder="Select Gym"       
-      (ionChange)="selecthandleChange($event)"
-      [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
-      slot="end">
-      <!-- <ion-select-option *ngFor="let mt of MemberType" [value]="mt">{{ mt.name }}</ion-select-option> -->
-        <ion-select-option *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
-        
-    </ion-select>
-  </ion-item>
-  <ion-searchbar         
-      placeholder ='Search Member'
-      [(ngModel)]="searchTerm"
-      showCancelButton="focus"
-      animated   
-      >    
-    </ion-searchbar>
-    
-   
+
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="Back" defaultHref="settings"> </ion-back-button>
+    </ion-buttons>
+    <ion-item>
+      <ion-select 
+        label="Select Gym"
+        placeholder="Select Gym"       
+        (ionChange)="selecthandleChange($event)"
+        [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
+        slot="end">
+        <!-- <ion-select-option *ngFor="let mt of MemberType" [value]="mt">{{ mt.name }}</ion-select-option> -->
+          <ion-select-option *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
+          
+      </ion-select>
+    </ion-item>
+  
+  </ion-toolbar>  
 </ion-header>
 
 <ion-content class="ion-padding">
+  <div *ngIf="isLoadingResults">
+    <ion-spinner *ngIf="isLoadingResults" ></ion-spinner>
+  </div>
          <!-- to refresh page on pull down  -->
       <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
-
-      <ion-div>
+<ion-list>
+      <ion-div *ngIf="expryMemberFound"  >
         <ion-label><strong>Subscription Expired</strong></ion-label>
         <!-- <ion-list lines="none" *ngFor="let m of members |customFilter:searchTerm" lines=""></ion-list> -->
       
@@ -44,12 +45,28 @@
       
       </ion-div>
 
-      <ion-div>
+      <ion-div *ngIf="validityExtentionFound">
         <ion-label><strong>Validity Extension Request</strong></ion-label>
         <!-- <ion-list lines="none" *ngFor="let m of members |customFilter:searchTerm" lines=""></ion-list> -->
       
-        <ion-list lines="none" *ngFor="let member of expry_members " lines="">
-          <ion-item detail="true" (click)="changeValidity(member._id)">
+        <ion-list lines="none" *ngFor="let member of valid_members;let i=index" lines="">
+          <ion-item detail="true" (click)="checkValidityExtention(member._id)">
+            <ion-label>
+              <h3>{{member.m_name}}</h3>
+              <p (click)="CallTel(member.mobile)"><ion-icon name="call-outline"></ion-icon>{{member.mobile}}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      
+
+      </ion-div>
+
+      <ion-div *ngIf="feedbackFound">
+        <ion-label><strong>Feedbacks</strong></ion-label>
+        <!-- <ion-list lines="none" *ngFor="let m of members |customFilter:searchTerm" lines=""></ion-list> -->
+      
+        <ion-list lines="none" *ngFor="let member of feed_members " lines="">
+          <ion-item detail="true" (click)="checkFeedback(member._id)">
             <ion-label>
               <h3>{{member.m_name}}</h3>
               <p><ion-icon name="calendar-number-outline"></ion-icon> {{member.m_enddate | date}}</p>
@@ -59,7 +76,16 @@
         </ion-list>
       
       </ion-div>
+</ion-list>
 
+
+
+<ion-toast
+    [isOpen]="isToastOpen"
+    message="This toast will close in 5 seconds"
+    [duration]="5000"
+    (didDismiss)="setOpen(false)"
+  ></ion-toast>
 
    
 </ion-content>

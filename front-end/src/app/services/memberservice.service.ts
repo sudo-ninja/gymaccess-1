@@ -60,13 +60,9 @@ export class MemberserviceService {
 
   update(id: any, data: any): Observable<any> {
     console.log("i m in Update by ID function");
-    // let url = `${this.baseUri}/members/`;
-    console.log(`${id}`);
+      console.log(`${id}`);
     console.log(`${baseUrl}/${id}`);
-
-    // return this.http.put(`${baseUrl}/${id}`,data,{headers: this.headers}).pipe(tap((dat:any)=>console.log(`updated with ID =${dat.id}`)),
-    // catchError(this.errorMgmt));
-    return this.http.put(`${baseUrl}/${id}`,data).pipe(tap((dat:any)=>console.log(`updated with ID =${id}`)),
+    return this.http.put(`${baseUrl}/${id}`,data).pipe(tap((dat:any)=>console.log(`updated with ID =${dat._id}`)),
     catchError(this.errorMgmt));
   }
 

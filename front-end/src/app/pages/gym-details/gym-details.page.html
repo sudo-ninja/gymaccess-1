@@ -21,8 +21,9 @@
 
   <form [formGroup]="gymForm" (ngSubmit)="onSubmit()">
         <ion-item>
-          <ion-label position="floating">Gym Name </ion-label>
             <ion-input 
+                  label="Gym Name" 
+                  labelPlacement="stacked"
                   formControlName="gym_name"      
                   type="text" required>
             </ion-input>
@@ -33,8 +34,9 @@
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">Gym Mobile </ion-label>
             <ion-input 
+                      label="Gym Mobile" 
+                      labelPlacement="stacked"
                       formControlName="gym_mobile"     
                       type="text" required>
             </ion-input>
@@ -47,8 +49,9 @@
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">Emergency Mobile: </ion-label>
             <ion-input 
+                    label="Emergency Mobile" 
+                    labelPlacement="stacked"
                     formControlName="gym_emergency"     
                     type="text" required>
             </ion-input>
@@ -60,16 +63,18 @@
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">GSTIN (Optional): </ion-label>
             <ion-input 
+                    label="GSTIN (Optional)" 
+                    labelPlacement="stacked"
                     formControlName="gym_gstin"     
                     type="text" > 
             </ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">Lock ID: </ion-label>
             <ion-input 
+                    label="Lock ID" 
+                    labelPlacement="stacked"
                     formControlName="gym_lockId"     
                     type="text"> 
             </ion-input>
@@ -81,18 +86,7 @@
           <ion-button slot="end" (click)="getLocation()">Set </ion-button>
         </ion-item>
 
-        <!-- <div>
-          <ion-button 
-            type="submit" 
-            [disabled]="!gymForm.valid" 
-            color="primary" 
-            shape="full" 
-            expand="block"
-            >
-          Update
-          </ion-button>
-      </div> -->
-
+        
    </form>
 
 </ion-content>

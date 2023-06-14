@@ -19,8 +19,7 @@ class="ion-no-border"
           (ionChange)="selecthandleChange($event)"
           [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
           slot="end"
-          (ionCancel)="pushLog('ionCancel fired')"
-          (ionDismiss)="pushLog('ionDismiss fired')"           
+         
         >
         <ion-select-option *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
             
@@ -32,6 +31,10 @@ class="ion-no-border"
 </ion-header>
 
 <ion-content [fullscreen]="true">
+
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   
   <div class="div-0">
     <ion-label color="dark"> <h2><strong>Report</strong></h2> </ion-label>   

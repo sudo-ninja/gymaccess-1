@@ -131,13 +131,15 @@ const routes: Routes = [
   {
     path: 'about',
     loadChildren: () => import('./static/about/about.module').then( m => m.AboutPageModule)
-  },  {
+  },
+  {
     path: 'chathome',
     loadChildren: () => import('./chatpages/chathome/chathome.module').then( m => m.ChathomePageModule)
   },
   {
     path: 'feedback-alert',
-    loadChildren: () => import('./pages/feedback-alert/feedback-alert.module').then( m => m.FeedbackAlertPageModule)
+    loadChildren: () => import('./pages/feedback-alert/feedback-alert.module').then( m => m.FeedbackAlertPageModule),
+    canActivate: [AuthGuard]
   },
 
 

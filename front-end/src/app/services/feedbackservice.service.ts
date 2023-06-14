@@ -41,9 +41,17 @@ export class FeedbackserviceService {
   }
 
   update(id: any, data: any): Observable<any> {
-    console.log("i m in Update by ID oop");
-    return this.http.put(`${baseUrl}/${id}`, data).pipe(catchError(this.errorMgmt));
+    console.log("i m in Update by ID function");
+    console.log(`${id}`);
+    console.log(`${baseUrl}/${id}`);
+
+    // return this.http.put(`${baseUrl}/${id}`,data,{headers: this.headers}).pipe(tap((dat:any)=>console.log(`updated with ID =${dat.id}`)),
+    // catchError(this.errorMgmt));
+    return this.http.put(`${baseUrl}/${id}`, data).pipe(tap((dat:any)=>console.log(`updated with ID =${dat._id}`)),
+    catchError(this.errorMgmt));
   }
+
+ 
 
   delete(id: any): Observable<any> {
     return this.http.delete(`${baseUrl}/${id}`).pipe(catchError(this.errorMgmt));
@@ -78,15 +86,28 @@ export class FeedbackserviceService {
     return this.http.get(`${baseUrl}/ByExpiry?isExpiryAlert=${_isExpiry}&gym_id=${gymId}`);
   }
 
-  getFeedbackByValidityReq(gymId:any,_isExpiry: any): Observable<Feedback> {
+  getFeedbackByValidityReq(gymId:any,_isValid: any): Observable<Feedback> {
     console.log("i m in get  by ID Method");
-    return this.http.get(`${baseUrl}/ByValidityRequest?isValidityRequestAlert=${_isExpiry}&gym_id=${gymId}`);
+    return this.http.get(`${baseUrl}/ByValidityRequest?isValidityRequestAlert=${_isValid}&gym_id=${gymId}`);
   }
 
-  getFeedbackByFeedback(gymId:any,senderId: any): Observable<Feedback> {
+  getFeedbackByFeedbackStatus(gymId:any,_isExpiry: any): Observable<Feedback> {
     console.log("i m in get  by ID Method");
-    return this.http.get(`${baseUrl}/ByFeedback?sender_id=${senderId}&gym_id=${gymId}`);
+    return this.http.get(`${baseUrl}/ByFeedbackStatus?isFeedback=${_isExpiry}&gym_id=${gymId}`);
   }
+
+  getFeedbackByFeedback(gymId:any,senderId: any,isfeedBk:boolean): Observable<Feedback> {
+    console.log("i m in get  by ID Method");
+    return this.http.get(`${baseUrl}/ByFeedback?sender_id=${senderId}&gym_id=${gymId}&isFeedback=${isfeedBk}`);
+  }
+
+  getFeedbackBySender(feedback:any,senderId: any): Observable<Feedback> {
+    console.log("i m in get  by ID Method");
+    return this.http.get(`${baseUrl}/ByFeedbackBysenderId?sender_id=${senderId}&isFeedback=${feedback}`);
+  }
+
+
+  
 
   // Error handling
   errorMgmt(error: HttpErrorResponse) {

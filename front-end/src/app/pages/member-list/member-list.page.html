@@ -14,13 +14,14 @@
     </ion-item>
     <ion-searchbar         
         placeholder ='Search Member'
-        [(ngModel)]="searchTerm"
+        [(ngModel)]="searchText"
         showCancelButton="focus"
+        (ionChange)="onSearchTextEntered($event)"
         animated   
         >    
       </ion-searchbar>
       
-     
+     <!-- <app-search (searchTextChanged)="onSearchTextEntered($event)"></app-search> -->
   </ion-header>
 
 <ion-content class="ion-padding">
@@ -35,7 +36,7 @@
         <!-- <ion-list lines="none" *ngFor="let m of members |customFilter:searchTerm" lines=""></ion-list> -->
 
        <ion-list lines="none" *ngFor="let m of members " lines="">
-        <ion-div >
+        <ion-div *ngIf="searchText ===''|| m.m_name.toLowerCase().includes(searchText) || m.mobile.toLowerCase().includes(searchText)">
           <ion-grid>
             <ion-row>
               <ion-col size="10">              

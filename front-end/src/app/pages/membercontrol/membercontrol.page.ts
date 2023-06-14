@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit, ViewChild} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -20,7 +20,20 @@ import { LoadingController, ModalController } from '@ionic/angular';
   styleUrls: ['./membercontrol.page.scss'],
 })
 export class MembercontrolPage implements OnInit {
-  value: any;
+
+  @ViewChild('dateTime') sdate;
+  @ViewChild('dateTime') edate;
+  @ViewChild('dateTime') Itime;
+  @ViewChild('dateTime') Otime;
+
+  //for intitial value 
+  dbEndDateUTC:any;
+  dbStartDateUTC:any;
+  dbInTimeUTC:any;
+  dbOutTimeUTC:any;
+  dbJoinDateUTC:any;
+  
+  // value: any;
   startDateValue: any;
   endDateValue: any;
   intimeValue: any;
@@ -29,6 +42,7 @@ export class MembercontrolPage implements OnInit {
   isButtonSubmit:boolean = true;
   // dateValue:new Date('2022-03-15').toISOString();
   date_value:any
+  join_date:any;
   myDate: String;
   myEndDate:String;
   myInTime:String;
@@ -65,30 +79,13 @@ export class MembercontrolPage implements OnInit {
 
   members: Member[] = [];
 
-  member: Member = {
-    _id: '',
-    m_name: '',
-    gym_id: '',
-    email: '',
-    aadhar: '',
-    mobile: '',
-    Emergency_mobile: '',
-    m_address_lat: '',
-    m_address_long: '',
-    memberType: '',
-    m_joindate: '',
-    m_accesstype: '',
-    isInviteAccepted: '',
-    m_startdate: '',
-    m_enddate: '',
-    m_validdays: '',
-    m_intime: '',
-    m_outtime: '',
-  }
-
-  memberForm!: FormGroup;
-  memberForm2!: FormGroup;
-   
+   memberForm!: FormGroup;
+  name: any;
+  Start_Date_UTC_: any;
+  End_Date_UTC_: number;
+  In_Time_UTC_: number;
+  Out_Time_UTC_: any;
+    
 
   constructor(
     public loadingController:LoadingController,
@@ -98,21 +95,32 @@ export class MembercontrolPage implements OnInit {
     public memberApi: MemberserviceService,
     private modalCtrl: ModalController
   ) {
-    // this.date_value =Date.now().toString();
-    console.log(this.myDate);
-   
+    
   }
 
   ngOnInit() {
-    
-    
-    let idu = this.id || this.route.snapshot.params['id'];
-    console.log(this.idu);
-    console.log(this.route.snapshot.paramMap.get['id']);
+       
+    // this.route.snapshot.params['id'];
+    // console.log(this.idu);
+    // console.log(this.route.snapshot.paramMap.get['id']);
     // this.getProduct(this.route.snapshot.params['id']);
     // this.getProduct(this.route.snapshot.paramMap.get('id'));
     this.idun = this.id;
     console.log(this.idu,this.id,this.idun);
+
+    this.memberApi.getMember(this.id).subscribe((res)=>{
+        console.log(res);
+      // this.join_date = res.m_joindate;
+      // this.myDate = res.m_startdate;
+      // this.myEndDate = res.m_enddate;
+      // this.myInTime = res.m_intime;
+      // this.myOutTime = res.m_outtime;
+
+      // this.sdate.value = this.myDate;
+      // this.edate.value = this.myEndDate;
+      // this.Itime.value = this.myInTime;
+      // this.Otime.value = this.myOutTime;
+    });
 
     
     this.getMembercontrol(this.id);
@@ -124,74 +132,66 @@ export class MembercontrolPage implements OnInit {
     // this.route.snapshot.params[this.id];
     // This member form will take data and update it
     this.memberForm = this.formBuilder.group({
-      m_startdate: ['', Validators.required],
-      m_enddate: ['', Validators.required],
-      m_validdays: ['', Validators.required],
-      m_intime: ['', Validators.required],
-      m_outtime: ['', Validators.required],
+      m_startdate: [''],
+      m_enddate: [''],
+      m_validdays: [''],
+      m_intime: [''],
+      m_outtime: [''],
     });
   }
 
+
+  cancel() {
+    return this.modalCtrl.dismiss(null, 'cancel');
+  }
+
+  confirm() {
+    return this.modalCtrl.dismiss(this.name, 'confirm');
+  }
   
   async getMembercontrol(id) {
-
     const loading = await this.loadingController.create({
       message: 'Loading....'
     });
     await loading.present();
-        var oldEndDateUTC;
-        var oldStartDateUTC;
-        var oldInTimeUTC;
-        var oldOutTimeUTC;
+
     this.memberApi.getMember(id).subscribe((data:any) => {
       try {
         console.log(data);
-        oldStartDateUTC = data.m_startdate;
-        oldEndDateUTC = data.m_enddate;
-        oldInTimeUTC = data.m_intime;
-        oldOutTimeUTC = data.m_outtime;
-        // this to get existing data to display as to be updated
-        
-        // console.log(new Date(this.outtimeValue*1).toTimeString();
-        // this.id = data.id;
-        this.memberForm.patchValue({
-          // m_startdate: data.m_startdate,
-          // m_enddate: data.m_enddate,
-          // m_validdays: data.m_validdays,
-          // m_intime: data.m_intime,
-          // m_outtime: data.m_outtime,
-          m_startdate: this.toISOStringWithTimezone(new Date(oldStartDateUTC*1)),
-          // m_enddate: new Date(oldEndDateUTC*1).toISOString(),
-          // m_validdays: data.m_validdays,
-          // m_intime: new Date(oldInTimeUTC*1).toISOString(),
-          // m_outtime: new Date(oldOutTimeUTC*1).toISOString(),
+        this.dbStartDateUTC = data.m_startdate;
+        this.dbEndDateUTC = data.m_enddate;
+        this.dbInTimeUTC = data.m_intime;
+        this.dbOutTimeUTC = data.m_outtime;
+        this.dbJoinDateUTC = data.m_joindate;
 
-          m_enddate: this.toISOStringWithTimezone(new Date(oldEndDateUTC*1)),
+        // console.log("myDate Start Date") ;
+        console.log(data.m_startdate);
+        // set intial value to be loaded using patchValue 
+        this.memberForm.patchValue({
+
+          m_startdate: this.toISOStringWithTimezone(new Date(this.dbStartDateUTC*1)),
+        
+          m_enddate: this.toISOStringWithTimezone(new Date(this.dbEndDateUTC*1)),
+
           m_validdays: data.m_validdays,
-          m_intime: this.toISOStringWithTimezone(new Date(oldInTimeUTC*1)),
-          m_outtime: this.toISOStringWithTimezone(new Date(oldOutTimeUTC*1)),
+
+          m_intime: this.toISOStringWithTimezone(new Date(this.dbInTimeUTC*1)),
+
+          m_outtime: this.toISOStringWithTimezone(new Date(this.dbOutTimeUTC*1)),
         });
         
-        // this.startDateValue = new Date(oldStartDateUTC*1).toISOString();
-        // this.endDateValue = new Date(oldEndDateUTC*1).toISOString();
-        // this.intimeValue = new Date(oldInTimeUTC*1).toISOString();
-        // this.outtimeValue = new Date(oldOutTimeUTC*1).toISOString();
+        this.startDateValue = this.toISOStringWithTimezone(new Date(this.dbStartDateUTC*1));
+        this.endDateValue = this.toISOStringWithTimezone(new Date(this.dbEndDateUTC*1));
+        this.intimeValue = this.toISOStringWithTimezone(new Date(this.dbInTimeUTC*1));
+        this.outtimeValue = this.toISOStringWithTimezone(new Date(this.dbOutTimeUTC*1));
+        this.join_date = this.toISOStringWithTimezone(new Date(this.dbJoinDateUTC*1));
 
-        this.startDateValue = this.toISOStringWithTimezone(new Date(oldStartDateUTC*1));
-        this.endDateValue = this.toISOStringWithTimezone(new Date(oldEndDateUTC*1));
-        this.intimeValue = this.toISOStringWithTimezone(new Date(oldInTimeUTC*1));
-        this.outtimeValue = this.toISOStringWithTimezone(new Date(oldOutTimeUTC*1));
-         
         this.isCalenderDate = true;
-        // console.log(this.startDateValue);
-        // console.log(this.endDateValue);
-        this.myDate = this.startDateValue;
-        this.myEndDate = this.endDateValue;
-        this.myInTime = this.intimeValue;
-        // this.myInTime = '2020-10-06T20:43:33+05:30';
-        this.myOutTime = this.outtimeValue;
-        console.log(this.myInTime);
-        console.log(this.myOutTime);
+        console.log(this.startDateValue);
+        console.log(this.intimeValue);
+        console.log(this.outtimeValue);
+        console.log(this.endDateValue);
+        // console.log(this.myDate);
         loading.dismiss();
       } catch (error) {
         loading.dismiss();
@@ -200,7 +200,7 @@ export class MembercontrolPage implements OnInit {
       }
     });
         
-    console.log(oldInTimeUTC);
+    console.log(this.dbInTimeUTC);
     console.log(this.startDateValue);
     console.log(this.endDateValue);
   }
@@ -210,19 +210,54 @@ export class MembercontrolPage implements OnInit {
     this.isLoadingResults = true;
     // console.log(this.idun);
     let idux = this.id || this.route.snapshot.paramMap.get('id') || this.idun;
-    console.log(idux, this.id, this.idun);
+    console.log(this.dbStartDateUTC,this.dbEndDateUTC);
+
+
+    if(!this.Start_Date_UTC){
+      this.Start_Date_UTC_ = +this.dbStartDateUTC;
+      console.log("null",this.dbStartDateUTC);
+    } else{
+      console.log("IF",this.Start_Date_UTC);
+      this.Start_Date_UTC_ = this.Start_Date_UTC;
+        }
+
+    if(!this.End_Date_UTC){
+      this.End_Date_UTC_= +this.dbEndDateUTC;
+     
+    } else{
+      this.End_Date_UTC_ = this.End_Date_UTC; 
+    }    
+
+    if(!this.In_Time_UTC){
+      this.In_Time_UTC_= +this.dbInTimeUTC;
+  
+    } else{
+      this.In_Time_UTC_ = this.In_Time_UTC;
+    }
+
+    if(!this.Out_Time_UTC){
+      this.Out_Time_UTC_= +this.dbOutTimeUTC;
+    
+    } else{
+      this.Out_Time_UTC_=this.Out_Time_UTC;
+    }
+
+
+    this.validDaysCalc();
+
     this.memberForm = this.formBuilder.group({
-      m_startdate: [this.Start_Date_UTC, Validators.required],
-      m_enddate: [this.End_Date_UTC, Validators.required],
+      m_startdate: [this.Start_Date_UTC_],
+      m_enddate: [this.End_Date_UTC_, Validators.required],
       m_validdays: [this.BalanceDays, Validators.required],
-      m_intime: [this.In_Time_UTC, Validators.required],
-      m_outtime: [this.Out_Time_UTC, Validators.required],
+      m_intime: [this.In_Time_UTC_, Validators.required],
+      m_outtime: [this.Out_Time_UTC_, Validators.required],
     });
     console.log(this.memberForm.value);
     console.log(idux);
 
     this.memberApi.update(idux, this.memberForm.value).subscribe(
-      (res: any) => {
+      (res) => {
+        console.log(res);
         this.idu = res._id;
         // localStorage.setItem('ID', JSON.stringify(this.id));
         this.isLoadingResults = false;
@@ -235,15 +270,9 @@ export class MembercontrolPage implements OnInit {
         this.isLoadingResults = false;
       }
     );
-
-    // this.memberForm2 = this.formBuilder.group({
-    //   'm_validdays': this.BalanceDays,
-    // });
-    console.log('End Daye', this.End_Date, 'Start Date', this.Start_Date_UTC);
-
-    // console.log("146 line",this.StartDate);
+   
     this.idu = this.idun;
-    this.validDaysCalc();
+   
   }
 
   // change(event) {
@@ -313,28 +342,33 @@ export class MembercontrolPage implements OnInit {
   End_Date: any;
   End_Date_UTC:any;
   EndDateChange(event) {
-    //     console.log(event);
+        console.log(event.detail.value);
     // console.log('Return Value True', event.detail.value);
     this.End_Date_UTC = Date.parse(event.detail.value);
     // console.log(new Date(this.End_Date).toTimeString());
     // this.validDaysCalc();
-    this.End_Date= new Date(this.End_Date_UTC).toISOString();
+    // this.End_Date= new Date(this.End_Date_UTC).toISOString();
+    this.End_Date = this.toISOStringWithTimezone(new Date(this.End_Date_UTC))
   }
+
   Start_Date:any;
   Start_Date_UTC: any;
+
   StartDateChange(event) {
-     // if this is not touched then set old value as new value 
-    // so that null can not be passed to DB
-  
     console.log(event.detail.value);
-    // console.log('Return Value True', event.detail.value);
-    this.Start_Date_UTC = Date.parse(event.detail.value);
+    console.log('sdate event trigger when touch', event);
+    if(event.detail.value){
+      this.Start_Date_UTC = Date.parse(event.detail.value);
+    }else{
+      console.log("Start Date not touch ");
+    }
     // this.StartDate = new Date(event.detail.value).getTime();
     // console.log('238 line for String', this.Start_Date_UTC);
     // console.log(new Date(this.Start_Date_UTC).toLocaleString());
     // console.log(this.Start_Date_UTC);
     // console.log(new Date(this.Start_Date_UTC).toString());
-    this.Start_Date = new Date(this.Start_Date_UTC).toISOString();
+    // this.Start_Date = new Date(this.Start_Date_UTC).toISOString();
+    this.Start_Date = this.toISOStringWithTimezone(new Date(this.Start_Date_UTC));
     // console.log(this.Start_Date);
     // var a = new Date(this.Start_Date_UTC).toLocaleString().split(',');
     // var date = a[0];
@@ -345,14 +379,18 @@ export class MembercontrolPage implements OnInit {
 
   In_Time:any
   In_Time_UTC: any;
+
   InTimeChange(event) {
     console.log("IN TIME ",event);
     // console.log('Return Value True', event.detail.value);
     this.In_Time_UTC = Date.parse(event.detail.value);
     // console.log(this.In_Time_UTC);
-    console.log(new Date(this.In_Time_UTC).toTimeString());
-    this.In_Time = new Date(this.In_Time_UTC).toISOString();
-    // console.log(this.In_Time);
+    console.log(new Date(this.In_Time_UTC).toISOString());
+        console.log(this.toISOStringWithTimezone(new Date(this.In_Time_UTC)))
+
+    // this.In_Time = new Date(this.In_Time_UTC).toISOString();
+    this.In_Time = this.toISOStringWithTimezone(new Date(this.In_Time_UTC))
+    console.log(this.In_Time);
   }
 
   Out_Time: any;
@@ -363,7 +401,8 @@ export class MembercontrolPage implements OnInit {
     this.Out_Time_UTC = Date.parse(event.detail.value);
     console.log(new Date(this.Out_Time_UTC));
     console.log(this.toISOStringWithTimezone(new Date(this.Out_Time_UTC)))
-    this.Out_Time = new Date(this.Out_Time_UTC).toISOString();
+    // this.Out_Time = new Date(this.Out_Time_UTC).toISOString();
+    this.Out_Time = this.toISOStringWithTimezone(new Date(this.Out_Time_UTC));
   }
 
   // convert date to ISO string with timezone

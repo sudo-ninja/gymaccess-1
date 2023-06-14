@@ -13,30 +13,50 @@
       <ion-list>
       <ion-item>
         <!-- <ion-label position="floating">Gym Name </ion-label> -->
-        <ion-input position="floating" label="Gym Name" formControlName="gym_name" type="text" required></ion-input>
+        <ion-input 
+        position="floating" 
+        labelPlacement="floating"
+        label="Gym Name" 
+        formControlName="gym_name" 
+        type="text" 
+        required></ion-input>
       </ion-item>
 
       <ion-item>
         <!-- <ion-label position="floating">Gym Mobile</ion-label> -->
-        <ion-input position="floating" label="Gym Mobile" formControlName="gym_mobile" type="text" required>
+        <ion-input 
+        position="floating"
+        labelPlacement="floating" 
+        label="Gym Mobile" 
+        formControlName="gym_mobile" type="text" required>
         </ion-input>
       </ion-item>
 
       <ion-item>
         <!-- <ion-label position="floating">Gym Emergency Mobile</ion-label> -->
-        <ion-input position="floating" label="Gym Emergency Mobile" formControlName="gym_emergency" type="text" required>
+        <ion-input 
+        position="floating"
+        labelPlacement="floating" 
+        label="Gym Emergency Mobile" 
+        formControlName="gym_emergency" type="text" required>
         </ion-input>
       </ion-item>
 
       <ion-item>
         <!-- <ion-label position="floating">Gym GSTIN (optional)</ion-label> -->
-        <ion-input label="Gym GSTIN(Optional)" formControlName="gym_gstin"  type="text">
+        <ion-input 
+        label="Gym GSTIN(Optional)" 
+        labelPlacement="floating"
+        formControlName="gym_gstin"  type="text">
         </ion-input>
       </ion-item>
 
       <ion-item>
         <!-- <ion-label position="floating">Gym Lock ID</ion-label> -->
-        <ion-input position="floating" label="Gym Lock ID" formControlName="gym_lockId"  type="text">
+        <ion-input 
+        position="floating"
+        labelPlacement="floating"
+        label="Gym Lock ID" formControlName="gym_lockId"  type="text">
         </ion-input>
       </ion-item>
 
@@ -44,18 +64,6 @@
           <ion-label>Location on Map</ion-label>
           <ion-button slot="end" (click)="getLocation()">Set </ion-button>
       </ion-item>
-
-      <!-- <ion-item>
-        <ion-label position="floating">Gym Location LAT</ion-label>
-        <ion-input formControlName="gym_lat"  type="text">
-        </ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="floating">Gym Location LONG</ion-label>
-        <ion-input formControlName="gym_long"  type="text">
-        </ion-input>
-      </ion-item> -->
 
       <div>
           <ion-button 
@@ -71,4 +79,4 @@
 
    </ion-content>
 
-   <!-- [disabled]="!gymForm.valid" -->
+ 

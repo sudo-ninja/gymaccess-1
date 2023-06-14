@@ -17,6 +17,8 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 // import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@awesome-cordova-plugins/native-geocoder/ngx';
 // import both main and modal page here 
 
+import { FormsModule } from '@angular/forms';
+
 // custom schema for swiper js
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
@@ -45,6 +47,7 @@ import { CustomFilterPipe } from './custom-filter-pipe.pipe';
     // NativeGeocoder, 
     IonicStorageModule.forRoot(), 
     ReactiveFormsModule,
+    FormsModule,
   ],
   providers: [AuthGuard,UserService,Storage,
     MemberserviceService,

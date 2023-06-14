@@ -32,6 +32,9 @@ import { Feedback } from 'src/app/models/feedback';
   styleUrls: ['./me.page.scss'],
 })
 export class MePage implements OnInit {
+
+  
+  isLoadingResults = false;
   // loggeduserUsername:any;
   loggeduserEmail:any;
   loggeduserIsAdmin:boolean;
@@ -63,6 +66,7 @@ export class MePage implements OnInit {
   isloggedUserMember: boolean;
   memberName: string;
   loggeduserUsername: any;
+  isFeedbk:boolean = false;
 
 
   
@@ -115,43 +119,27 @@ export class MePage implements OnInit {
      this.loggeduserUsername = JSON.parse(user!).username; // if admin is loggedin then there is no other way to know his name except username
      this.loggeduserEmail = JSON.parse(user!).email;  
      this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((res)=>{
+        
+      if(!res){
+        return;
+      }else{
+        console.log(res);
       this.memberGymId = res.gym_id;
       this.memberId = res._id;
       this.memberName = res.m_name;
+      console.log(this.memberGymId);
+
+      this.gymApi.getGym(this.memberGymId).subscribe((res)=>{
+        this.gymName= res.gym_name;
+        this.gymLocation_lat= res.gym_address_lat;
+        this.gymLocation_lng = res.gym_address_long;
+        this.gymEmergencyMobile=res.gym_emergency;          
+      });
+    }
      });   
      
   }
 
- 
-  // if logged user is member then change the page information 
-  // if logged user is admin then in gym managment show .. gym , associated with him , gym names, 
-  //if logged user is member then in gym management show .. gym joined by him
-
-  // in message centre if loffed user is admin then here hw should get all mrequest sent by members to him
-  // for extension show them as one liner .. if click that one liner then show that in alert ..
-  // if click Ok in alert send back response message as delivered to member message centre with Accepted or Denied.
-  
-  
-  // help and feedback .. keep some text area here limit 140 char, as soon as type start show
-  // submit button 
-  // as soon as submit is prssed store this message in DB and back end let this message go to app developer 
-  // using node mailer along with member ID 
-
-  /* in setting button .. show user profile 
-  user profile containing 
-  name 
-  email id
-  telephone 
-  address
-
-  also privacy policy
-  about 
-  terms and conditions
-  and at bottom logout 
-  logout function with all delet cache data and all local storage clear , session clear data
-  
-
-   */
 
   ngOnInit() {
 
@@ -194,12 +182,6 @@ export class MePage implements OnInit {
     
   }
 
-  // Request Made show here use Ion chip to show number of request made by use with date and time 
-  // also show if that is pending or accepted if pending .. if accepted then remove that and show push notification
-  // as request accepted . 
-  // use ngIF at html to check if request message is made or not 
-  //if made then show div with Request Message made for Days ...
-  // Recharge Request Accepted .. Pending 
   rechargeDays:any;
   isAccepted:any;
 
@@ -242,25 +224,7 @@ export class MePage implements OnInit {
     this.router.navigate(['/login'],{replaceUrl:true});
   }
 
-  //check if user exist as member or not ?
-// if he is not member or deleted by gym then page must route back to home page 
-// isUserMember(email){
-//   //search member DB for this email 
-//   this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
-//     console.log(data);
-//     if(!data){
-      
-//       this.router.navigateByUrl('/home',{replaceUrl: true,});
-//     }else{
-//       // this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
-//       // this.memberOutTime = data.m_outtime*1 // in Unix milisecond
-//       // this.memberInTime = data.m_intime*1// in unix milisecond
-//       // this.gymId = data.gym_id // get gym ID
-//     }
-
-//   });
-// }
-
+  
   gymLat:any;
   gymLng:any;
 async gymLocation(){
@@ -285,7 +249,32 @@ customCounterFormatter(inputLength: number, maxLength: number) {
   return `${maxLength - inputLength} characters remaining`;
 }
 
-async feedbackAlert(){  
+feedbackAlert(){ 
+  this.isLoadingResults = true;
+  this.feedbackApi.getFeedbackByFeedback(this.memberGymId,this.memberId,true).subscribe((res)=>{
+    this.isLoadingResults = false;
+
+    console.log(res);
+    console.log([res].length);
+    for (let i = 0; i < [res].length; i++) {
+      console.log(res[i].isFeedback);
+      if(res[i].isFeedback){       
+      this.isFeedbk = res[i].isFeedback;      
+      this.presentAlert("Earlier Feddback Made !!","Action Still Pending");
+      break;      
+    }
+  }
+});
+  
+if(!this.isFeedbk){
+  console.log("in add feedbak");  
+  this.addFeedback();
+}
+
+}
+
+async addFeedback(){
+
   const alert = await this.alertController.create({
     header :'Suggestions or Query About App',
     inputs: [
@@ -309,13 +298,8 @@ async feedbackAlert(){
         }, 
         {
             text: 'Send',
-            handler: (alertData) => { //takes the data 
-                // console.log(alertData.feedback);
-                // first check if already feedback is there or not by this member of gym 
-                //if not then only allow to send 
-                this.feedbackApi.getFeedbackByFeedback(this.memberGymId,this.memberId).subscribe((res)=>{
-                  console.log([res].length);
-                  if([res].length){
+            handler: (alertData) => { 
+                if(this.isFeedbk){
                     // console.log("previous feedback still not responded wait for response")
                     this.presentAlert("Earlier Feddback Made !!","Action Still Pending");
                   }else{
@@ -323,7 +307,7 @@ async feedbackAlert(){
                       console.log(res);
                     });
                   };
-                });
+                
                 // console.log({"gym_id":this.memberGymId,"sender_id":this.memberId,"message":alertData.feedback,"isFeedback":true});
                               
         }
@@ -331,6 +315,10 @@ async feedbackAlert(){
     ]
 });
 await alert.present();
+}
+
+async feedbackAlertAdmin(){  
+ this.router.navigateByUrl('/feedback-alert');
 }
 
 settings(){

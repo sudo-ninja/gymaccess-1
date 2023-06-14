@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Share } from '@capacitor/share';
@@ -26,6 +26,8 @@ import { StorageService } from 'src/app/services/storage.service';
 import { AnimationController } from '@ionic/angular';
 import { createAnimation } from '@ionic/core';
 
+import { SearchComponent } from 'src/app/search/search.component';
+
 
 
  
@@ -36,6 +38,8 @@ import { createAnimation } from '@ionic/core';
 })
 export class MemberListPage implements OnInit {
   // @ViewChildren(IonCard,{read:ElementRef})
+  @ViewChild(SearchComponent) search:SearchComponent;
+
   BalanceDays_ = localStorage.getItem('balanceDays');
   isButtonSubmit:boolean=false;
 
@@ -140,9 +144,7 @@ export class MemberListPage implements OnInit {
         if(data){
           console.log(data.length,"GYM ID==..",data);
            this.gyms = data; // from here passing data to gym selector
-           
-
-        }      
+                  }      
       } catch (error) {
         throw error;
       }
@@ -225,10 +227,7 @@ async getMembers(){
     
   }
 
-  // drop(event:CdkDragDrop<string[]>){
-  //   moveItemInArray(this.members,event.previousIndex,event.currentIndex);
-  // }
-
+ 
   addProduct() {
     this.router.navigate(['/member-add']);
   }
@@ -295,9 +294,6 @@ async getMembers(){
 
   /// Validity Controller by update member control
   async updateMemberControl(uid:string) {
-    // setTimeout(x => {
-    //   this.isButtonSubmit=true;
-    // },500)//.5 seconds
     
     const modal = await this.modalCtrl.create({
     component: MembercontrolPage,
@@ -305,8 +301,8 @@ async getMembers(){
     breakpoints: [0, 0.5, 0.8],
     initialBreakpoint: 0.8,      
   });
-  console.log(res => {
-    this.memberApi.getMember(res.id);
+  this.memberApi.getMember(uid).subscribe((res)=>{
+    console.log(res);
   });
   await modal.present();
   this.isButtonSubmit=false;
@@ -340,22 +336,6 @@ async getMembers(){
     }    
    });
    
-
-  //  if(this.mcontrol_s.getMcontrolEmail(this.inviteMemberMail)){
-    
-  //   this.inviteContolAlertSubHeaderMessage = "iCode";
-  //   this.inviteControlHeaderMessage = "Invitaion Code";
-  //   this.inviteContolAlertMessage = 'Please ask member to enter this code in "JOIN GYM", ***Valid For 1 Hours***';
-  //  }else{
-  //   this.inviteControlHeaderMessage = "Invitaion Acceptance Pending !";
-  //   this.inviteContolAlertSubHeaderMessage = 'Already Invitaion Code Generted';
-  //   this.inviteContolAlertMessage = "Please Ask Member to Enter Code after Clicking in JOIN GYM";
-  //   this.invitaionCodeGenerated = true;
-  //  }
-  //   if(this.invitaionCodeGenerated){
-  //     console.log("in 164 loop");
-  //   }
-      
 
   }
 
@@ -590,29 +570,29 @@ rangeValue(endate:any,balanceDays:any){
 selecthandleChange(ev){
 this.currentGym = ev.target.value;
 this.MyDefaultGymValue = ev.target.value;
-// console.log(this.currentGym);
+console.log(this.currentGym);
 this._gym_id = this.currentGym;
 console.log(this._gym_id);
 this.getMembers();
 this.compareWithFn(this._gym_id,ev.target.value);
 }
 
-customPopoverOptions = {
-  header: 'My GYM(s)',
-  // subHeader: 'Select Specific Gym',
-  message: 'Select Specific Gym',
-};
-
-// compareFn(g1:Gym,g2:Gym) : boolean{
-//   return g1 && g2 ? g1.gym_name == g2.gym_name : g1 == g2;
-
-// }
-
-
+// customPopoverOptions = {
+//   header: 'My GYM(s)',
+//   // subHeader: 'Select Specific Gym',
+//   message: 'Select Specific Gym',
+// };
 
 compareWithFn(o1, o2) {
   return o1 === o2;
 };
+
+searchText:any = '';
+
+onSearchTextEntered(searchValue:any){
+this.searchText = searchValue;
+console.log(this.searchText);
+}
 
 deletAllMembers(){
   this.memberApi.deleteAll();

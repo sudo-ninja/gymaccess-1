@@ -16,6 +16,7 @@ import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+// import { Ng2SearchPipeModule } from 'ng2-search-filter';
 // import { AppModule } from "../../app.module";
 
 
@@ -35,6 +36,8 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
         MemberListPageRoutingModule,
         QRCodeModule,
         // AppModule
+        //import here search component
+        
     ]
 })
 export class MemberListPageModule {}

@@ -12,19 +12,19 @@
   <form [formGroup]="memberForm" (ngSubmit)="onFormSubmit()">
     
       <ion-item>
-        <ion-label position = "fixed"> Start Date   </ion-label>         
+        <ion-label position = "fixed"> Start Date   </ion-label> 
         <ion-datetime-button slot="end" datetime ="sdate" formControlName="m_startdate" ngDefaultControl></ion-datetime-button>
       </ion-item>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
           <ion-datetime
-          [value]="myDate"
+          [min]="join_date"
+          [value]="startDateValue"
           [showDefaultButtons]="true"
           presentation="date" 
           id="sdate"
-          #sdate
-          hourCycle="h24" 
+          #sdate           
           (ionChange)="StartDateChange($event)">
           <span slot="title">Select a Start Date</span>
         </ion-datetime>
@@ -41,8 +41,8 @@
           <ion-datetime
                     
           [showDefaultButtons]="true"
-          [value]="myEndDate"
-          hourCycle="h24"
+          
+          [value]="endDateValue"
           [min]="Start_Date" 
           presentation="date" 
           id="edate" 
@@ -51,7 +51,7 @@
           <span slot="title">Select a End Date</span>
         </ion-datetime>
         <ion-buttons slot="buttons">
-          <ion-button color="danger" (click)="edate.reset()">Reset</ion-button>
+          <!-- <ion-button color="danger" (click)="edate.reset()">Reset</ion-button> -->
           <!-- <ion-button color="primary" (click)="edate.cancel()">Never mind</ion-button>
           <ion-button color="primary" (click)="edate.confirm()">All Set</ion-button> -->
         </ion-buttons>
@@ -66,11 +66,13 @@
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
           <ion-datetime 
-          [value]="myInTime"
+          
+          [value]="intimeValue"
           [showDefaultButtons]="true"
           presentation="time" 
           hourCycle="h24"
           id="Itime" 
+          #Itime
           (ionChange)="InTimeChange($event)"></ion-datetime>
         </ng-template>
       </ion-modal>
@@ -83,12 +85,13 @@
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
           <ion-datetime
-          [value]="myOutTime"
+          [min]="intimeValue"
+          [value]="outtimeValue"
           [showDefaultButtons]="true"
-          [min]="In_Time"
           presentation="time"
           hourCycle="h24" 
           id="Otime" 
+          #Otime
           (ionChange)="OutTimeChange($event)"></ion-datetime>
         </ng-template>
       </ion-modal>
@@ -104,7 +107,6 @@
           color="primary" 
           shape="full" 
           expand="block"
-          [disabled]="isButtonSubmit"
           >
         Update
         </ion-button>

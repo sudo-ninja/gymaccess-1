@@ -1,13 +1,16 @@
  
 <ion-content>
+  <div *ngIf="isLoadingResults">
+    <ion-spinner *ngIf="isLoadingResults" ></ion-spinner>
+  </div>
   <ion-list lines="none">
 
   <ion-item>
     <ion-icon class="ion-icon-1" slot="end" name="settings" (click)="settings()"></ion-icon>              
   </ion-item>
 
-  <div class= "ion-padding">
-    <ion-item class="ion-item" href="/personalinformation">
+  <div class= "div-2">
+    <ion-item  href="/personalinformation" details="true">
       <ion-label>         
         <ion-text color="dark"><strong>{{loggeduserUsername}}</strong></ion-text>
       </ion-label>
@@ -46,34 +49,18 @@
         </ion-list>
     </div>  
      
-    <div class="div-1"  *ngIf="this.loggeduserIsAdmin"> 
-      <ion-item>   
-      <ion-label><h2>Gym Management</h2></ion-label>
-      <ion-icon slot="start"  name="barbell-sharp"><h2 color="primary">New Message</h2></ion-icon>
-    </ion-item> 
-        <ion-list [inset]="true" lines="none">
-          <ion-item>
-            <ion-label>
-              <p>Add More Gym..</p>
-              <ion-icon slot="end"  name="chevron-forward-outline"></ion-icon>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-    </div>
-     
-  
+      
 <div class="div-1" *ngIf="!this.loggeduserIsAdmin">
   <ion-item>
     <ion-label><h2 color="primary">Message Center</h2></ion-label>
-    <ion-badge color="success" slot="end">10</ion-badge>
-    <ion-badge color="danger" slot="end"*ngIf="anyMessage">1</ion-badge>
-    
+    <!-- <ion-badge color="success" slot="end">10</ion-badge> -->
+    <ion-badge color="danger" slot="end"*ngIf="anyMessage">1</ion-badge>    
     <ion-icon slot="start" name="mail-unread"><h2 color="primary">New Message</h2></ion-icon>
   </ion-item>
+
   <div>
     <ion-item *ngIf="anyMessage">
-      <ion-label><h2 color="primary">Request Sent</h2></ion-label>
-     
+      <ion-label><h2 color="primary">Request Sent</h2></ion-label>     
       <ion-icon slot="end"  name="chevron-forward-outline" (click)="alertForMemberMessage()"></ion-icon>
     </ion-item> 
 
@@ -82,54 +69,25 @@
       <ion-icon slot="start" name="mail-unread"> </ion-icon>
     </ion-item>
   </div>
+</div>
+
+
+
+<div class="div-1" *ngIf="!this.loggeduserIsAdmin">
+  <ion-item class="ion-item" detail="true" (click)="feedbackAlert()">
+    <ion-label > Feedback or Suggestions</ion-label>
+    <ion-icon slot="start" name="reader-outline"></ion-icon>
+  </ion-item> 
 </div>
 
 <div class="div-1" *ngIf="this.loggeduserIsAdmin">
-  <ion-item>
-    <ion-label><h2 color="primary"><strong>Message Center</strong></h2></ion-label>
-    <ion-item button detail="true" detail-icon="caret-forward-outline">
-      <ion-label>
-        <h3>Button Item</h3>
-        <p>Detail set to true - detail arrow displays on both modes</p>
-        <p>Detail icon set to caret-forward-outline</p>
-      </ion-label>
-    </ion-item>
-    
-
-    <ion-badge color="success" slot="end">10</ion-badge>
-    <ion-badge color="danger" slot="end"*ngIf="anyMessage">1</ion-badge>
-    
-    <ion-icon slot="start" name="mail-unread"><h2 color="primary">New Message</h2></ion-icon>
-  </ion-item>
-  <div>
-    <ion-item *ngIf="anyMessage">
-      <ion-label><h2 color="primary">Request Sent</h2></ion-label>
-     
-      <ion-icon slot="end"  name="chevron-forward-outline" (click)="alertForMemberMessage()"></ion-icon>
-    </ion-item> 
-    <ion-item *ngIf="isMessageFromAdmin">
-      <ion-label><h2 color="primary">Message From Gym Admin</h2></ion-label>
-      <ion-icon slot="start" name="mail-unread"> </ion-icon>
-    </ion-item>
-  </div>
-</div>
-
-
-<div class= "ion-padding">
-    <ion-item class="ion-item">
-      <ion-label > Feedback or Suggestions</ion-label>
+  
+    <ion-item class="ion-item" detail="true"(click)="feedbackAlertAdmin()"> 
+      <ion-label> Feedbacks or Alert </ion-label>
       <ion-icon slot="start" name="reader-outline"></ion-icon>
-      <ion-icon slot="end"  name="chevron-forward-outline" (click)="feedbackAlert()"></ion-icon>
     </ion-item> 
 </div>
   
-
- 
-
-  <!-- <ion-item>
-    <ion-label>Toggle</ion-label>
-    <ion-toggle slot="end"></ion-toggle>
-  </ion-item> -->
 </ion-list>
 </ion-content>
 

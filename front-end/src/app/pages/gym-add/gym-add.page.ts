@@ -43,6 +43,8 @@ export class GymAddPage implements OnInit {
   gymId:any;
 // for modal controller
   @ViewChild(GmapPage, {static : true}) gmap : GmapPage;
+  gymLAT: string;
+  gymLNG: string;
 
   constructor(
     private router: Router,
@@ -104,13 +106,16 @@ export class GymAddPage implements OnInit {
 
     this.gymForm = this.fb.group({
       user_id: [this.loggeduser._id, Validators.required],
-      gym_name: [''],
-      gym_emergency: [''],
-      gym_mobile: [''],
+      gym_name: ['',Validators.required],
+      gym_emergency: ['',Validators.required],
+      gym_mobile: ['',Validators.required],
       gym_gstin: [''],
-      gym_address_lat: [localStorage.getItem('gymLat')],
-      gym_address_long: [localStorage.getItem('gymLng')],
-      gym_lockId:[''],      
+      gym_lockId:[''],   
+      
+      // why lat , llng not taking by 
+      gym_address_lat: [this.gymLAT],
+      gym_address_long: [this.gymLNG],
+         
     })
     
   }
@@ -144,15 +149,24 @@ export class GymAddPage implements OnInit {
       await modal.present();
       const { data, role } = await modal.onWillDismiss();
     if (role === 'confirm') {
-      this.message = `Hello, ${data.lat}!`;
+      this.message = `Hello, ${data.lat,data.lng}!`;
       console.log(this.message);
       console.log(localStorage.getItem('gymLat'),localStorage.getItem('gymLng'));
+      this.gymLAT = localStorage.getItem('gymLat') || data.lat;
+      this.gymLNG = localStorage.getItem('gymLng') || data.lng;
     }
     }
     
 
   onSubmit() {
-    // this.submitted = true;  
+    // this.submitted = true; 
+    console.log(this.gymLAT,this.gymLNG);
+    this.gymForm.patchValue({
+      gym_address_lat :this.gymLAT,
+      gym_address_long :this.gymLNG,
+    });    
+    
+    console.log(this.gymForm.value);
      
     if (!this.gymForm.valid) {
       this.findInvalidControls();

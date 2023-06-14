@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 
 //for gym select
 import { GymService } from 'src/app/services/gym.service';
@@ -8,10 +8,12 @@ import { MemberserviceService } from 'src/app/services/memberservice.service';
 // to store once fetched data from DB to store locally
 import { StorageService } from 'src/app/services/storage.service';
 import { SafeUrl } from '@angular/platform-browser';
-import { AlertController } from '@ionic/angular';
+
 import { Router } from '@angular/router';
 
-import { ToastController } from '@ionic/angular';
+import { LoadingController, ToastController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
+import { GymDetailsPage } from '../gym-details/gym-details.page';
 
 
 
@@ -44,6 +46,10 @@ export class InforPage implements OnInit {
   //lock ID toggle set as momentry trigger only
   lockIDtoggleTrigger:boolean = false;
 
+  //listen button event
+  // @ViewChild('toggleBtn')
+    // public toggleBtn: ButtonComponent;
+
 
 
   constructor(
@@ -56,7 +62,12 @@ export class InforPage implements OnInit {
     // to navigate page to qr code page
     private router: Router,
     //tostcontrole
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    //modal controller
+    private alertCtrl: AlertController, 
+    private modalCtrl: ModalController,
+    public loadingController:LoadingController,
+
 
     ) { 
     // for select default gym in gym selector
@@ -71,33 +82,7 @@ export class InforPage implements OnInit {
           this.gyms = this.gymsResult;
     });
 
-    this.storageService.get('membersList').then((val)=>{
-      console.log(val); // here we store once fetched gym data
-          this.memberResults = val;
-          console.log(this.memberResults.length);
-          this.totalMembers = this.memberResults.length;
-          if(this.memberResults.m_accesstype=="free")
-          {
-            
-          }
-          // this.paidMebers = 
-    });
-
-
-    // 
-
-    this.memberApi.getMemberType(this._gym_id,"paid").subscribe((data)=>{
-      this.paidMemberResults = data;
-      this.paidMembers = this.paidMemberResults.length;
-      console.log((data));
-    });
-
-    this.memberApi.getMemberType(this._gym_id,"free").subscribe((data)=>{
-      this.freeMemberResults = data;
-      this.freeMembers = this.freeMemberResults.length;
-      console.log(data);
-    });
-
+   
     // Java code for date calculation 
     var date = new Date();
     date.setDate(date.getDate() + 7);
@@ -105,15 +90,28 @@ export class InforPage implements OnInit {
     this._daysAfter = date.getTime();
     console.log(this._daysAfter);
 
-    this.memberApi.getGoingtoEndMember(this._gym_id,this._daysAfter).subscribe((data)=>{
-      console.log(data);
-      this.goingtoEndResults = data;
-      this.goingtoExpire = this.goingtoEndResults.length;      
-    });
+  }
+
+//to prevent double click on submit button 
+  // @HostListener('dblclick', ['$event'])
+  //   clickEvent(event) {
+  //     event.srcElement.setAttribute('disabled', true);
+  //     }
+  handleRefresh(event) {
+        setTimeout(() => {
+          this.getMembersData();
+          event.target.complete();
+        }, 2000);
+      };
+
+  ngOnInit() {
+    this.getMembersData();
+
+    this.compareWith = this.compareWithFn;     
 
   }
 
-  ngOnInit() {
+  ionViewWillEnter(){
   }
 
   logs: string[] = [];
@@ -129,14 +127,60 @@ export class InforPage implements OnInit {
     // console.log(this.currentGym);
     this._gym_id = this.currentGym;
     console.log(this._gym_id);
-    // this.getMembers();
+    this.getMembersData();
     this.compareWithFn(this._gym_id,ev.target.value);
-    console.log(this.compareWithFn(this._gym_id,ev.target.value));
     }
+
+  // selecthandleChange(ev){
+  //   this.currentGym = ev.target.value;
+  //   this.MyDefaultGymValue = ev.target.value;
+  //   // console.log(this.currentGym);
+  //   this._gym_id = this.currentGym;
+  //   console.log(this._gym_id);
+    
+  //   this.compareWithFn(this._gym_id,ev.target.value);
+  //   console.log(this.compareWithFn(this._gym_id,ev.target.value));
+  //   }
 
     compareWithFn(o1, o2) {
       return o1 === o2;
     };
+
+    async getMembersData(){
+      const loading = await this.loadingController.create({
+        message: 'Loading....'
+      });
+      await loading.present();
+      // to store gym id as same will be used to add member page to add member in perticular gym
+      this.storageService.store('defaultGymId',this._gym_id);
+      localStorage.setItem('gymID',this._gym_id);
+      console.log(this._gym_id);
+      
+    await this.memberApi.getMemberType(this._gym_id,"free").subscribe((data)=>{
+      console.log(this._gym_id);
+      this.freeMemberResults = data;
+      this.freeMembers = this.freeMemberResults.length;
+      loading.dismiss();
+    });
+
+   await this.memberApi.getMemberType(this._gym_id,"paid").subscribe((data)=>{
+      this.paidMemberResults = data;
+      this.paidMembers = this.paidMemberResults.length;
+      this.totalMembers = this.freeMembers + this.paidMembers;
+      console.log((data));
+      loading.dismiss();
+    });
+
+    
+    await this.memberApi.getGoingtoEndMember(this._gym_id,this._daysAfter).subscribe((data)=>{
+      console.log(data);
+      this.goingtoEndResults = data;
+      this.goingtoExpire = this.goingtoEndResults.length; 
+      loading.dismiss();     
+    }); 
+
+      
+    }
 
 gymIdQrCodeDownload(){
   // from here pass gym id to Qr code page which will generate QR code for download
@@ -147,6 +191,7 @@ gymIdQrCodeDownload(){
 // download in pdf file with file name as gymID.
   public qrcode_data: string;
   public qrCodeDownloadLink: SafeUrl = "";
+
     downloadQrCode(gid:any,url:SafeUrl){
       this.qrCodeDownloadLink = url;
       this.qrcode_data=JSON.stringify(gid);
@@ -210,12 +255,22 @@ QrCodeDownLoad(){
 }
 
 addmoregym(){
-  this.router.navigate(['/gym-add/']),{replaceurl:true};}
-
-gymUpdate(){
-  console.log(this._gym_id);
-  // here user modal controller to update gym data
+  this.router.navigate(['/gym-add/']),{replaceurl:true};
 }
+
+async gymUpdate(){
+  console.log(this._gym_id);
+  this.router.navigate(['/gym-details/',this._gym_id]);
+  // here can not use modal controller to update gym dat as with in thos modal gmap modal is used
+    //   const modal = await this.modalCtrl.create({
+    //   component: GymDetailsPage,
+    //   componentProps:{id:this._gym_id},
+    //   breakpoints: [0, 0.5, 0.8],
+    //   initialBreakpoint: 0.8,      
+    // });
+    // await modal.present();
+  }
+
 
 
 async showErrorToast(data: any) {

@@ -304,7 +304,8 @@ rechargeRequestAlert(){
    }
  });
 }
-    async rechargeRequestAlertFirst(){  
+
+async rechargeRequestAlertFirst(){  
       const alert = await this.alertController.create({
         header :'Enter Days for Recharge',
         inputs: [
