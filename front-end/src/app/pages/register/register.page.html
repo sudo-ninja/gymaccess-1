@@ -9,33 +9,45 @@
     <ion-spinner name="crescent" color="success" ></ion-spinner>
   </div>
   <div *ngIf="!userVerified">
-  <ion-item>
-    <ion-label position="floating">User Name </ion-label>
-    <ion-input [(ngModel)]="username" type="username" name="username" placeholder="user name"
-    type="username"      
-    required placeholder="Enter username "></ion-input>
-  </ion-item>
+  <!-- <ion-item>
+    
+    <ion-input 
+    label="User Name" 
+    labelPlacement="floating"
+    [(ngModel)]="username" 
+    type="username" 
+    name="username" 
+    
+        
+    required 
+    placeholder="Enter Username "></ion-input>
+  </ion-item> -->
 
   <ion-item>
-    <ion-label position="floating">Mobile Phone</ion-label>
-    <ion-input [(ngModel)]="mobile" type="mobile" name="mobile" placeholder="mobile number"
-    type="Mobile"     
-    required placeholder="Enter Mobile Number"> </ion-input>
+    <ion-input 
+    label="Mobile Phone" 
+    labelPlacement="floating" 
+    [(ngModel)]="mobile" 
+    type="mobile" 
+    name="mobile" 
+    required 
+    placeholder="Enter Mobile Number"> </ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label>e-mail</ion-label>
-    <ion-input 
-    [(ngModel)]="email" type="email" name="email" placeholder="email" position="floating"
-    required placeholder="Enter Valid Email Address"></ion-input>
+    <ion-input
+    label="E-Mail" 
+    labelPlacement="floating"  
+    [(ngModel)]="email" 
+    type="email" 
+    name="email" 
+    position="floating"
+    required 
+    placeholder="Enter Valid Email Address"></ion-input>
   </ion-item>
 
-  <!-- <ion-item>
-    <ion-label position="floating">Password</ion-label>
-    <ion-input [(ngModel)]="password" type="password" name="password" placeholder="Password"
-    type="Password"     
-    required placeholder="Enter Password"> </ion-input>
-  </ion-item> -->
+  
 
   <ion-button 
   expand="block" 
@@ -49,18 +61,32 @@
   <form [formGroup] = "registerForm" (ngSubmit)="register()">
     <ion-list>
     <ion-item>
-      <ion-label position="floating">Name</ion-label>
-      <ion-input formControlName="username" type="text" required></ion-input>
+  
+      <ion-input
+      label="Name" labelPlacement="floating"  
+      formControlName="username" 
+      type="text" 
+      required></ion-input>
     </ion-item>
 
   <ion-item>
-      <ion-label position="floating">Mobile N0.</ion-label>
-      <ion-input formControlName="mobile" type="text" required></ion-input>
+      
+      <ion-input 
+      label="Mobile No." 
+      labelPlacement="floating" 
+      formControlName="mobile" 
+      type="text" 
+      required></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-label position="floating">Password</ion-label>
-      <ion-input formControlName="password" type="password" required>
+      
+      <ion-input 
+      label="password" 
+      labelPlacement="floating" 
+      formControlName="password" 
+      type="password" 
+      required>
       </ion-input>
     </ion-item>
 
@@ -76,13 +102,12 @@
   </form> 
 </div>
   <p class="ion-text-center" *ngIf="isLoading"> <ion-spinner></ion-spinner> </p>
-  <!-- once verified email then use ngif to pop up new block for username and mobile and password using form builder -->
+  
   <p class="ion-text-right">already have an account?<strong routerLink="/login">login</strong></p>
 
 
   <ion-item  *ngIf="userexist" class="ion-padding" >
-    <ion-button type="button" expand="block" color="secondary" >Forget Password</ion-button>
-    <!-- <p class="ion-text-right" ><strong> Forgot Password </strong></p> -->
+  <ion-button type="button" expand="block" color="secondary" >Forget Password</ion-button>
   </ion-item>
 
   
@@ -90,19 +115,3 @@
 
 </ion-content>
 
-<!-- <ion-item>
-  <ion-label> Are you service provider? </ion-label>
-    <ion-select placeholder="Select" (ionChange)="onServiceSelect($event)">
-      <ion-select-option value="yes">Yes</ion-select-option>
-      <ion-select-option value="no">No </ion-select-option>
-    </ion-select>
-  </ion-item>
-  <ion-tem *ngIf="isServiceprovider"> // this only visible if issrvice provider is true
-    <ion-label> Service </ion-label>
-    <ion-select placeholder="All" [{ngModel}]="service">
-      <ion-select-option value="deco">Decoration</ion-select-option>
-      <ion-select-option value="sound">Sound</ion-select-option>
-      <ion-select-option value = "lights">Lights</ion-select-option>
-    </ion-select>
-
-  </ion-tem> -->

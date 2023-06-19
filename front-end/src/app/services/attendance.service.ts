@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rxjs';
 import{ Attendance_ } from '../models/attendance.model';
+import { environment } from 'src/environments/environment.prod';
 
 
 
@@ -15,7 +16,8 @@ const searchUrl = 'http://localhost:3000/api/v1/attendances/search/';
 })
 
 export class AttendanceService {
-  baseUri :string = 'http://localhost:3000/api/v1';
+  // baseUri :string = 'http://localhost:3000/api/v1';
+  baseUri : string = environment.SERVER;
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
 

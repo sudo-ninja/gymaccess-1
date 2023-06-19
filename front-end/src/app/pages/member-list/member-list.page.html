@@ -7,7 +7,7 @@
         (ionChange)="selecthandleChange($event)"
         [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
         slot="end">
-        <!-- <ion-select-option *ngFor="let mt of MemberType" [value]="mt">{{ mt.name }}</ion-select-option> -->
+     
           <ion-select-option *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
           
       </ion-select>
@@ -21,22 +21,17 @@
         >    
       </ion-searchbar>
       
-     <!-- <app-search (searchTextChanged)="onSearchTextEntered($event)"></app-search> -->
+   
   </ion-header>
 
 <ion-content class="ion-padding">
-        <!-- debounce="100"
-        (ionChange)="handleChange($event)" -->
-
-        <!-- to refresh page on pull down  -->
+   
         <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
           <ion-refresher-content></ion-refresher-content>
         </ion-refresher>
 
-        <!-- <ion-list lines="none" *ngFor="let m of members |customFilter:searchTerm" lines=""></ion-list> -->
-
        <ion-list lines="none" *ngFor="let m of members " lines="">
-        <ion-div *ngIf="searchText ===''|| m.m_name.toLowerCase().includes(searchText) || m.mobile.toLowerCase().includes(searchText)">
+        <ion-div *ngIf="searchText ===''|| m.m_name.toLowerCase().includes(searchText) || m.mobile.toLowerCase().includes(searchText) || m.m_enddate.toLowerCase().includes(searchText)">
           <ion-grid>
             <ion-row>
               <ion-col size="10">              

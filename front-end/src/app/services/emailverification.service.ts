@@ -4,12 +4,14 @@ import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import{Users} from '../models/user.model'
 import { AlertController } from '@ionic/angular';
+import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmailverificationService {
-  url:string= 'http://localhost:3000/api/v1'
+  // url:string= 'http://localhost:3000/api/v1'
+  url : string = environment.SERVER;
 
   constructor(
     private http:HttpClient,

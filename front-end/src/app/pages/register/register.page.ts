@@ -35,8 +35,6 @@ export class RegisterPage implements OnInit {
   errMsg: any;
   serverErrorMessage:string;
 
-  // url: string = 'http://localhost:3000/api/v1/user/register';
-
   isLoadingResults = false;
 
   constructor(
@@ -64,7 +62,7 @@ export class RegisterPage implements OnInit {
     });
   }
 
-  // get formControls() { return this.registerForm.controls; }
+  
 
   async register() {
     const loading = await this.loadingController.create();
@@ -76,15 +74,7 @@ export class RegisterPage implements OnInit {
     }
     console.log(this.registerForm.value);
 
-    // this.router.navigateByUrl('/home');
-
-    // let user = {
-    //   email: this.email,
-    //   password: this.password,
-    //   mobile:this.mobile,
-    //   username:this.username
-    // }
-
+    
     this.isLoadingResults = true;
     this.userAPI.register(this.registerForm.value).subscribe(
       {
@@ -140,13 +130,14 @@ export class RegisterPage implements OnInit {
           this.isLoadingResults = false;
           this.verifyEmailSignup();
         }
-      },
+      },//  if user does not exist 
       (error) => {
         this.isLoadingResults = false;
         // console.log(this.isLoadingResults);
         console.log(error.status);
-        if (error.status == 404) {
+        if (error.status === 404) {
           this.verifyEmailSignup();
+          // this.isLoadingResults = true;
         }
       }
     );
@@ -213,6 +204,9 @@ verifyEmailSignup() {
                     // here all goods then redirect to new page or
                     this.userVerified = true;
                     this.registration(res.email);
+                    //as password not formed so can not route this
+                    // let it be on registration page to form password
+                    // this.router.navigateByUrl('/login',{replaceUrl:true});
                   },
                   (error) => {
                     console.log(error.error);

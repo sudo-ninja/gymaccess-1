@@ -23,7 +23,7 @@ import { Router } from '@angular/router';
   
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-        if(request.headers.get('noauth'))
+        if(request.headers.get('NoAuth'))
             return next.handle(request.clone());
         else{
             const clonereq = request.clone();

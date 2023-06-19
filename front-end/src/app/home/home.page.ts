@@ -78,16 +78,7 @@ export class HomePage implements OnInit{
     public memberApi:MemberserviceService,   
 
   ) {
-    // this.userApi.user().subscribe(
-    //   res=>{
-    //     // this.addName(res),
-    //     console.log(res);
-    //   },
-    //   error=>{
-    //     // this.router.navigate(['/login'])
-    //     console.log(error)
-    //   }
-    //  )
+  
      const user = localStorage.getItem('User')
      console.log(JSON.parse(user!).email );
      console.log(JSON.parse(user!)._id);
@@ -232,7 +223,7 @@ logs: string[] = [];
 //   })
 // }
 
-  // join gym alert to get verification code 
+  // for member join gym alert to get verification code 
   async joinGymAlert() {
     const alert = await this.alertCtrl.create({
       header: 'Please enter Verification Code',
@@ -371,16 +362,9 @@ logs: string[] = [];
   async loggedUserRoleaAlert(header:string,message:string) {
     const alert = await this.alertCtrl.create({
       header:header,
+      backdropDismiss: false,
       message:message,
-      buttons: [
-        {
-          text: 'Add Gym',
-          role: 'admin',
-          handler: () => { localStorage.setItem('loggedUserId',this.loggeduser._id);
-                           console.log(this.loggeduser._id);
-                          this.router.navigate(['/gym-add'],{replaceUrl:true});
-                        }
-        },
+      buttons: [       
         {
           text: 'Join Gym',
           role: 'member',
@@ -395,7 +379,15 @@ logs: string[] = [];
               }
             });
           }
-        }
+        },
+        {
+          text: 'Add Gym',
+          role: 'admin',
+          handler: () => { localStorage.setItem('loggedUserId',this.loggeduser._id);
+                           console.log(this.loggeduser._id);
+                          this.router.navigate(['/gym-add'],{replaceUrl:true});
+                        }
+        },
       ]
     });
     await alert.present();

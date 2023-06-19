@@ -26,7 +26,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { AnimationController } from '@ionic/angular';
 import { createAnimation } from '@ionic/core';
 
-import { SearchComponent } from 'src/app/search/search.component';
+
 
 
 
@@ -37,8 +37,7 @@ import { SearchComponent } from 'src/app/search/search.component';
   styleUrls: ['./member-list.page.scss'],
 })
 export class MemberListPage implements OnInit {
-  // @ViewChildren(IonCard,{read:ElementRef})
-  @ViewChild(SearchComponent) search:SearchComponent;
+  
 
   BalanceDays_ = localStorage.getItem('balanceDays');
   isButtonSubmit:boolean=false;
@@ -186,9 +185,9 @@ async inviteControl(){
     'email' : ['', Validators.required],
     'mobile': ['', [
       Validators.required,
-      // Validators.minLength(10),
-      // Validators.maxLength(13),
-      // Validators.pattern('^[0-9]*$')
+      Validators.minLength(10),
+      Validators.maxLength(13),
+      Validators.pattern('^[0-9]*$')
     ]
     ],
     'inviteCode':['', Validators.required],

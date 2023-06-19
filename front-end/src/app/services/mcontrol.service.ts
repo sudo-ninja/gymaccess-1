@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rxjs';
 
 import {Mcontrol} from '../models/mcontrol';
+import { environment } from 'src/environments/environment.prod';
 
 const baseUrl = 'http://localhost:3000/api/v1/membercontrols';
 const searchUrl = 'http://localhost:3000/api/v1/mcontrol/search/';
@@ -12,7 +13,9 @@ const searchUrl = 'http://localhost:3000/api/v1/mcontrol/search/';
   providedIn: 'root'
 })
 export class McontrolService {
-  baseUri :string = 'http://localhost:3000/api/v1';
+  // baseUri :string = 'http://localhost:3000/api/v1';
+
+  baseUri : string = environment.SERVER;
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
 

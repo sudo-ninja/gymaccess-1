@@ -65,8 +65,7 @@ export class LoginPage implements OnInit {
       return;
     }
     this.authService.signIn(this.authForm.value);
-    console.log(this.authForm.value);
-    
+    console.log(this.authForm.value);    
     this.login(this.authForm.value);
     // this.router.navigateByUrl('/home');
   }
@@ -105,6 +104,39 @@ export class LoginPage implements OnInit {
     console.log(credentials);
     await loading.dismiss();
   }
+
+  //login using user service api
+  
+  
+  // async login(credentials:any){
+  //   const loading = await this.loadingController.create();
+	// 	await loading.present();
+  //  let _email = this.authForm.value.email;
+  //  this.userAPI.login(credentials).subscribe(
+  //   {
+  //     next: (res) =>{
+  //       console.log(res);
+  //       this.userAPI.setToken(res['token']); // to store locally token 
+  //       this.isLoading=false;
+  //       localStorage.setItem('User',JSON.stringify(res)) // trick use to transfer login user data to home page by get and set method
+  //       this.router.navigateByUrl('/home',{replaceUrl:true}) // url is replaces so that use cant go back to login page without logout
+  //        this.isLoading=true;
+  //   },
+  //     error: (error) => {
+  //         this.serverErrorMessage = error.error;
+  //         this.isLoading=false;
+  //         this.emailExist(_email);
+  //         console.log(error.error);
+  //       }
+  //     }
+  //     );
+    
+
+  //   console.log(credentials);
+  //   await loading.dismiss();
+  // }
+
+
 
 //check if email exist or not
 emailExist(email_){

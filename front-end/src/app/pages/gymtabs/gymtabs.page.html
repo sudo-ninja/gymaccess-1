@@ -11,10 +11,16 @@
       <ion-icon [name]="selectedTab=='infor'?'fitness':'fitness-outline'"></ion-icon>
       <ion-label>My Gym</ion-label>
     </ion-tab-button>
+    
 
     <ion-tab-button tab="me">
       <ion-icon [name]="selectedTab=='me'? 'person': 'person-outline'"></ion-icon>
       <ion-label>Me</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="unlock">
+      <ion-icon [name]="selectedTab==''?'lock-open':'lock-open-outline'"></ion-icon>
+      <ion-label>Unlock</ion-label>
     </ion-tab-button>
 
   </ion-tab-bar>

@@ -89,4 +89,21 @@
        
   </ion-list>
 </div>
+
+<div class="timer" *ngIf="countDownStarted">
+  <h4>Count down timer</h4>
+  <!-- <span id="minutes"> {{minutesToDday}} </span>Min. -->
+  <span id="seconds"> {{  countdownSeconds  }} </span>Sec.
+   
+    <ion-button (click)="cancelCountDown()" expand="block" color="warning" shape="round"><strong>Cancel</strong></ion-button>
+   
+</div>
+
 </ion-content>
+
+<ion-footer collapse="fade">
+  <ion-toolbar>
+    <ion-title (click)="onDeleteAccount(adminEmail||memberEmail)"><strong color="danger">Delete Account</strong></ion-title>
+  </ion-toolbar>
+</ion-footer>
+

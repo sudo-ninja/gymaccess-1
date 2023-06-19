@@ -5,3 +5,14 @@ ion-content{
         --ion-background-color:#ffffff;
     }
 }
+
+.timer {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 1.4em;
+    letter-spacing: -1px;
+  }
+  .timer span {
+    font-size: 2em;
+    margin: 0 3px 0 15px;
+  }

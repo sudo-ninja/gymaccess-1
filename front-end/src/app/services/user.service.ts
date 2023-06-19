@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import{Users} from '../models/user.model'
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,8 @@ export class UserService {
   // tobe used for intercpetor 
   noAuthHeader = {headers: new HttpHeaders({'NoAuth':'True'})};
 
-  url:string= 'http://localhost:3000/api/v1'
+  // url:string= 'http://localhost:3000/api/v1'
+  url:string = environment.SERVER;
 
 constructor(private http:HttpClient,
             // private _user:Users,
@@ -35,12 +37,9 @@ constructor(private http:HttpClient,
   }
   
   login(authCredentials): Observable<any> {
-    return this.http.post('this.url/user/login',authCredentials,this.noAuthHeader)
-    // {
-    //   // observe:'body',
-    //   // withCredentials:true,
-    //   // headers:new HttpHeaders().append('Content-Type','application/json')
-    // });
+    console.log(this.url);
+    return this.http.post('this.url/user/login',authCredentials,).pipe(tap((dat:any)=>console.log(`login succesfully`)),
+    catchError(this.errorMgmt));
   }
 
   setToken(token:string){
@@ -99,6 +98,13 @@ constructor(private http:HttpClient,
     return this.http.get(`http://localhost:3000/api/v1/user/user/email/${_Email}`,this.noAuthHeader);
   }
 
+  deletUserbyId(id:any):Observable<Users>{
+    let url = `${this.url}/user/delete/${id}`
+    return this.http.delete(url,this.noAuthHeader).pipe(tap((dat:any)=>
+    console.log(` with ID =${id}`)
+    ),
+    catchError(this.errorMgmt));
+  }
   // logout(){
 
   //   this.deleteToken();

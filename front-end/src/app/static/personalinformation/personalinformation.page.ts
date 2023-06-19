@@ -1,6 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { MemberserviceService } from 'src/app/services/memberservice.service';
+import { AlertController } from '@ionic/angular';
+import{ Router} from '@angular/router';
+
+// for countdown display on screen 
+import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-personalinformation',
@@ -8,6 +13,9 @@ import { MemberserviceService } from 'src/app/services/memberservice.service';
   styleUrls: ['./personalinformation.page.scss'],
 })
 export class PersonalinformationPage implements OnInit {
+  //for countdown time
+  private subscription: Subscription;
+
   loggeduserIsAdmin: boolean;
 
   adminName:any;
@@ -37,11 +45,21 @@ export class PersonalinformationPage implements OnInit {
   memberAcceptedinvitation: any;
   memberAttended: boolean;
   memberSetreminder: boolean;
+
   loggeduser: any;
+  loggedUserId:any;
+
+  countdownSeconds: number;
+  countDownStarted:boolean = false;
+
+   
 
   constructor(
     private memberApi: MemberserviceService,
-    private userApi: UserService
+    private userApi: UserService,
+    private alertCtrl: AlertController,
+    private router :Router,
+
   ) {
     const user = localStorage.getItem('User');
     this.loggeduser = JSON.parse(user!);
@@ -81,5 +99,102 @@ export class PersonalinformationPage implements OnInit {
     
   }
 
-  ngOnInit() {}
+   
+
+  ngOnInit() {
+     //re 180 second means  180 000 milisecon
+  }
+
+  
+
+  onDeleteAccount(email:any){
+      this.userApi.getUserbyEmail(email).subscribe((res)=>{
+        console.log(res.id);
+        this.loggedUserId = res.id;
+      });
+      this.presentAlert("Are You Sure?","","This will delete all data..")
+}
+
+//present alert are you sure 
+// you will loss all data !
+
+async presentAlert(header:string,subheader:string, message:string) {
+  const alert = await this.alertCtrl.create({
+    header:header,
+    subHeader: subheader,
+    message:message,
+    buttons: [
+      {
+        text : 'OK',
+        handler:()=>{
+           this.startCountdown(180,this.loggedUserId); // set 180 second count down
+           this.countDownStarted = true;
+        }
+      },
+      {
+        text : 'Cancel',
+        handler:()=>{
+          
+        }
+      }
+      
+      
+      ],
+  });
+  await alert.present();
+}
+
+
+
+
+// start count down for 180 second
+interval:any;
+startCountdown(seconds,id) {
+  let counter = seconds;    
+  this.interval = setInterval(() => {
+    console.log(counter);
+    this.countdownSeconds = counter;
+    counter--;      
+    if (counter < 0 ) {
+      clearInterval(this.interval);
+      console.log('Ding!');
+      this.countDownStarted = false;
+      this.deleteAlert("All Data Will be Lost","Still Want to Delete ?","",id);
+    }
+  }, 1000);
+}
+
+cancelCountDown(){
+  clearInterval(this.interval);
+  this.router.navigateByUrl('/settings', {
+    replaceUrl: true,
+  });
+}
+
+// finally delete account alert
+async deleteAlert(header:string,subheader:string, message:string,id:any) {
+  const alert = await this.alertCtrl.create({
+    header:header,
+    subHeader: subheader,
+    message:message,
+    buttons: [
+      {
+        text : 'OK',
+        handler:()=>{
+           this.userApi.deletUserbyId(id);
+        }
+      },
+      {
+        text : 'Cancel',
+        handler:()=>{
+          
+        }
+      }
+      
+      
+      ],
+  });
+  await alert.present();
+}
+
 }
