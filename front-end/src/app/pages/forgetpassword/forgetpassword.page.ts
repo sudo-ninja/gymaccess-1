@@ -17,6 +17,7 @@ export class ForgetpasswordPage implements OnInit {
   resetForm!: FormGroup;
   isSubmitted  =  false;
   isOTPmailed = false;
+  OTPinputTouch = false;
 
   serverErrorMessage:string;
 
@@ -185,4 +186,6 @@ export class ForgetpasswordPage implements OnInit {
       error:(err)=>{this.serverErrorMessage = err.error},
     });
   }
+
+  
 }

@@ -9,19 +9,6 @@
     <ion-spinner name="crescent" color="success" ></ion-spinner>
   </div>
   <div *ngIf="!userVerified">
-  <!-- <ion-item>
-    
-    <ion-input 
-    label="User Name" 
-    labelPlacement="floating"
-    [(ngModel)]="username" 
-    type="username" 
-    name="username" 
-    
-        
-    required 
-    placeholder="Enter Username "></ion-input>
-  </ion-item> -->
 
   <ion-item>
     <ion-input 
@@ -63,7 +50,8 @@
     <ion-item>
   
       <ion-input
-      label="Name" labelPlacement="floating"  
+      label="Name" 
+      labelPlacement="floating"  
       formControlName="username" 
       type="text" 
       required></ion-input>
