@@ -1,9 +1,5 @@
-import { NavController } from '@ionic/angular';
-
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
-import { AuthGuardService } from './auth/auth-guard.service';
 import { UserService } from '../services/user.service';
 
 

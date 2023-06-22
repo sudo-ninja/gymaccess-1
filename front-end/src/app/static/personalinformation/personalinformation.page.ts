@@ -1,6 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { MemberserviceService } from 'src/app/services/memberservice.service';
+import { McontrolService } from 'src/app/services/mcontrol.service';
+import { AttendanceService } from 'src/app/services/attendance.service';
+import { FeedbackserviceService } from 'src/app/services/feedbackservice.service';
 import { AlertController } from '@ionic/angular';
 import{ Router} from '@angular/router';
 
@@ -17,11 +20,14 @@ export class PersonalinformationPage implements OnInit {
   private subscription: Subscription;
 
   loggeduserIsAdmin: boolean;
+  loggeduserIsMember:boolean;
 
   adminName:any;
   adminEmail:any;
   adminMobile:any;
   adminRoll:any;
+
+  gym_id:any;
 
   memberType: any;
   memberName: any;
@@ -57,6 +63,9 @@ export class PersonalinformationPage implements OnInit {
   constructor(
     private memberApi: MemberserviceService,
     private userApi: UserService,
+    private memberControlApi :McontrolService,
+    private attendanceApi:AttendanceService,
+    private feedbackApi:FeedbackserviceService,
     private alertCtrl: AlertController,
     private router :Router,
 
@@ -69,6 +78,7 @@ export class PersonalinformationPage implements OnInit {
     
     const UserIsAdmin = localStorage.getItem('UserIsAdmin');
     const UserIsMember = localStorage.getItem('UserIsMember');
+
     if(UserIsAdmin === 'true'){
       this.loggeduserIsAdmin = true;
       
@@ -78,6 +88,7 @@ export class PersonalinformationPage implements OnInit {
     this.memberApi
     .getMemberByEmail(this.loggeduser.email)
     .subscribe((data: any) => {
+      this.gym_id = data.gym_id;
       this.memberName = data.m_name;
       this.memberEmail = data.email;
       this.memberMobile = data.mobile;
@@ -108,17 +119,21 @@ export class PersonalinformationPage implements OnInit {
   
 
   onDeleteAccount(email:any){
+    console.log(email);
       this.userApi.getUserbyEmail(email).subscribe((res)=>{
-        console.log(res.id);
-        this.loggedUserId = res.id;
+        console.log(res._id);
+        this.loggedUserId = res._id;
+        this.loggeduserIsAdmin = res.isAdmin;
+        this.loggeduserIsMember = res.isMember;
+        this.presentAlert("Are You Sure?","","This will delete all data..",res._id)
       });
-      this.presentAlert("Are You Sure?","","This will delete all data..")
+      
 }
 
 //present alert are you sure 
 // you will loss all data !
 
-async presentAlert(header:string,subheader:string, message:string) {
+async presentAlert(header:string,subheader:string, message:string,id:any) {
   const alert = await this.alertCtrl.create({
     header:header,
     subHeader: subheader,
@@ -127,7 +142,7 @@ async presentAlert(header:string,subheader:string, message:string) {
       {
         text : 'OK',
         handler:()=>{
-           this.startCountdown(180,this.loggedUserId); // set 180 second count down
+           this.startCountdown(180,id); // set 180 second count down
            this.countDownStarted = true;
         }
       },
@@ -181,7 +196,44 @@ async deleteAlert(header:string,subheader:string, message:string,id:any) {
       {
         text : 'OK',
         handler:()=>{
-           this.userApi.deletUserbyId(id);
+          console.log(this.loggedUserId);  
+          console.log(this.loggeduserIsMember);         
+            if(this.loggeduserIsMember){
+               this.memberApi.delete(this.memberId).subscribe((res)=>{
+                console.log(res);
+                              });
+
+            this.memberControlApi.getMcontrolEmail(this.memberEmail).subscribe((res)=>{
+              console.log(res._id);
+            this.memberControlApi.delete(res._id).subscribe((res)=>{
+              console.log(res);
+            });                              
+            });
+             
+            this.attendanceApi.getMemberAttendance(this.memberId).forEach((value)=>{
+              console.log(value._id);
+            this.attendanceApi.delete(value._id).subscribe((res)=>{
+              console.log(res);
+            });
+            });
+
+            this.feedbackApi.getFeedbackBySenderId(this.gym_id,this.memberId).forEach((value)=>{
+              console.log(value._id);
+            this.feedbackApi.delete(value._id).subscribe((res)=>{
+              console.log(res);
+            });
+            });
+
+            
+            }
+
+            console.log(id);
+            this.userApi.deletUserbyId(id).subscribe((res)=>{
+              console.log(res);
+            }); // delet user
+            localStorage.clear(); //clear local storage            
+            this.userApi.deleteToken();//clear token            
+            this.router.navigate(['/login'],{replaceUrl:true});           
         }
       },
       {

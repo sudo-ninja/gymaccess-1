@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 export class UserService {
   // tobe used for intercpetor 
   noAuthHeader = {headers: new HttpHeaders({'NoAuth':'True'})};
+  AuthHeader = {headers:new HttpHeaders({'token':'My TOken'})};
 
   // url:string= 'http://localhost:3000/api/v1'
   url:string = environment.SERVER;
@@ -17,8 +18,6 @@ export class UserService {
 constructor(private http:HttpClient,
             // private _user:Users,
             ) { }
-
-
 
   register(body:any): Observable<any> {
     console.log(body);
@@ -95,7 +94,8 @@ constructor(private http:HttpClient,
 
   getUserbyEmail(_Email:any): Observable<Users> {
     console.log("i m in get  by emailloop");
-    return this.http.get(`http://localhost:3000/api/v1/user/user/email/${_Email}`,this.noAuthHeader);
+    let url = `${this.url}/user/user/email/${_Email}`
+    return this.http.get(url,this.noAuthHeader);
   }
 
   deletUserbyId(id:any):Observable<Users>{

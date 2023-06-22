@@ -8,6 +8,13 @@
 </ion-header>
 
 <ion-content>
+  <div class="timer" *ngIf="countDownStarted">
+    <h4>Please Wait ....</h4>
+    <!-- <span id="minutes"> {{minutesToDday}} </span>Min. -->
+    <span id="seconds"> {{  countdownSeconds  }} </span>Sec.
+      <ion-button (click)="cancelCountDown()" expand="block" color="warning" shape="round"><strong>Cancel</strong></ion-button>
+  </div>
+
   <div *ngIf="!this.loggeduserIsAdmin">
   <ion-list [inset]="true" lines="none">
     <ion-item>
@@ -90,14 +97,7 @@
   </ion-list>
 </div>
 
-<div class="timer" *ngIf="countDownStarted">
-  <h4>Count down timer</h4>
-  <!-- <span id="minutes"> {{minutesToDday}} </span>Min. -->
-  <span id="seconds"> {{  countdownSeconds  }} </span>Sec.
-   
-    <ion-button (click)="cancelCountDown()" expand="block" color="warning" shape="round"><strong>Cancel</strong></ion-button>
-   
-</div>
+
 
 </ion-content>
 
