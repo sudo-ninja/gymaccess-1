@@ -13,7 +13,7 @@ import { Member } from 'src/app/models/member.model';
 import {MemberserviceService} from 'src/app/services/memberservice.service';
 
 import {AttendanceService} from 'src/app/services/attendance.service';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 // call service for lock open 
 import { MqttService } from 'src/app/services/mqtt.service';
 // call service of gym for gym lock id
@@ -84,6 +84,7 @@ export class MemberActionPage implements OnInit {
     private lockApi:MqttService,
     private gymApi:GymService,
     private feedbackApi:FeedbackserviceService,
+    public loadingController:LoadingController,
 
   ) {
     // this._user.user().subscribe(
@@ -107,6 +108,15 @@ export class MemberActionPage implements OnInit {
           // this.addName(res),
           console.log(res);
           this.isloggedUserMember = res.isMember;
+          this.memberApi.getMemberByEmail(this.loggedUserEmail).subscribe({
+            next:res=>{
+              if(!res){
+                this.router.navigateByUrl('home', {replaceUrl: true});
+              }else{
+                return;
+              }
+            }
+          });
         },
         error=>{
           // this.router.navigate(['/login'])
@@ -121,7 +131,7 @@ export class MemberActionPage implements OnInit {
 
   addName(data:any){
     this.username = data.username;
-    console.log(this.username);
+    // console.log(this.username);
   }
 
   ngOnInit() {
@@ -201,8 +211,7 @@ export class MemberActionPage implements OnInit {
       this.stopScan();
   }
 
-  async attendance(){
-      
+  async attendance(){     
     this.attendanceForm = this.formBuilder.group({
       'member_id' : this.memberId,
       'checkin_date' : Date.now(),
@@ -238,6 +247,7 @@ async fetchLocation(){
 
 async validAttendance(current_date:any,current_time:any,email:any)
 {
+  
   // here we will first fetch member using email id as already done in constructor use that data only 
       // console.log((new Date(current_date)).getTime());  // to get current date in unix 
     this.unixCurrentDateTime = (new Date(current_date)).getTime();
@@ -256,13 +266,15 @@ async validAttendance(current_date:any,current_time:any,email:any)
                       {
                         console.log("First Attendance");                        
                         this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
-                          console.log(res);      
+                          console.log(res); 
+                              
                           this.openLock(email); // iff attendance saved then only open the lock
                             });
                             this.firstAttendance = true;
                             // once first attendenace made member updated as attended and every time it will b check
                            this.memberApi.update(this.memberId,{"isAttended":true}).subscribe((res:any)=>{
                             console.log(res);
+                            
                            });
                       }else{
                         console.log("Second Attendance"); 
@@ -288,30 +300,14 @@ async validAttendance(current_date:any,current_time:any,email:any)
                                     this.todaySecondAttendance(data[data.length-1]._id,email);
                             } 
                             else{
+                              
                               this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
                               console.log(res);      
                               this.openLock(email); // iff attendance saved then only open the lock
                               
                               });
                             }
-                        //     if(this.todayAttendance){
-                        //         this.attenApi.update(data[data.length]._id,this.attendanceForm.value).subscribe((res:any)=>{
-                        //         console.log(res);
-                        //         this.openLock(email); // iff attendance saved then only open the lock
-                        //             });
-                        //     }
-                        //     else{
-                        //         this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
-                        //         console.log(res);      
-                        //         this.openLock(email); // iff attendance saved then only open the lock
-                        //         }
-                        // // ,(err: any) => {
-                        // //   // console.log(err);
-                        // //   this.isLoadingResults = false;
-                        // //                 }
-                        //         );
-                        //         this.todayAttendance = true;
-                        //      }
+                      
                       });
                       }
 
@@ -334,6 +330,7 @@ async validAttendance(current_date:any,current_time:any,email:any)
                   // console.log("Time Expired Contact Admin to Increase Validity");
                   this.feedbackApi.addFeedback({"gym_id":this.gymId ,"sender_id":this.memberId,"message":"Validity Expired","isFeedback":false,"isExpiryAlert":true}).subscribe((res)=>{
                     console.log(res);
+                  
                   });
                   this.presentAlert("Validity Expired","Contact Admin","");
                   };
@@ -342,9 +339,14 @@ async validAttendance(current_date:any,current_time:any,email:any)
     }
   }
 
-todaySecondAttendance(data:any,email:any){
+async todaySecondAttendance(data:any,email:any){
+  const loading = await this.loadingController.create({
+    message: 'Loading....'
+  });
+  await loading.present();
   this.attenApi.update(data,this.attendanceForm.value).subscribe((res:any)=>{
             console.log(res);
+            loading.dismiss();
             this.openLock(email); // iff attendance saved then only open the lock
                 });
 
@@ -352,17 +354,9 @@ todaySecondAttendance(data:any,email:any){
 
 openLock(email:any){
   console.log("Lock Open Comand Given");    
-    try {
-        this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
-        try {
-          this.lockId = data.lockId;
-        } catch (error) {
-          throw error;
-        }
-      });
-    } catch (error) {
-      throw error;
-    }
+         this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
+              this.lockId = data.lockId;
+          });
   
   this.lockApi.openLock(
     {
@@ -373,7 +367,7 @@ openLock(email:any){
   console.log("Lock succesfull open");
   
 
-// need to pass unique Lock ID 
+// need to pass unique Lock ID -- to pass unique lock is , use gym pi query using member email, and get lock ID assign that to unique lock id
 // unique lock ID will be saved along with Gym Detail
 // unique lock ID will be topic for that lock 
   // if valid attendance 
@@ -601,10 +595,13 @@ memberActionSelected(){
 5.4 amount balance  ?
 6.0 set fees alert */
 
-/* menue for member
-1. My profile allowed chng name , mobile , locations,
-2. set alarm for gym time
-3. my performance (show attendance) */
+handleRefresh(event) {
+  setTimeout(() => {
+    // here write API 
+    this.isUserMember(this.loggedUserEmail);
+    event.target.complete();
+  }, 2000);
+};
 
 }
 

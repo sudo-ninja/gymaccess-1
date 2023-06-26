@@ -31,22 +31,42 @@
         </ion-refresher>
 
        <ion-list lines="none" *ngFor="let m of members " lines="">
-        <ion-div *ngIf="searchText ===''|| m.m_name.toLowerCase().includes(searchText) || m.mobile.toLowerCase().includes(searchText) || m.m_enddate.toLowerCase().includes(searchText)">
+        <ion-div *ngIf="searchText ===''|| m.m_name.toLowerCase().includes(searchText) || m.mobile.toLowerCase().includes(searchText) || m.m_enddate.toLowerCase().includes(searchText)|| m.email.toLowerCase().includes(searchText)">
           <ion-grid>
             <ion-row>
               <ion-col size="10">              
-                <ion-item>  
-                  <div class="avatar"> {{getInitials(m.m_name)}}</div>            
-                  <!-- <ion-avatar slot="start">
-                    <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img> 
-                    
-                  </ion-avatar> -->
+                <ion-item >  
+                  <div class="avatar" (click)="attenRecord(m._id,$event)" id="open-modal"> {{getInitials(m.m_name)}}</div>            
+                  <ion-modal #modal trigger="open-modal" mode="md">
+                    <ng-template>
+                      <ion-content>
+                        <ion-datetime
+                        locale="en-IN"
+                        [min]="start_Date"
+                        [max]="end_Date"
+                        presentation="date"
+                        #dateValue
+                        size="cover"
+                        [highlightedDates]="highlightedDates"
+                        (ionChange)="dateTouched(dateValue.value)"                         
+                        (ionCancel)="isModalOpen = false;"            
+                        >
+                        <span slot="title">{{m.m_name}} Attended Days</span>
+                      <ion-buttons slot="buttons">
+                        <ion-button (click)="close()" color="primary" ><strong>Dismiss</strong></ion-button>
+                      </ion-buttons>
+                      
+                      </ion-datetime>
+
+                      </ion-content>
+                    </ng-template>
+                   </ion-modal>
                   
                 <ion-row></ion-row>
                   <!-- <ion-badge>{{m.memberType}}</ion-badge>  -->
                 <ion-list>
                   <ion-label>
-                  <h3>{{m.m_name}}</h3>
+                  <h3><strong>{{m.m_name}}</strong></h3>
                   <ion-badge>{{m.memberType}}</ion-badge> 
                   <p (click)="CallTel(m.mobile)"><ion-icon name="call"></ion-icon>{{m.mobile}}</p>                  
                   <p><ion-icon name="calendar"></ion-icon> Last Date:{{m.m_enddate | date }}</p>
@@ -61,9 +81,10 @@
             </ion-col>
 
             </ion-row>
-            <ion-button class="button-round" *ngIf="m.isInviteAccepted === 'Yes'" [disabled]="isButtonSubmit" color="primary" shape="round" fill="outline" expand="block" (click)="updateMemberControl(m._id)"><ion-icon name="create"></ion-icon>Validity</ion-button>
+            <ion-button class="button-round" *ngIf="m.isInviteAccepted === 'Yes'" [disabled]="isButtonSubmit" color="primary" shape="round" fill="outline" expand="block" (click)="updateMemberControl(m._id)" 
+            (click)="deleteCodeIfacceptedOrExpired(m.email,true)"><ion-icon name="create"></ion-icon>Validity</ion-button>
             <ion-button *ngIf="m.isInviteAccepted === 'Not'" [disabled]="isButtonSubmit" color="primary" shape="round" fill="outline" expand="block" (click)="inviteMember(m._id)"><ion-icon name="create"></ion-icon>Invite</ion-button>
-            <ion-button *ngIf="m.isInviteAccepted === 'Pending'" [disabled]="isButtonSubmit" color="success" shape="round" fill="outline" expand="block" (click)="inviteMember(m._id)"><ion-icon name="create"></ion-icon>Invited</ion-button>
+            <ion-button *ngIf="m.isInviteAccepted === 'Pending'" [disabled]="isButtonSubmit" color="success" shape="round" fill="outline" expand="block" (click)="inviteMember(m._id)" (click)="deleteCodeIfacceptedOrExpired(m.email,false)"><ion-icon name="create"></ion-icon>Invited</ion-button>
   
           </ion-grid>
          
@@ -71,8 +92,15 @@
       </ion-div>
        </ion-list>
 
+       
+
+       
+
+            
+     
+
   
-      <ion-card class="ion-margin"         
+      <!-- <ion-card class="ion-margin"         
       *ngFor="let m of members">
               <ion-card-header appSwipe
               (swipe)="onSwipe(m._id,$event)"
@@ -89,7 +117,7 @@
                       <h2>{{m.m_name}}</h2>                      
                       <ion-badge>{{m.memberType}}</ion-badge>                       
                       <p (click)="CallTel(m.mobile)"><ion-icon name="call"></ion-icon>{{m.mobile}}</p>
-                      <!-- presentModal -->
+                      <!-- presentModal --
                       
                     </ion-label>
                     
@@ -100,7 +128,7 @@
                 <ion-card-subtitle>
                    <ion-grid>
                       <ion-row>
-                        <!-- <ion-col>Balance :{{m.m_validdays}} Day(s)</ion-col> -->
+                        <!-- <ion-col>Balance :{{m.m_validdays}} Day(s)</ion-col> --
                         <ion-col>End Date:{{m.m_enddate | date }}</ion-col>
                         <ion-col>Start Time:{{m.m_intime | date:'shortTime' }}</ion-col>
                         <ion-col>Finish Time:{{m.m_outtime | date:'shortTime' }}</ion-col>
@@ -125,19 +153,19 @@
               </ion-card-content> 
               <!-- <ion-item>
                 <ion-range aria-label="Custom range" [value]={rangeValue} [pin]="true"></ion-range>
-              </ion-item>  -->
+              </ion-item>  --
 
               <ion-grid>
                 <ion-row>
                   <ion-col><ion-button [disabled]="isButtonSubmit" color="primary" shape="round" fill="outline" expand="block" (click)="updateMemberControl(m._id)"><ion-icon name="create"></ion-icon>Validity</ion-button>
                   </ion-col>
                   <!-- <ion-col><ion-button color="primary" expand="block" (click)="updateMember(m._id)"><ion-icon name="documents"></ion-icon>Detail</ion-button></ion-col> -->
-                  <!-- <ion-col><ion-button color="primary" expand="block" (click)="inviteMember(m._id)"><ion-icon name="send"></ion-icon>Invite</ion-button></ion-col> -->
+                  <!-- <ion-col><ion-button color="primary" expand="block" (click)="inviteMember(m._id)"><ion-icon name="send"></ion-icon>Invite</ion-button></ion-col> --
                 </ion-row>
               </ion-grid>
               
                      
-    </ion-card>
+    </ion-card> -->
     
 
     <!-- <ion-button

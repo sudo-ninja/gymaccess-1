@@ -25,6 +25,7 @@ import { GmapPage } from '../gmap/gmap.page';
 // add recharge request in feedback service 
 import { FeedbackserviceService } from 'src/app/services/feedbackservice.service';
 import { Feedback } from 'src/app/models/feedback';
+import { highlighteDate } from 'src/app/models/highlighteDate';
 
  
 
@@ -44,6 +45,9 @@ export class MemberinforPage implements OnInit {
   memberStartDate:any;
   // to store dates of gym accessed
   attendedDates:[];
+  // to highlight dates 
+  highlightedDates:any ;
+  highlightedDates_m:highlighteDate[]=[];
   
 
   messageReminder:boolean = false;
@@ -179,7 +183,21 @@ this.AttendanceApi.getMemberAttendance(mId).subscribe((data:any)=>{
   this.attendedDates = data[0].checkin_date;
   console.log(this.attendedDates);
   this.memberAttendances = data.length;
+// to spread attended days over calender by yellow color
+  for (let i = 0; i < data.length; i++) {
+    this.highlightedDates_m.push(
+      {
+        date:this.toISOStringWithTimezone(new Date(+data[i].checkin_date)).split("T")[0],
+        textColor: 'var(--ion-color-warning-contrast)',
+        backgroundColor:'var(--ion-color-warning)',
+      }
+    );
+   }
+   this.highlightedDates = this.highlightedDates_m;
 });
+
+console.log(this.highlightedDates_m);
+
 }
 
 
@@ -367,28 +385,7 @@ async rechargeRequestAlertFirst(){
     //   }
     // }
      
-      highlightedDates = (isoString) => {
-        const date = new Date(isoString);
-        const utcDay = date.getUTCDate();
-    
-        if(utcDay % 5 === 0) {
-          return {
-            textColor: '#800080',
-            backgroundColor: '#ffc0cb',
-          };
-        }
-    
-        if(utcDay % 3 === 0) {
-          return {
-            textColor: 'var(--ion-color-secondary-contrast)',
-            backgroundColor: 'var(--ion-color-secondary)',
-          };
-        }
-    
-        return undefined;
-      };
-
-
+      
       // convert date to ISO string with timezone
   toISOStringWithTimezone(date)
   {

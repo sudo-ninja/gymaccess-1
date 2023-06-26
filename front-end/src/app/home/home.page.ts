@@ -94,15 +94,24 @@ export class HomePage implements OnInit{
           this.loggeduserIsAdmin = res.isAdmin;
           console.log(this.isloggedUserMember);
 
+          
+
           if(this.isloggedUserMember){
             console.log('Logged User is Member');
-            this.router.navigateByUrl('/tabs/member-action', {replaceUrl: true});
+            this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe({
+              next:res=>{
+                if(!res){
+                  this.router.navigateByUrl('home', {replaceUrl: true});
+                }else{
+                  this.router.navigateByUrl('/tabs/member-action', {replaceUrl: true});
+                }
+              }
+            });
+            // this.router.navigateByUrl('/tabs/member-action', {replaceUrl: true});
           } else{
           if(this.loggeduserIsAdmin){
             console.log('Logged User is Admin');
-            this.router.navigateByUrl('/gym-list', {
-              replaceUrl: true,
-            });
+            this.router.navigateByUrl('/gym-list', {replaceUrl: true,});
             } else{
             //he may be member or may be first time user only 
             // so let him decide the roll of him self
@@ -326,12 +335,16 @@ logs: string[] = [];
   }
 
   updateUserToMember(){
-    this.userApi.update(this.loggeduserId,{"isMember":true}).subscribe((res:any)=>{
-      console.log(" in update ",res._id);
+    this.userApi.update(this.loggeduserId,{"isMember":true}).subscribe(
+    {
+    next:(res:any)=>{
+      console.log("in update ",res._id);
     },
-    (err: any) => {
+    error:(err: any) => {
       console.log(err);
-    });
+    }
+    }
+  );
   }
 
   updateMemberInvitedAccepted(email:any,Yes:any)

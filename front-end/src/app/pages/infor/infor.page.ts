@@ -285,5 +285,12 @@ async showErrorToast(data: any) {
   await toast.present();
 }
 
+removeGym(){
+  // present alert for gym selectionwith two button delet or cancel
+  // now check if gym have members .. if gym have memberes then dont delet 
+  //show alert contact to app admin as gym have members 
+  // if no members in gym then delet and show toast deleted successfully .
+}
+
 
 }

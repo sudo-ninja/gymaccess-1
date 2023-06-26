@@ -5,7 +5,8 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 import {Mcontrol} from '../models/mcontrol';
 import { environment } from 'src/environments/environment.prod';
 
-const baseUrl = 'http://localhost:3000/api/v1/membercontrols';
+// const baseUrl = 'http://localhost:3000/api/v1/membercontrols';
+const baseUrl =  environment.SERVER+'/membercontrols';
 const searchUrl = 'http://localhost:3000/api/v1/mcontrol/search/';
 
 
@@ -52,12 +53,14 @@ export class McontrolService {
   }
 
   delete(id: any): Observable<any> {
+    console.log(id);
+    console.log(`${baseUrl}/${id}`);
     return this.http.delete(`${baseUrl}/${id}`).pipe(catchError(this.errorMgmt));
   }
 
-  deleteAll(): Observable<any> {
-    return this.http.delete(baseUrl).pipe(catchError(this.errorMgmt));
-  }
+  // deleteAll(): Observable<any> {
+  //   return this.http.delete(baseUrl).pipe(catchError(this.errorMgmt));
+  // }
 
   wildSearch(mobile: any): Observable<Mcontrol[]> {
     console.log("i m in wild search loop");

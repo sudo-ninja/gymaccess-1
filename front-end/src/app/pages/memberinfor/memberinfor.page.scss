@@ -18,6 +18,13 @@ ion-content{
       border: 1px solid #ddd;
     }
 
+    ion-datetime {
+    
+      border-radius: 10px;
+      box-shadow: rgba(var(--ion-color-rose-rgb), 0.3) 0px 10px 15px -3px;
+      
+    }
+
     // ion-item::part(native) {
     //     background: #19422d;
     //     color: #fff;

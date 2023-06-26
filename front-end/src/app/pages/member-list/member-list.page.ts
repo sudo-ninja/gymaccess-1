@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Share } from '@capacitor/share';
-import { AlertController, LoadingController, ModalController } from '@ionic/angular';
+import { AlertController, IonDatetime, LoadingController, ModalController } from '@ionic/angular';
 import { Member } from 'src/app/models/member.model';
 import {Mcontrol} from 'src/app/models/mcontrol'
 
@@ -13,6 +13,7 @@ import { MembercontrolPage } from '../membercontrol/membercontrol.page';
 import{McontrolService} from 'src/app/services/mcontrol.service' // to control invite code 
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { GymService } from 'src/app/services/gym.service';
+
 import { Gym } from 'src/app/models/gym.model';
 
 
@@ -25,6 +26,9 @@ import { StorageService } from 'src/app/services/storage.service';
 // animation from right to left for modal open 
 import { AnimationController } from '@ionic/angular';
 import { createAnimation } from '@ionic/core';
+import { AttendanceService } from 'src/app/services/attendance.service';
+import { error } from 'console';
+import { highlighteDate } from 'src/app/models/highlighteDate';
 
 
 
@@ -37,6 +41,8 @@ import { createAnimation } from '@ionic/core';
   styleUrls: ['./member-list.page.scss'],
 })
 export class MemberListPage implements OnInit {
+
+  @ViewChild(IonDatetime) datetime:IonDatetime;
   
 
   BalanceDays_ = localStorage.getItem('balanceDays');
@@ -55,6 +61,14 @@ export class MemberListPage implements OnInit {
 
   //range value for slider bar to show how much % left 
   RangeValue:Number;
+  highlightedDates:any ;
+  highlightedDates_:highlighteDate[]=[];
+
+  attendanceDays:any;
+
+  // for modal 
+  canDismiss = false;
+  presentingElement = null;
   
 
 
@@ -101,6 +115,8 @@ export class MemberListPage implements OnInit {
   
 
   public results = [...this.members];
+  start_Date: string;
+  end_Date: string;
 
 
   constructor(
@@ -117,13 +133,13 @@ export class MemberListPage implements OnInit {
     private formBuilder: FormBuilder,
     private inviteControlApi:McontrolService,
     public memberApi:MemberserviceService,
+    private attendApi:AttendanceService,
 
     // to store data
     private storageService :StorageService, // storage service is used insted of get set method
 
     // to get native element 
     private elementRef:ElementRef,
-
 
   ) { 
     const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Gym list page
@@ -138,29 +154,23 @@ export class MemberListPage implements OnInit {
     this.loggeduser=JSON.parse(user!);
     console.log(this.loggeduser._id);
 
-    this.gymApi.wildSearch(this.loggeduser._id).subscribe((data:any)=>{
-      try {
-        if(data){
-          console.log(data.length,"GYM ID==..",data);
-           this.gyms = data; // from here passing data to gym selector
-                  }      
-      } catch (error) {
-        throw error;
-      }
-    });
-
+    this.gymApi.wildSearch(this.loggeduser._id).subscribe(
+      (data:any)=>{
+        this.gyms = data; // from here passing data to gym selector     
+    }
+    );
     this.today_ = this.today_*1+604800000;
     console.log(this.today_);
   }
 
-  ngOnInit() {
-    
+  ngOnInit() {    
     // get member associated with this gym only
     this.getMembers();
     // const searchTerm = this.searchField.valueChanges.pipe(
     //   startWith(this.searchField.value));
-    console.log(this.searchTerm);
+    // console.log(this.searchTerm);
     this.memberControl(); // here its call so that patch value can work
+
     // to get default gym value
     // this.MyDefaultGymValue = "GYM NAME here"
     this.compareWith = this.compareWithFn; 
@@ -311,9 +321,9 @@ async getMembers(){
    console.log(uid);
    this.memberApi.getMember(uid).subscribe((data)=>{
     try {
-      console.log(data);
-      console.log(data.isInviteAccepted);
-      console.log(data.email); // this email will search in member control DB if already this exist 
+      // console.log(data);
+      // console.log(data.isInviteAccepted);
+      // console.log(data.email); // this email will search in member control DB if already this exist 
       // once invite accepted or time passed lets delet this from DB so one time only one code is there
       this.invitaionAccepted = data.isInviteAccepted;
 
@@ -361,43 +371,43 @@ async getMembers(){
       message: message,
       buttons: [
         {
-        text: 'OK',
-        role: 'confirm',
-        handler: () => {
-          this.inviteControl(); // invite control form from FB
-          this.memberApi.getMember(uid).subscribe(res=>
-            {
-            this.member=res;
-            console.log(this.member);
-            this._duration=Date.now()+(3*60*60*1000);
-            console.log('in handelr = ',this._email,this._duration,this._invitationcode,this._memberid,this._mobile)
-            this.inviteControlForm.patchValue({
-              member_id : this.member._id,
-              email : this.member.email,
-              mobile: this.member.mobile,
-              inviteCode:this._invitationcode,
-              duration:this._duration,
-            }); 
+          text: 'OK',
+          role: 'confirm',
+          handler: () => {
+            this.inviteControl(); // invite control form from FB
+            this.memberApi.getMember(uid).subscribe({
+              next: (res) => {
+                this.member = res;
+                console.log(this.member);
+                this._duration = Date.now() + 3 * 60 * 60 * 1000;
+                this.inviteControlForm.patchValue({
+                  member_id: this.member._id,
+                  email: this.member.email,
+                  mobile: this.member.mobile,
+                  inviteCode: this._invitationcode,
+                  duration: this._duration,
+                });
 
-            // this.memberForm.patchValue({
-            //   isInviteAccepted:"Pending"
-            // });
-
-            this.inviteControlApi.addMcontrol (this.inviteControlForm.value)
-            .subscribe((res: any) => {
-                console.log('Added invitation code');
-                console.log(this.member.email);
-                this.setInvitaion(this.member.email,"Pending");
-              }, (err: any) => {
-                console.log(err)
-              });
-              
-            }),err=>{
-          console.log(err);   
-           } },
-      }
+                this.inviteControlApi
+                  .addMcontrol(this.inviteControlForm.value)
+                  .subscribe({
+                    next: (res: any) => {
+                      console.log('Added invitation code');
+                      console.log(this.member.email);
+                      this.setInvitaion(this.member.email, 'Pending');
+                    },
+                    error: (err: any) => {
+                      console.log(err);
+                    },
+                  });
+              },
+              error: (err) => {
+                console.log(err);
+              },
+            });
+          },
+        },
       ],
-      
     });    
  
     await alert.present();
@@ -412,24 +422,20 @@ async getMembers(){
   };
 
   setInvitaion(email:any,pending:any){  
-    console.log("in invitaion code setup")
-    this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
+    // console.log("in invitaion code setup")
+    this.memberApi.getMemberByEmail(email).subscribe({
+      next:(data: any)=>{
       this.memberId = data._id
-      // console.log(this.memberId);
       this.memberForm.patchValue(
         {
           isInviteAccepted:pending // Status Change to Pending
         });
-
-    // some error as update PUT not getting ID
-    console.log(this.memberId);
-    this.memberApi.update(this.memberId,this.memberForm.value).subscribe((res: any) => {
-      console.log('invitaion type change to =',res.isInviteAccepted);
-    }, (err: any) => {
-      console.log(err)
-    });
-        
-    });    
+    this.memberApi.update(this.memberId,this.memberForm.value).subscribe({
+      next:(res: any) => { console.log('invitaion type change to =',res.isInviteAccepted);         }, 
+      error:(err: any) => {console.log(err) }
+               });        
+    }
+  });    
     
   }
 
@@ -475,22 +481,31 @@ async getMembers(){
     
   }
 
+  // this needed to use so that invitation code be deleted and if member deleted then 
+  //added again then it should not catch olf code.
   deleteCodeIfacceptedOrExpired(email:any,ifAccepted:boolean){    
-    this.inviteControlApi.getMcontrolEmail(email).subscribe((res:any)=>{
-      try {
-        this.tempid=res._id;
-        this.tempDuration = res.duration;
-      } catch (error) {
-        throw error;
-      }
-    });
-    if(ifAccepted){
-      this.inviteControlApi.delete(this.tempid);      
-    }else{
-      if(Date.now()>this.tempDuration){
-        this.inviteControlApi.delete(this.tempid);
-      }return;
-    }
+    this.inviteControlApi.getMcontrolEmail(email).subscribe(
+      (res:any)=>{
+        if(!res){ return; }
+        else{
+              console.log(res);
+              this.tempid=res._id;
+              this.tempDuration = res.duration;
+              if(ifAccepted){
+                console.log(this.tempid);
+                this.inviteControlApi.delete(this.tempid).subscribe((res)=>{
+                  console.log(res);
+                });      
+              }else{
+                console.log(this.tempDuration);
+                if(Date.now()>this.tempDuration){
+                  this.inviteControlApi.delete(this.tempid).subscribe((res)=>{
+                    console.log(res);
+                });
+              };            
+                   };    
+            }
+          });    
   }
  
   //set user as member if invite accepted
@@ -498,9 +513,84 @@ async getMembers(){
     this.userApi.update(loggedUserId,{"isMember":"true"}).subscribe((data)=>{
       console.log(data);
     });
+  }
+
+  // date touched 
+  dateTouched(value:any){
+    this.isModalOpen = false;
+    console.log("date touched", value);
+  }
+
+  //get attendance record when click on avatar or image
+async attenRecord(id,event:any){
+  const loading = await this.loadingController.create({
+    message: 'Loading....'
+  });
+  await loading.present();
+  // call member by id and check start date and end date 
+  this.memberApi.getMember(id).subscribe({
+    next:res=>{
+      this.start_Date = this.toISOStringWithTimezone(new Date(+res.m_startdate));
+      this.end_Date = this.toISOStringWithTimezone(new Date(+res.m_enddate));
+      // console.log(this.start_Date , this.end_Date);
+      loading.dismiss();
+    },
+    error:error=>{
+      console.log(error);
+      loading.dismiss();
+    }
+  });
+
+
+  this.attendApi.getMemberAttendance(id).subscribe({
+    next:res=>{      
+      this.attendanceDays = res;
+      // console.log(this.attendanceDays);  
+
+      for (let i = 0; i < this.attendanceDays.length; i++) {
+        this.highlightedDates_.push(
+          {
+            date:this.toISOStringWithTimezone(new Date(+this.attendanceDays[i].checkin_date)).split("T")[0],
+            textColor: 'var(--ion-color-warning-contrast)',
+            backgroundColor:'var(--ion-color-warning)',
+          }
+        );
+       }
+      
+      this.highlightedDates = this.highlightedDates_;
+      
+      // [
+      //   {
+      //     date: this.toISOStringWithTimezone(new Date(+res[0].checkin_date)).split("T")[0],
+      //     // date: '2023-06-25',
+      //     textColor: 'var(--ion-color-warning-contrast)',
+      //     backgroundColor: 'var(--ion-color-warning)',
+      //   },
+      // ];
+
+      console.log(this.highlightedDates[0]);
+      console.log(this.highlightedDates_);
+      
+    },
+    error:err=>{
+      console.log(err);
+    },
+  });
+  event.preventDefault();
+  this.setOpen(true);
+  // this.isModalOpen = true;
+
+ 
   
 
-  }
+
+console.log(id,event);
+}
+
+//ion date time button 
+close(){
+  this.datetime.cancel(true);
+}
 
   onTap(event: any) {
     console.log('tap: ', event);
@@ -596,6 +686,21 @@ console.log(this.searchText);
 deletAllMembers(){
   this.memberApi.deleteAll();
 }
+
+isModalOpen = false;
+
+setOpen(isOpen: boolean) {
+  this.isModalOpen = isOpen;
+}
+
+cancel(){
+  this.setOpen(false);
+}
+
+confirm(){
+  this.setOpen(false);
+
+}
 // may use inbuilt icon https://fontawesomeicons.com/Ionic/icons?search=bar
 // if memmber expiry date from current date is less then 5 only then show some image like
 // if more then 5 days then full 5 step with green color and thick green border 
@@ -629,9 +734,20 @@ getInitials(firstName:string) {
   return firstName[0].toUpperCase();
 }
 
-// // to get intial of name as avatar
-// getInitials(firstName:string, lastName:string) {
-//   return firstName[0].toUpperCase() + lastName[0].toUpperCase();
-// }
+     // convert date to ISO string with timezone
+     toISOStringWithTimezone(date)
+     {
+      const tzOffset = -date.getTimezoneOffset();
+      const diff = tzOffset >= 0 ? '+' : '-';
+      const pad = n => `${Math.floor(Math.abs(n))}`.padStart(2, '0');
+      return date.getFullYear() +
+        '-' + pad(date.getMonth() + 1) +
+        '-' + pad(date.getDate()) +
+        'T' + pad(date.getHours()) +
+        ':' + pad(date.getMinutes()) +
+        ':' + pad(date.getSeconds()) +
+        diff + pad(tzOffset / 60) +
+        ':' + pad(tzOffset % 60);
+    };
 
 }

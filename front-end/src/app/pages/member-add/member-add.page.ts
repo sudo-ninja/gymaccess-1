@@ -73,6 +73,7 @@ export class MemberAddPage implements OnInit {
     private router: Router,
     // public fb: FormBuilder,
     private formBuilder: FormBuilder,
+    private alertCtrl: AlertController,
     public memberApi:MemberserviceService,
    
   ) {
@@ -112,7 +113,7 @@ export class MemberAddPage implements OnInit {
           Validators.pattern('^[0-9]*$')
         ]
         ],
-        'aadhar':[null, Validators.required],
+        'aadhar':[null],
         'email':[null, [
           Validators.required,
           // Validators.toLowerCase(),
@@ -150,39 +151,26 @@ export class MemberAddPage implements OnInit {
                 console.log(d.getDate());
       }
 
-        // Choose options with select-dropdown
-        // selectMemberType(e) {
-        // this.memberForm.get('memberType').setValue(e, {
-        //   onlySelf: true,
-        //   })
-        // }
-
-        // selectAccessType(e) {
-        //   this.memberForm.get('m_accesstype').setValue(e, {
-        //     onlySelf: true,
-        //     })
-        //   }
 
         onFormSubmit() {
           this.isLoadingResults = true;
           console.log(this.memberForm.controls['email'].value.toLowerCase());
-          this.memberApi.addMember(this.memberForm.value)
-            .subscribe((res: any) => {
+          this.memberApi.addMember(this.memberForm.value).subscribe({
+            next:(res) => {
                 const id = res._id;
                 localStorage.setItem('ID',JSON.stringify(id));
                 localStorage.setItem('GYM_ID',JSON.stringify(res.gym_id));
                 this.isLoadingResults = false;
                 this.router.navigate(['/member/', id],{replaceUrl:true});
-              }, (err: any) => {
+              }, 
+              error:(err) => {
                 console.log(err);
+                this.presentAlert("Alert !!!","User Exist ","Or Wrong Data Entered!");
                 this.isLoadingResults = false;
-              });
+              }
+            });
                 this.memberType = this.membertype;
                 this.m_accesstype = this.accesstype;
-
-                // this.memberForm.patchValue({
-                //   memberType:"this.memberType",
-                // });
              
         }
 
@@ -215,5 +203,16 @@ export class MemberAddPage implements OnInit {
         BacktoList(){
           this.router.navigate(['/gymtabs/member-list'],{replaceUrl:true});
         }
+
+        async presentAlert(header:string,subheader:string, message:string) {
+          const alert = await this.alertCtrl.create({
+            header:header,
+            subHeader: subheader,
+            message:message,
+            buttons: ['OK'],
+          });
+          await alert.present();
+        }
+
         
 }

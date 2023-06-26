@@ -59,11 +59,12 @@ class="ion-no-border"
     <ion-label color="dark"><h2>My Performance</h2></ion-label>  
          <!-- set min date as Start Date so that it start from that only -->
       <ion-datetime
-       [min]="Start_Date"
+        [min]="Start_Date"
         [max]="lastDate" 
-         
-      [showDefaultButtons]="false"
-      presentation="date"
+        size="cover"
+        [highlightedDates]="highlightedDates"
+        [showDefaultButtons]="false"
+        presentation="date"
       ></ion-datetime>
      
     

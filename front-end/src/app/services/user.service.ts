@@ -10,10 +10,11 @@ import { environment } from 'src/environments/environment';
 export class UserService {
   // tobe used for intercpetor 
   noAuthHeader = {headers: new HttpHeaders({'NoAuth':'True'})};
-  AuthHeader = {headers:new HttpHeaders({'token':'My TOken'})};
+  // AuthHeader = {headers:new HttpHeaders({'Authorization':+this.getToken})};
 
   // url:string= 'http://localhost:3000/api/v1'
   url:string = environment.SERVER;
+  private token:string;
 
 constructor(private http:HttpClient,
             // private _user:Users,
@@ -27,17 +28,32 @@ constructor(private http:HttpClient,
     catchError(this.errorMgmt));
   }
 
+  
+  login(authCredentials) {
+    console.log(this.url);
+    return this.http.post('this.url/user/login',authCredentials,)
+    .pipe(tap((dat:any)=>console.log(`login succesfully`)),
+    catchError(this.errorMgmt))
+    .subscribe(res=>{
+      const token = res.token;
+      this.token = token;
+    });
+
+    // this.http.post('this.url/user/login',authCredentials,)
+    // .pipe(tap((dat:any)=>console.log(`login succesfully`)),
+    // catchError(this.errorMgmt))
+    // .subscribe(res=>{
+    //   const token = res.token;
+    //   this.token = token;
+    // });
+  }
+
   update(Id:any, data: any): Observable<any> {
     console.log(Id);
     console.log(data);
     let url = `${this.url}/user/register/${Id}`
-    return this.http.put(url,data,this.noAuthHeader).pipe(tap((dat:any)=>console.log(`updated with ID =${Id}`)),
-    catchError(this.errorMgmt));
-  }
-  
-  login(authCredentials): Observable<any> {
-    console.log(this.url);
-    return this.http.post('this.url/user/login',authCredentials,).pipe(tap((dat:any)=>console.log(`login succesfully`)),
+    console.log(url);
+    return this.http.put(url,data).pipe(tap((dat:any)=>console.log(`updated with ID =${Id}`)),
     catchError(this.errorMgmt));
   }
 
@@ -47,6 +63,7 @@ constructor(private http:HttpClient,
 
   getToken(){
     return localStorage.getItem('token');
+    // return this.token;
   }
 
   deleteToken(){
@@ -63,12 +80,12 @@ constructor(private http:HttpClient,
     else
     return null;
   }
-
+// used in authguard
   isLoggedIn(){
     var userPayload = this.getUserPayload();
-    if(userPayload)
+    if(userPayload){
     return userPayload.exp > Date.now()/1000;
-    else
+    }else
     return false;
   }
   
@@ -100,7 +117,7 @@ constructor(private http:HttpClient,
 
   deletUserbyId(id:any):Observable<Users>{
     let url = `${this.url}/user/delete/${id}`
-    return this.http.delete(url,this.noAuthHeader).pipe(tap((dat:any)=>
+    return this.http.delete(url).pipe(tap((dat:any)=>
     console.log(` with ID =${id}`)
     ),
     catchError(this.errorMgmt));

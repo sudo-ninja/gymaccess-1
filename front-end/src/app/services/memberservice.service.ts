@@ -51,6 +51,8 @@ export class MemberserviceService {
 
   getMemberByEmail(email: any): Observable<Member> {
     console.log("i m in get member by email search ");
+    console.log(email);
+    console.log(`${baseUrl}/email/${email}`);
     return this.http.get(`${baseUrl}/email/${email}`);
   }
 

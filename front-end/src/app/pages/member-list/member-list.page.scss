@@ -296,3 +296,25 @@ $colors: #a2b9bc,#6b5b95,#feb236, #d64161, #ff7b25, #b2ad7f,  #878f99;
         background: lighten(nth($colors, $i), 20%);
     }
 }
+
+ion-datetime{
+  background:#fff;
+}
+
+ion-modal{
+  --background:rgba(44,39,45,0.2);
+  &::part(content){
+    backdrop-filter:blur(6px);
+  }
+  ion-content{
+    --padding-top:25vh;
+    --padding-start:20px;
+    --padding-end:20px;
+    --background:transparent;
+
+    ion-datetime {
+      border-radius: 8px;
+      box-shadow: rgba(var(--ion-color-rose-rgb), 0.3) 0px 10px 15px -3px;
+}
+  }
+}
