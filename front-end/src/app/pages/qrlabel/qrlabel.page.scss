@@ -10,7 +10,6 @@
     border-radius: 0 0 45% 45%;
     margin-left: 1px;
     position: relative;
-
 }
 
 #boldfont{
@@ -22,23 +21,10 @@
         align-items: center;
         width: 100%;
 }
-ion-fab {
-    ion-icon {
-        font-size: 2.5rem;
-    }
-}
 
 ion-list {
     margin-top: 1vh;
-    ion-list-header {
-        font-weight: 1000;
-        font-size: 1.5rem;
-        justify-content: center;
-        display: flex;
-        align-content: center;
-        align-items: center;
-        width: 100%;
-    }
+    
     ion-item {
         border: 1px solid var(--ion-color-light);
         border-radius: 20px;
@@ -53,52 +39,11 @@ ion-list {
         width: 100%;
         font-weight: 1000;
         font-size: 1.5rem;
-        ion-div{
-            justify-content: center;
-            display: flex;
-            align-content: center;
-            align-items: center;
-            width: 100%; 
-            font-weight: 1000;
-        font-size: 1.5rem; 
-        }
-        ion-label{
-            justify-content: center;
-            display: flex;
-            align-content: center;
-            align-items: center;
-            width: 100%; 
-            font-weight: 1000;
-            font-size: 1.5rem;
-            .p{
-                justify-content: center;
-            display: flex;
-            align-content: center;
-            align-items: center;
-            width: 100%; 
-            font-weight: 1000;
-            font-size: 1.5rem;
-            }
-        }
     }
     
 }
 
-.label_center {
-    
-    margin-top:5px;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    position: relative;
-    display: flex;
-    align-content: center;
-    align-items: center;
-
-    
-  }
-
-  .p {
+.p {
     padding-top: 10px;
     top: margin px;
     font-weight: 1000;
@@ -109,8 +54,7 @@ ion-list {
     display: flex;
     align-content: center;
     align-items: center;
-    width: 100%;
-    
+    width: 100%;    
 }
 
 .p1 {
@@ -124,8 +68,7 @@ ion-list {
     display: flex;
     align-content: center;
     align-items: center;
-    width: 100%;
-    
+    width: 100%;    
 }
 
 .p2 {
@@ -160,7 +103,7 @@ ion-list {
 
 .div-1 {
          
-    background: whitesmoke;          
+    background: whitesmoke;       
     
     margin-top:10px;
     margin-right: 10px;
@@ -200,21 +143,17 @@ ion-list {
     box-shadow: 0 6px 4px -4px var(--ion-color-medium);
   }
 
-  /* The div container */
-.qrcodeImage {
-    display: flex;
-    flex: 1;
-  }
-  
+   
   /* Add custom styles here */
   .center {
+    margin: auto;
+    width: 50%;
     display: flex;
-    flex: 1;
+    flex: 2;
     justify-content: center;
   }
 
-  ion-button {
- 
+  ion-button { 
     --webkit-box-shadow: 0 6px 4px -4px var(--ion-color-medium);
     --moz-box-shadow: 0 6px 4px -4px var(--ion-color-medium);
   

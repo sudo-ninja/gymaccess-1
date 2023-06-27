@@ -1,40 +1,59 @@
 
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding">
+<ion-content [fullscreen]="true" >
+  <div id="bg">
+    <ion-fab vertical="bottom" edge horizontal="center" slot="fixed">
+      <ion-fab-button color="white" routerLink="/login">
+        <img src="assets/svg/folded_hand.svg">
+        <!-- <ion-icon name="close-outline" color="medium"></ion-icon> -->
+      </ion-fab-button>
+    </ion-fab>
+  </div>
 
   <form [formGroup] = "authForm" (ngSubmit)="signIn()">
-    <ion-list>
-    <ion-item class="item-has-focus ion-touched ion-valid" >   
+  <ion-list lines="none" class="ion-margin">
+    <ion-list-header>WELCOME !</ion-list-header>
+    <!-- <ion-item class="ion-margin">
+      <ion-input placeholder="Enter Username" type="text" clearInput="true"></ion-input>
+    </ion-item> -->
+
+    <ion-item class="item-has-focus ion-touched ion-valid" class="ion-margin">   
       <ion-input labelPlacement="floating" label="Email ID" placeholder="Enter Email" formControlName="email" type="email" required></ion-input>
     </ion-item>
 
-    <ion-item class="item-has-focus ion-touched ion-valid" >
-       <ion-input labelPlacement="floating" label="Password" placeholder="Enter Password" formControlName="password" type="password" required>
-      </ion-input>
-    </ion-item>
+    <!-- <ion-item class="ion-margin">
+      <ion-input placeholder="Enter Password" type="password" clearInput="true"></ion-input>
+    </ion-item> -->
 
-    <div>
-        <ion-button 
-        type="submit" 
-        [disabled]="!authForm.valid"
-        color="primary" 
-        shape="full" 
-        expand="block">Login</ion-button>
+    <ion-item class="item-has-focus ion-touched ion-valid" class="ion-margin">
+      <ion-input labelPlacement="floating" label="Password" placeholder="Enter Password" formControlName="password" type="password" required>
+     </ion-input>
+   </ion-item>
+
+    <ion-text color="medium"><p class="ion-margin-horizontal"> <strong routerLink="/forgetpassword"> Forgot Password ?</strong></p></ion-text>
+
+    <div align="right">
+      <!-- <ion-button shape="round" strong="true" class="ion-margin-end" color="plant">
+        SIGN IN
+        <ion-icon name="log-in" slot="end"></ion-icon>
+      </ion-button> -->
+
+      
+        <ion-button  
+        type="submit" [disabled]="!authForm.valid"  
+        color="danger" shape="round" strong="true" class="ion-margin-end"
+        >SIGN IN
+        <ion-icon name="log-in" slot="end"></ion-icon></ion-button>
+  
+
     </div>
   </ion-list>
-</form> 
-  
- 
-<p class="ion-text-right"> Don't have an account?<strong routerLink="/register"> Register</strong></p>
-<p class="ion-text-left"><strong routerLink="/forgetpassword"> Forgot Password </strong></p>
-<p class="ion-text-center" *ngIf="isLoading"> <ion-spinner></ion-spinner> </p>
 
  
+   
+</form> 
+<p class="ion-text-center" *ngIf="isLoading"> <ion-spinner></ion-spinner> </p>
+
+
 <div *ngIf = "serverErrorMessage">
   {{serverErrorMessage}}
 </div>

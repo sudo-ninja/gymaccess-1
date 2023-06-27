@@ -1,8 +1,10 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+// to share invitation code 
 import { Share } from '@capacitor/share';
-import { AlertController, IonDatetime, LoadingController, ModalController } from '@ionic/angular';
+
+import { AlertController, IonDatetime, LoadingController, ModalController, ToastController } from '@ionic/angular';
 import { Member } from 'src/app/models/member.model';
 import {Mcontrol} from 'src/app/models/mcontrol'
 
@@ -117,6 +119,7 @@ export class MemberListPage implements OnInit {
   public results = [...this.members];
   start_Date: string;
   end_Date: string;
+  currentGymName: string;
 
 
   constructor(
@@ -129,11 +132,13 @@ export class MemberListPage implements OnInit {
     
     private alertCtrl: AlertController, 
     private modalCtrl: ModalController,
+    private toastCtrl: ToastController,
 
     private formBuilder: FormBuilder,
     private inviteControlApi:McontrolService,
     public memberApi:MemberserviceService,
     private attendApi:AttendanceService,
+
 
     // to store data
     private storageService :StorageService, // storage service is used insted of get set method
@@ -156,7 +161,7 @@ export class MemberListPage implements OnInit {
 
     this.gymApi.wildSearch(this.loggeduser._id).subscribe(
       (data:any)=>{
-        this.gyms = data; // from here passing data to gym selector     
+        this.gyms = data; // from here passing data to gym selector  for list of gyms   
     }
     );
     this.today_ = this.today_*1+604800000;
@@ -392,8 +397,16 @@ async getMembers(){
                   .addMcontrol(this.inviteControlForm.value)
                   .subscribe({
                     next: (res: any) => {
-                      console.log('Added invitation code');
-                      console.log(this.member.email);
+                      // to get gym name 
+                      this.gymApi.getGym(this._gym_id).subscribe({ 
+                        next:(res)=>{
+                          this.currentGymName = res.gym_name;
+                        },
+                        error:(err)=>{
+                          this.showErrorToast(JSON.stringify(err));
+                        }
+                      });
+                      this.basicShare(this._invitationcode,this.currentGymName)
                       this.setInvitaion(this.member.email, 'Pending');
                     },
                     error: (err: any) => {
@@ -439,11 +452,11 @@ async getMembers(){
     
   }
 
-  async basicShare(){
+  async basicShare(invitation_code:any, gym_name){
     await Share.share({
-      title:' This will appear in subject  ',
-      text:' this will appear in message body',
-      url:'url link from here '
+      title: `Invitation Code to Join ${gym_name}`,
+      text:`${invitation_code}`,
+      url:'download app from here - link of app '
     });
   }
 
@@ -666,12 +679,6 @@ this.getMembers();
 this.compareWithFn(this._gym_id,ev.target.value);
 }
 
-// customPopoverOptions = {
-//   header: 'My GYM(s)',
-//   // subHeader: 'Select Specific Gym',
-//   message: 'Select Specific Gym',
-// };
-
 compareWithFn(o1, o2) {
   return o1 === o2;
 };
@@ -701,33 +708,7 @@ confirm(){
   this.setOpen(false);
 
 }
-// may use inbuilt icon https://fontawesomeicons.com/Ionic/icons?search=bar
-// if memmber expiry date from current date is less then 5 only then show some image like
-// if more then 5 days then full 5 step with green color and thick green border 
-// battery full with 5 steps with red color 
-//if remain 4 then with 4 step with red
-// if 3 steps with 3 step with red
-// if 2 days then 2 step with red
-// if 1 day then 1 step with red and some flash and red border to member card
-// if Zero day then show more thick red border and all card text to red color 
 
-// to slide member ifnormation from right to left
-// angular.module('app', ['ionic'])
-
-// .controller('appCtrl', function($scope, $ionicModal) {
-//   $ionicModal.fromTemplateUrl('templates/modal.html', {
-//     scope: $scope,
-//     animation: 'slide-in-right'
-//   }).then(function(modal) {
-//     $scope.modal = modal;
-//   });
-//   $scope.openModal = function() {
-//     $scope.modal.show();
-//   }
-//   $scope.closeModal = function() {
-//     $scope.modal.hide();
-//   }
-// })
 
 // to get intial of name as avatar
 getInitials(firstName:string) {
@@ -750,4 +731,15 @@ getInitials(firstName:string) {
         ':' + pad(tzOffset % 60);
     };
 
+
+    // toast 
+    async showErrorToast(data: any) {
+      let toast = await this.toastCtrl.create({
+        message: data,
+        duration: 3000,
+        position: 'top',
+      });
+      toast.onDidDismiss();
+      await toast.present();
+    }
 }

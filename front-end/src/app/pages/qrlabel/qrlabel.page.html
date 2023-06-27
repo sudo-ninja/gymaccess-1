@@ -5,43 +5,43 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content class="pagebg" [fullscreen]="true"  >
-    <div id="bg">
-            <ion-label ><h1 class="p">WELCOME</h1>
-                        <h2 class="p">TO</h2>
-                        <h1 class="p">{{gymname | uppercase }}</h1>
-            </ion-label>
-    </div>
-    <div class="div-1" id="pdfTable" #pdfTable >
-        <ion-list  lines="none" class="ion-margin">
-        <ion-label><h1 class="p1">SCAN ME</h1></ion-label>
-        <ion-item >
-            <div class="center">
-            <!-- <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img> -->
-            <qrcode
-            id="qr_code img" 
-            [qrdata]= 'gymIdforQRcode'
-            [width]="225" 
-            [cssClass]="'center'"
-            [errorCorrectionLevel]="'M'">
-            </qrcode>
-            </div>
-        </ion-item>
-        <ion-text ><h2 class="p2">TO GET PROPERTY ACCESS</h2></ion-text>          
-        </ion-list>
-
-                
-    </div>
-    <div class="div-2">
-        <!-- <ion-item class=" item-1">
-            <ion-list lines="none" class="ion-margin">
-                <!-- <h3 class="p3"> DOWNLOAD THE APP. </h3> -->
-                <!-- <h3 class= "p3"> GYM ACCESS CONTROl.</h3> -->
-                <!-- <p slot="end"> powered by <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img></p>               
-            </ion-list>
-        </ion-item> -->
-    </div>
-
+<ion-content class="pagebg" [fullscreen]="true" id="downloadme" #downloadme >
+     
+        <div id="bg">
+                <ion-label ><h1 class="p">WELCOME</h1>
+                            <h2 class="p">TO</h2>
+                            <h1 class="p">{{gymname | uppercase }}</h1>
+                </ion-label>
+        </div>
+        <div class="div-1" >
+            <ion-list  lines="none" class="ion-margin">
+            <ion-label ><h1 class="p1">SCAN ME</h1></ion-label>
+            <ion-item >
+                <div class="center">
+                   <qrcode
+                    #imageCanvas
+                    id="qr_code img" 
+                    [qrdata]= 'gymIdforQRcode'
+                    [width]="225" 
+                    [cssClass]="'center'"
+                    [errorCorrectionLevel]="'M'">
+                    </qrcode>
+                </div>
+            </ion-item>
+            <ion-text ><h2 class="p2">TO GET PROPERTY ACCESS</h2></ion-text>          
+            </ion-list>                    
+        </div>
+        
+        <div class="div-2">
+            <!-- <ion-item class=" item-1">
+                <ion-list lines="none" class="ion-margin">
+                    <!-- <h3 class="p3"> DOWNLOAD THE APP. </h3> -->
+                    <!-- <h3 class= "p3"> GYM ACCESS CONTROl.</h3> -->
+                    <!-- <p slot="end"> powered by <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img></p>               
+                </ion-list>
+            </ion-item> -->
+        </div>
+    
   </ion-content>
 
   <ion-footer>

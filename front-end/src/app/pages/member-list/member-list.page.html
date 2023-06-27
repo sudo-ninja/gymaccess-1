@@ -2,8 +2,7 @@
     <ion-item>
       <ion-select 
         aria-label="Gym"
-        placeholder="Select Gym"
-      
+        placeholder="Select Gym"      
         (ionChange)="selecthandleChange($event)"
         [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
         slot="end">
@@ -19,8 +18,7 @@
         (ionChange)="onSearchTextEntered($event)"
         animated   
         >    
-      </ion-searchbar>
-      
+      </ion-searchbar>      
    
   </ion-header>
 
