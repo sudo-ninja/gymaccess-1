@@ -1,5 +1,7 @@
   <ion-header>
+   
     <ion-item>
+      
       <ion-select 
         aria-label="Gym"
         placeholder="Select Gym"      
@@ -18,11 +20,18 @@
         (ionChange)="onSearchTextEntered($event)"
         animated   
         >    
-      </ion-searchbar>      
+    </ion-searchbar> 
    
   </ion-header>
 
 <ion-content class="ion-padding">
+
+  <ion-fab class="ion-fab-1" slot="fixed" vertical="top" horizontal="end" [edge]="true">
+    <ion-fab-button (click)="openLock()">
+      <ion-icon name='lock-open'></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
    
         <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
           <ion-refresher-content></ion-refresher-content>
@@ -234,7 +243,7 @@
     SWIPE GESTURE
   </ion-button> -->
 
-    <ion-fab color="Secondary" vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab class=".ion-fab-2" vertical="bottom" horizontal="center" slot="fixed">
       <ion-fab-button (click)="addProduct()" >
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>

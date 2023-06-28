@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { MemberserviceService } from 'src/app/services/memberservice.service';
+import { GymService } from 'src/app/services/gym.service';
 import { McontrolService } from 'src/app/services/mcontrol.service';
 import { AttendanceService } from 'src/app/services/attendance.service';
 import { FeedbackserviceService } from 'src/app/services/feedbackservice.service';
@@ -9,6 +10,7 @@ import{ Router} from '@angular/router';
 
 // for countdown display on screen 
 import { Subscription, interval } from 'rxjs';
+import { Gym } from 'src/app/models/gym.model';
 
 @Component({
   selector: 'app-personalinformation',
@@ -58,11 +60,14 @@ export class PersonalinformationPage implements OnInit {
   countdownSeconds: number;
   countDownStarted:boolean = false;
 
+  gyms:Gym[]=[];
+
    
 
   constructor(
     private memberApi: MemberserviceService,
     private userApi: UserService,
+    private gymApi:GymService,
     private memberControlApi :McontrolService,
     private attendanceApi:AttendanceService,
     private feedbackApi:FeedbackserviceService,
@@ -196,8 +201,15 @@ async deleteAlert(header:string,subheader:string, message:string,id:any) {
       {
         text : 'OK',
         handler:()=>{
-          console.log(this.loggedUserId);  
-          console.log(this.loggeduserIsMember);         
+          // logged user is neither member nor admin then directly send back to login page 
+         
+          if((!this.loggeduserIsAdmin) && (!this.loggeduserIsMember))
+          {
+           localStorage.clear(); //clear local storage            
+           this.userApi.deleteToken();//clear token            
+           this.router.navigate(['/login'],{replaceUrl:true}); 
+          }  
+          
             if(this.loggeduserIsMember){
                this.memberApi.delete(this.memberId).subscribe((res)=>{
                 console.log(res);
@@ -224,16 +236,60 @@ async deleteAlert(header:string,subheader:string, message:string,id:any) {
             });
             });
 
-            
-            }
-
-            console.log(id);
             this.userApi.deletUserbyId(id).subscribe((res)=>{
               console.log(res);
             }); // delet user
             localStorage.clear(); //clear local storage            
             this.userApi.deleteToken();//clear token            
-            this.router.navigate(['/login'],{replaceUrl:true});           
+            this.router.navigate(['/login'],{replaceUrl:true});     
+            
+            }
+            // if logged user is admin 
+            // then alert for gym delet
+          
+            if(this.loggeduserIsAdmin) {
+              this.gymApi.wildSearch(this.loggeduser._id).subscribe(
+                (data:any)=>{
+                  if(!data.length){ // check if user have gym . if gym is not there then only delete user                
+                    this.userApi.deletUserbyId(id).subscribe((res)=>{
+                      console.log(res);
+                    }); // delet user
+                    localStorage.clear(); //clear local storage            
+                    this.userApi.deleteToken();//clear token            
+                    this.router.navigate(['/login'],{replaceUrl:true});
+                  }else{
+                    // show alert first delet gym then only account can be deleted..
+                    this.gymDeletAlert("Warning !","You have gym","First remove gym");
+                  }
+                 }
+              );
+             }
+             
+            
+        }
+      },
+      {
+        text : 'Cancel',
+        handler:()=>{
+          
+        }
+      }      
+      ],
+  });
+  await alert.present();
+}
+
+async gymDeletAlert(header:string,subheader:string, message:string) {
+  const alert = await this.alertCtrl.create({
+    header:header,
+    subHeader: subheader,
+    message:message,
+    buttons: [
+      {
+        text : 'OK',
+        handler:()=>{
+          // navigate to gymtabs/infor 
+          this.router.navigateByUrl('/gymtabs/infor', { replaceUrl: true, });
         }
       },
       {
@@ -242,7 +298,6 @@ async deleteAlert(header:string,subheader:string, message:string,id:any) {
           
         }
       }
-      
       
       ],
   });

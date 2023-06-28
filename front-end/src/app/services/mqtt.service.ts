@@ -14,7 +14,7 @@ export class MqttService {
   openLock(data:any): Observable<any>{
     console.log("in open lock srvice method");
     let url = `${this.baseUrl}`;
-    return this.http.post(url,data).pipe(tap((dat:any)=>console.log("lock Open")),
+    return this.http.post(url,data).pipe(tap((dat:any)=>console.log(dat)),
     catchError(this.errorMgmt));
   }
 

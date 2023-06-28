@@ -17,6 +17,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { GymService } from 'src/app/services/gym.service';
 
 import { Gym } from 'src/app/models/gym.model';
+//call mqtt api
+import { MqttService } from 'src/app/services/mqtt.service';
 
 
 // call user service to update user as member as soon as invite accepted
@@ -138,6 +140,9 @@ export class MemberListPage implements OnInit {
     private inviteControlApi:McontrolService,
     public memberApi:MemberserviceService,
     private attendApi:AttendanceService,
+
+    //call mqtt api
+    private mqttApi:MqttService,
 
 
     // to store data
@@ -598,6 +603,18 @@ async attenRecord(id,event:any){
 
 
 console.log(id,event);
+}
+
+// open lock , call MQTT API to open lock ..withoit condition 
+openLock(){
+  //call mqtt api and pass lock id of selected gym_id , 
+  this.gymApi.getGym(this._gym_id).subscribe({
+    next:(res)=>{
+      this.mqttApi.openLock({"topic":res.gym_lockId,"message":"1"}).subscribe({
+        next:(res)=>{}
+      }); // to open lock
+    }
+  });
 }
 
 //ion date time button 
