@@ -24,6 +24,7 @@ export class ForgetpasswordPage implements OnInit {
 
   constructor(
     private alertCtrl: AlertController,
+    public loadingController: LoadingController,
     private userApi : UserService,
     private fb: FormBuilder,
     private router:Router,
@@ -40,8 +41,9 @@ export class ForgetpasswordPage implements OnInit {
 
   this.resetForm  =  this.fb.group({
     email: ['',[ Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),],],
-
-    otp: ['', Validators.required],
+    otp: ['',[Validators.minLength(5),
+              Validators.maxLength(6), 
+              Validators.required]],
     newPassword:['',[Validators.required,
                     Validators.minLength(8),]],
 });
@@ -54,13 +56,17 @@ export class ForgetpasswordPage implements OnInit {
   // join gym alert to get verification code 
   async verificationAlert() {
     // call loading true
-    this.isLoadingResults = true;
+    const loading = await this.loadingController.create({
+      message: 'Loading....',
+    });
+    await loading.present();
+
     this.userApi.forgetPassword(this.authForm.value).subscribe({
       next:(res)=> { console.log(res);
-        this.isLoadingResults = false;
+        loading.dismiss();
       },
       error:(error)=>{ console.log(error)
-        this.isLoadingResults = false;},
+        loading.dismiss();},
     })
     // shoot email for verification (code by htting API.
     // if success full hit then set loading .false and then only this alert
@@ -81,13 +87,7 @@ export class ForgetpasswordPage implements OnInit {
                       console.log(var_code);
                       // if verification code matched check by calling api  
                       this.successVerificationAlert();
-                      // if not macthed 
-                      // prompt again 
-                      /*Back to Forget Password Page*/
-                      
-
-                        }
-                       
+                     }              
                       
                     },
                     {
@@ -171,11 +171,17 @@ export class ForgetpasswordPage implements OnInit {
     await alert.present();
   }
  
-  getOTP(){
+  async getOTP(){
     this.isSubmitted = true;
+    const loading = await this.loadingController.create({
+      message: 'Loading....',
+    });
+    await loading.present();
     this.userApi.forgetPassword(this.authForm.value).subscribe({
-      next:(res)=>{if(res.otp){this.isOTPmailed=true}},
-      error:(err)=>{this.serverErrorMessage = err.error},
+      next:(res)=>{if(res.otp){this.isOTPmailed=true}
+      loading.dismiss();},
+      error:(err)=>{this.serverErrorMessage = err.error;
+        loading.dismiss();},
     });
   }
 

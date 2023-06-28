@@ -1,16 +1,34 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>register</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true">
+  <div id="bg">
+    <ion-fab vertical="bottom" edge horizontal="center" slot="fixed">
+      <ion-fab-button color="white" routerLink="/login">
+        <img src="assets/svg/folded_hand.svg">
+        <!-- <ion-icon name="close-outline" color="medium"></ion-icon> -->
+      </ion-fab-button>
+    </ion-fab>
+  </div>
 
-<ion-content>
   <div class="ion-align-items-center" *ngIf="isLoadingResults">
     <ion-spinner name="crescent" color="success" ></ion-spinner>
   </div>
   <div *ngIf="!userVerified">
+    <ion-list lines="none" class="ion-margin">
+  
 
-  <ion-item>
+  <ion-item class="item-has-focus ion-touched ion-valid" class="ion-margin">
+    <!-- <ion-label>e-mail</ion-label> -->
+    <ion-input
+    label="E-Mail" 
+    labelPlacement="floating"  
+    [(ngModel)]="email" 
+    type="email" 
+    name="email" 
+    position="floating"
+    required 
+    placeholder="Enter Valid Email Address"></ion-input>
+  </ion-item>  
+
+  <ion-item class="item-has-focus ion-touched ion-valid" class="ion-margin">
     <ion-input 
     label="Mobile Phone" 
     labelPlacement="floating" 
@@ -21,33 +39,22 @@
     placeholder="Enter Mobile Number"> </ion-input>
   </ion-item>
 
-  <ion-item>
-    <ion-label>e-mail</ion-label>
-    <ion-input
-    label="E-Mail" 
-    labelPlacement="floating"  
-    [(ngModel)]="email" 
-    type="email" 
-    name="email" 
-    position="floating"
-    required 
-    placeholder="Enter Valid Email Address"></ion-input>
-  </ion-item>
-
-  
-
   <ion-button 
   expand="block" 
-  class="ion-padding" 
-  color="light" (click)="sendVerificationCodeSignup()">
+  class="ion-padding"
+  shape="round" 
+  strong="true"
+  color="light" 
+  (click)="sendVerificationCodeSignup()">
   Get Verification Code
   </ion-button>
+  </ion-list>
 </div>
 
 <div *ngIf="userVerified">
   <form [formGroup] = "registerForm" (ngSubmit)="register()">
     <ion-list>
-    <ion-item>
+    <ion-item class="item-has-focus ion-touched ion-valid" class="ion-margin">
   
       <ion-input
       label="Name" 
@@ -57,7 +64,7 @@
       required></ion-input>
     </ion-item>
 
-  <ion-item>
+  <ion-item class="item-has-focus ion-touched ion-valid" class="ion-margin">
       
       <ion-input 
       label="Mobile No." 
@@ -67,7 +74,7 @@
       required></ion-input>
     </ion-item>
 
-    <ion-item>
+    <ion-item class="item-has-focus ion-touched ion-valid" class="ion-margin">
       
       <ion-input 
       label="password" 
@@ -83,19 +90,27 @@
         type="submit" 
         [disabled]="!registerForm.valid"
         color="primary" 
-        shape="full" 
-        expand="block">Register</ion-button>
+        shape="round" 
+        strong="true"
+        expand="block">
+        Register</ion-button>
     </div>
   </ion-list>
   </form> 
 </div>
   <p class="ion-text-center" *ngIf="isLoading"> <ion-spinner></ion-spinner> </p>
   
-  <p class="ion-text-right">already have an account?<strong routerLink="/login">login</strong></p>
+  <ion-text color="medium">  <p class="ion-margin-horizontal"> <strong routerLink="/login"><ion-icon name="chevron-back"></ion-icon> Back to login</strong></p></ion-text>
 
-
+  
   <ion-item  *ngIf="userexist" class="ion-padding" >
-  <ion-button type="button" expand="block" color="secondary" >Forget Password</ion-button>
+  <ion-button 
+  type="button"
+  shape="round" 
+  strong="true"
+  expand="block" 
+  color="primary" 
+  >Forget Password</ion-button>
   </ion-item>
 
   
