@@ -23,14 +23,19 @@ import { CancelOptions, Channel, LocalNotifications, ScheduleOptions } from '@ca
 //call fedback service to send subscription expiry alert
 import { FeedbackserviceService } from 'src/app/services/feedbackservice.service';
 
-// call recharge request services
+// to call components here 
+import { IonicModule } from '@ionic/angular';
+import { BannerComponent } from './banner/banner.component';
 
 @Component({
   selector: 'app-member-action',
   templateUrl: './member-action.page.html',
   styleUrls: ['./member-action.page.scss'],
+  
 })
 export class MemberActionPage implements OnInit {
+  //slide show 
+  slides: any[] = [];
 
   loggedUserEmail:any;
   loggedUserName:any;
@@ -135,6 +140,13 @@ export class MemberActionPage implements OnInit {
   }
 
   ngOnInit() {
+    // slide show ..
+    this.slides = [
+      {banner: 'assets/imgs/1.jpeg'},
+      {banner: 'assets/imgs/2.jpg'},
+      {banner: 'assets/imgs/3.jpg'},
+]
+
     setTimeout(() => {
       this.dateTime = new Date().toISOString();
     });

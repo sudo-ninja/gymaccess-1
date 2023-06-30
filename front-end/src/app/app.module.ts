@@ -20,7 +20,7 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 
 // custom schema for swiper js
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+// import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 // import HTTP_INTERCEPTORS here so that can be used gloablly 
 // import { HttpConfigInterceptor } from '../app/interceptors/httpConfig.interceptor';
@@ -72,6 +72,6 @@ import { CustomFilterPipe } from './custom-filter-pipe.pipe';
     //   CustomFilterPipe
     // ],
   bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  // schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {}
