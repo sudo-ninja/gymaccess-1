@@ -25,7 +25,12 @@ import { FeedbackserviceService } from 'src/app/services/feedbackservice.service
 
 // to call components here 
 import { IonicModule } from '@ionic/angular';
-import { BannerComponent } from './banner/banner.component';
+import { BannerComponent } from '../../components/banner/banner.component';
+//call banner service 
+// call banner service 
+import { BannerService } from 'src/app/services/banner.service';
+import { environment } from 'src/environments/environment.prod';
+
 
 @Component({
   selector: 'app-member-action',
@@ -34,6 +39,7 @@ import { BannerComponent } from './banner/banner.component';
   
 })
 export class MemberActionPage implements OnInit {
+  baseUri : string = environment.SERVER;
   //slide show 
   slides: any[] = [];
 
@@ -72,7 +78,9 @@ export class MemberActionPage implements OnInit {
 
   serviceProviders: any; // serviceprovider means admin as he is providing service to members.
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
-  usersUrl:string='http://localhost:3000/api/v1/users';// URL at postman from where all user are fetched
+  // usersUrl:string='http://localhost:3000/api/v1/users';// URL at postman from where all user are fetched
+  usersUrl:string=this.baseUri+'/users';// URL at postman from where all user are fetched
+  
   originalserviceProvider:any;
   selectedService:any;
 
@@ -90,6 +98,8 @@ export class MemberActionPage implements OnInit {
     private gymApi:GymService,
     private feedbackApi:FeedbackserviceService,
     public loadingController:LoadingController,
+    // banner service api
+    private bannerApi:BannerService
 
   ) {
     // this._user.user().subscribe(
@@ -141,11 +151,41 @@ export class MemberActionPage implements OnInit {
 
   ngOnInit() {
     // slide show ..
-    this.slides = [
-      {banner: 'assets/imgs/1.jpeg'},
-      {banner: 'assets/imgs/2.jpg'},
-      {banner: 'assets/imgs/3.jpg'},
-]
+    this.bannerApi.getImageByGymId(this.gymId).subscribe({
+      next:res=>{
+        console.log(res.length);
+        if(!res.length){   // if no image uploaded by gym admin then show default images
+          this.bannerApi.getImageByGymId("default_memberaction_page").subscribe({            
+            next:dat=>{
+              console.log(dat)
+              for (let i = 0; i <dat.length; i++) {
+                // make array of image objects
+                this.slides.push(
+                  {banner:this.baseUri+'/images/'+dat[i].image_path}
+                );
+              };
+            },
+            error:err=>{ console.log(err)}
+          });
+      //     this.slides = [
+      //       {banner: 'assets/imgs/1.jpg'},
+      //       {banner: 'assets/imgs/2.jpg'},
+      //       {banner: 'assets/imgs/3.jpg'},
+      //  ]        
+      } else{ 
+        for (let i = 0; i < res.length; i++) {
+          // make array of image objects
+          this.slides.push(
+            {banner:this.baseUri+'/images/'+res[i].image_path}
+          );
+        };
+      }
+      },
+      error:err=>{
+        console.log(err);
+      }
+    });
+//     
 
     setTimeout(() => {
       this.dateTime = new Date().toISOString();

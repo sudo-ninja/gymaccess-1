@@ -8,7 +8,7 @@ import { MemberActionPageRoutingModule } from './member-action-routing.module';
 
 import { MemberActionPage } from './member-action.page';
 import { QRCodeModule } from 'angularx-qrcode';
-import { BannerComponent } from './banner/banner.component';
+import { BannerComponent } from './../../components/banner/banner.component';
 
 @NgModule({
   imports: [

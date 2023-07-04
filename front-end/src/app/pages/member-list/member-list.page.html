@@ -24,7 +24,16 @@
    
   </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" >
+  <!-- [ngStyle]="{ background-image: background_image }" -->
+  <!-- [ngStyle]="{'background-image': 'url(' + background_image + ')'}" -->
+  <div [ngStyle]="{'background-image': ' url(' + imageUrl  + ') no-repeat 0 0'}" >
+<!-- was tryng to set Backgrund image but not success -->
+  </div>
+  
+  <div>
+    <app-banner [slides]="members_slides"></app-banner>
+  </div>
 
   <ion-fab class="ion-fab-1" slot="fixed" vertical="top" horizontal="end" [edge]="true">
     <ion-fab-button (click)="openLock()">
@@ -254,7 +263,7 @@
     </ion-infinite-scroll> -->
 <!-- <ion-button (click)="deletAllMembers()"> Delet All Members</ion-button> -->
 
-  </ion-content>
+</ion-content>
 
  
  

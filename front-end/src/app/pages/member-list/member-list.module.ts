@@ -14,12 +14,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ReactiveFormsModule } from '@angular/forms';
-
+// this is used for custom search at memeber list page 
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 // import { Ng2SearchPipeModule } from 'ng2-search-filter';
 // import { AppModule } from "../../app.module";
 
-
+import { BannerComponent } from './../../components/banner/banner.component';
 
 @NgModule({
     declarations: [MemberListPage],
@@ -31,6 +31,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
         IonicModule,
         DirectivesModule,
         // Ng2SearchPipeModule,
+        BannerComponent, // component call in module this way , refrence this https://angular.io/guide/standalone-components
         RouterModule,
         ReactiveFormsModule,
         MemberListPageRoutingModule,

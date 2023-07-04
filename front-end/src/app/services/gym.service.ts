@@ -5,7 +5,8 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 import{Gym} from '../models/gym.model';
 import { environment } from 'src/environments/environment.prod';
 
-const baseUrl = 'http://localhost:3000/api/v1/gyms';
+// const baseUrl = 'http://localhost:3000/api/v1/gyms';
+const baseUrl = environment.SERVER+'/gyms';
 const searchUrl = 'http://localhost:3000/api/v1/gyms/search';
 
 
@@ -14,7 +15,7 @@ const searchUrl = 'http://localhost:3000/api/v1/gyms/search';
 })
 export class GymService {
   // baseUri :string = 'http://localhost:3000/api/v1';
-  baseUri : string = environment.SERVER;
+  
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
 
@@ -35,7 +36,7 @@ export class GymService {
   addGym(data: any): Observable<any> {
     console.log("i m in add member loop");
     console.log(data);
-    let url = `${this.baseUri}/gyms`;
+    let url = baseUrl;
     console.log(url);
     return this.http.post(url, data).pipe(tap((dat:any)=>console.log(`Added with ID =${dat._id}`)),
     catchError(this.errorMgmt));

@@ -2,6 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, Component, ElementRef, Input, OnInit, ViewChild
 import { CommonModule } from '@angular/common';
 import { IonicSlides } from '@ionic/angular';
 
+
 @Component({
   selector: 'app-banner',
   templateUrl: './banner.component.html',
@@ -18,13 +19,13 @@ export class BannerComponent  implements OnInit {
   @ViewChild('swiper')
   swiperRef: ElementRef | undefined;
 
-  constructor() { }
+  constructor( ) { }
 
   ngOnInit() {}
 
   onSlideChange(event: any) {
-    console.log(this.swiperRef?.nativeElement.swiper.activeIndex);
-    console.log('event', event);
+    // console.log(this.swiperRef?.nativeElement.swiper.activeIndex);
+    // console.log('event', event);
   }
 
 }

@@ -35,7 +35,12 @@ import { error } from 'console';
 import { highlighteDate } from 'src/app/models/highlighteDate';
 
 
-
+// to call components here 
+import { IonicModule } from '@ionic/angular';
+import { BannerComponent } from '../../components/banner/banner.component';
+// call banner service 
+import { BannerService } from 'src/app/services/banner.service';
+import { environment } from 'src/environments/environment.prod';
 
 
  
@@ -47,6 +52,11 @@ import { highlighteDate } from 'src/app/models/highlighteDate';
 export class MemberListPage implements OnInit {
 
   @ViewChild(IonDatetime) datetime:IonDatetime;
+  //slide show 
+  members_slides: any[] = [];
+  baseUri : string = environment.SERVER;
+  background_memberlist_page_image:any[] =[];
+  background_image:any;
   
 
   BalanceDays_ = localStorage.getItem('balanceDays');
@@ -122,6 +132,7 @@ export class MemberListPage implements OnInit {
   start_Date: string;
   end_Date: string;
   currentGymName: string;
+  imageUrl: any;
 
 
   constructor(
@@ -150,6 +161,8 @@ export class MemberListPage implements OnInit {
 
     // to get native element 
     private elementRef:ElementRef,
+    // banner service api
+    private bannerApi:BannerService
 
   ) { 
     const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Gym list page
@@ -184,12 +197,44 @@ export class MemberListPage implements OnInit {
     // to get default gym value
     // this.MyDefaultGymValue = "GYM NAME here"
     this.compareWith = this.compareWithFn; 
+
+    // to get image for banner
+    this.callBanner();
+    // for background image
+    this.background();
        
    }
 
    // if end date of memeber is less than 7 days then set alert and change color to RED
    checkMemberlastingtime(id:any){
 
+   }
+   // call image from back end to display on html page 
+   callBanner(){
+    this.bannerApi.getImageByGymId("default_memberlist_page").subscribe({            
+      next:dat=>{
+        console.log(dat)
+        for (let i = 0; i <dat.length; i++) {
+          // make array of image objects
+          this.members_slides.push(
+            {banner:this.baseUri+'/images/'+dat[i].image_path}
+          );
+        };
+      },
+      error:err=>{ console.log(err)}
+    });
+   }
+   // for background image 
+   background(){
+    this.bannerApi.getImageByGymId("default_memberlist_page").subscribe({            
+      next:dat=>{
+        // console.log(this.baseUri+'/images/'+dat[1].image_path);
+        this.background_image = this.baseUri+'/images/'+dat[0].image_path;
+        // console.log(this.background_image);
+        this.imageUrl = this.background_image;
+      },
+      error:err=>{ console.log(err)}
+    });
    }
 
    handleChange(event) {

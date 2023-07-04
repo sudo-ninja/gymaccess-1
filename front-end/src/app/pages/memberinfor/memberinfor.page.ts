@@ -176,10 +176,6 @@ isUserMember(email){
 getMemberAttendances(mId:any){
   console.log(mId);
 this.AttendanceApi.getMemberAttendance(mId).subscribe((data:any)=>{
-  console.log(data.length);
-  for (let i = 0; i < data.length; i++) {
-    console.log(i);
-  }
   this.attendedDates = data[0].checkin_date;
   console.log(this.attendedDates);
   this.memberAttendances = data.length;
