@@ -1,0 +1,36 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+      <ion-title>attended</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirm()" [strong]="true">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+  <ion-item>
+    <!-- <ion-label> My Date </ion-label> -->
+    <ion-datetime
+    [showDefaultTitle]="false" 
+    locale="en-IN"
+    [min]="start_Date"
+    [max]="end_Date"
+    presentation="date"
+    #datetime
+    size="cover"
+    [highlightedDates]="highlightedDates"             
+    (ionCancel)= "true"  
+    (ionChange)="dateTouched($event)"         
+    >
+    <!-- <span slot="title">me Attended Days</span> -->
+  
+    <ion-buttons slot="buttons">
+    <ion-button (click)="close()" color="primary" ><strong>Dismiss</strong></ion-button>
+    </ion-buttons>      
+</ion-datetime>
+     
+  </ion-item>
+</ion-list>   
+     
+</ion-content>

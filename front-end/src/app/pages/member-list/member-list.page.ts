@@ -3,6 +3,8 @@ import { ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 // to share invitation code 
 import { Share } from '@capacitor/share';
+//ion modal 
+import { IonModal } from '@ionic/angular';
 
 import { AlertController, IonDatetime, LoadingController, ModalController, ToastController } from '@ionic/angular';
 import { Member } from 'src/app/models/member.model';
@@ -41,6 +43,7 @@ import { BannerComponent } from '../../components/banner/banner.component';
 // call banner service 
 import { BannerService } from 'src/app/services/banner.service';
 import { environment } from 'src/environments/environment.prod';
+import { AttendedPage } from './attended/attended.page';
 
 
  
@@ -52,12 +55,12 @@ import { environment } from 'src/environments/environment.prod';
 export class MemberListPage implements OnInit {
 
   @ViewChild(IonDatetime) datetime:IonDatetime;
+  @ViewChild(IonModal) modal: IonModal;
   //slide show 
   members_slides: any[] = [];
   baseUri : string = environment.SERVER;
   background_memberlist_page_image:any[] =[];
-  background_image:any;
-  
+  background_image:any;  
 
   BalanceDays_ = localStorage.getItem('balanceDays');
   isButtonSubmit:boolean=false;
@@ -326,8 +329,9 @@ async getMembers(){
     const modal = await this.modalCtrl.create({
       component: MemberUpdatePage,
       componentProps:{id:mid},
-      breakpoints: [0, 0.5, 0.8],
-      initialBreakpoint: 0.8, 
+      cssClass:'update-modal',
+      // breakpoints: [0, 0.5, 0.8],
+      // initialBreakpoint: 0.8, 
       showBackdrop: false,
       enterAnimation,
       leaveAnimation   
@@ -339,6 +343,10 @@ async getMembers(){
 
 
   }
+
+
+
+
 
 // to update member information 
   async updateMember(mid:string) {
@@ -361,9 +369,10 @@ async getMembers(){
     
     const modal = await this.modalCtrl.create({
     component: MembercontrolPage,
+    cssClass:'update-modal',
     componentProps:{id:uid},
-    breakpoints: [0, 0.5, 0.8],
-    initialBreakpoint: 0.8,      
+    // breakpoints: [0, 0.5, 0.8],
+    // initialBreakpoint: 0.8,      
   });
   this.memberApi.getMember(uid).subscribe((res)=>{
     console.log(res);
@@ -371,6 +380,26 @@ async getMembers(){
   await modal.present();
   this.isButtonSubmit=false;
 }
+
+/// see attendnace in calender 
+async seeAttendance(uid:string) {    
+  console.log(uid);
+  const modal = await this.modalCtrl.create({
+  component: AttendedPage,
+  componentProps:{id:uid},
+  cssClass:'date-modal',
+  // breakpoints: [0, 0.5, 0.8],
+  // initialBreakpoint: 0.8,      
+});
+// this.memberApi.getMember(uid).subscribe((res)=>{
+//   console.log(res);
+// });
+await modal.present();
+// this.isButtonSubmit=false;
+}
+
+
+/// to invite user as member
 
   async inviteMember(uid:string){
    console.log(uid);
@@ -586,69 +615,67 @@ async getMembers(){
 
   //get attendance record when click on avatar or image
 async attenRecord(id,event:any){
-  const loading = await this.loadingController.create({
-    message: 'Loading....'
-  });
-  await loading.present();
-  // call member by id and check start date and end date 
-  this.memberApi.getMember(id).subscribe({
-    next:res=>{
-      this.start_Date = this.toISOStringWithTimezone(new Date(+res.m_startdate));
-      this.end_Date = this.toISOStringWithTimezone(new Date(+res.m_enddate));
-      // console.log(this.start_Date , this.end_Date);
-      loading.dismiss();
-    },
-    error:error=>{
-      console.log(error);
-      loading.dismiss();
-    }
-  });
-
-
-  this.attendApi.getMemberAttendance(id).subscribe({
-    next:res=>{      
-      this.attendanceDays = res;
-      // console.log(this.attendanceDays);  
-
-      for (let i = 0; i < this.attendanceDays.length; i++) {
-        this.highlightedDates_.push(
-          {
-            date:this.toISOStringWithTimezone(new Date(+this.attendanceDays[i].checkin_date)).split("T")[0],
-            textColor: 'var(--ion-color-warning-contrast)',
-            backgroundColor:'var(--ion-color-warning)',
-          }
-        );
-       }
-      
-      this.highlightedDates = this.highlightedDates_;
-      
-      // [
-      //   {
-      //     date: this.toISOStringWithTimezone(new Date(+res[0].checkin_date)).split("T")[0],
-      //     // date: '2023-06-25',
-      //     textColor: 'var(--ion-color-warning-contrast)',
-      //     backgroundColor: 'var(--ion-color-warning)',
-      //   },
-      // ];
-
-      console.log(this.highlightedDates[0]);
-      console.log(this.highlightedDates_);
-      
-    },
-    error:err=>{
-      console.log(err);
-    },
-  });
-  event.preventDefault();
-  this.setOpen(true);
-  // this.isModalOpen = true;
-
- 
+   
+// this.CallmemberDates(id);
+// // now get attendance and save them in highlighed 
+// this.getAttendance(id);
   
-
-
-console.log(id,event);
+//   event.preventDefault();
+//   this.setOpen(true);
+  // this.isModalOpen = true;
 }
+
+// // Startdate and end date of perticular memers
+// async CallmemberDates(id){
+//   const loading = await this.loadingController.create({
+//     message: 'Loading....'
+//   });
+//   await loading.present();
+//   this.memberApi.getMember(id).subscribe({
+//     next:res=>{
+//       this.start_Date = this.toISOStringWithTimezone(new Date(+res.m_startdate));
+//       this.end_Date = this.toISOStringWithTimezone(new Date(+res.m_enddate));
+//       // console.log(this.start_Date , this.end_Date);
+//       loading.dismiss();
+//     },
+//     error:error=>{
+//       console.log(error);
+//       loading.dismiss();
+//     }
+//   });
+// }
+
+// //get attendance by ID
+// async getAttendance(id){
+//   const loading = await this.loadingController.create({
+//     message: 'Loading....'
+//   });
+//   await loading.present();
+
+//   this.attendApi.getMemberAttendance(id).subscribe({
+//     next:res=>{      
+//       this.attendanceDays = res;
+//       console.log(this.attendanceDays); 
+//       for (let i = 0; i < this.attendanceDays.length; i++) {
+//         this.highlightedDates_.push(
+//           {
+//             date:this.toISOStringWithTimezone(new Date(+this.attendanceDays[i].checkin_date)).split("T")[0],
+//             textColor: 'var(--ion-color-warning-contrast)',
+//             backgroundColor:'var(--ion-color-warning)',
+//           }
+//         );
+//        }      
+//       this.highlightedDates = this.highlightedDates_;
+//       console.log(this.highlightedDates_);
+//       loading.dismiss();
+//     },
+//     error:err=>{
+//       console.log(err);
+//       loading.dismiss();
+//     },
+//   });
+
+// }
 
 // open lock , call MQTT API to open lock ..withoit condition 
 openLock(){
@@ -662,10 +689,13 @@ openLock(){
   });
 }
 
-//ion date time button 
-close(){
-  this.datetime.cancel(true);
-}
+// //ion date time dismiss button 
+// close(){
+//   this.datetime.cancel(true);
+//   //set highligthed date array empty
+//   this.highlightedDates=[];
+//   this.modal.dismiss(true);
+// }
 
   onTap(event: any) {
     console.log('tap: ', event);
@@ -723,11 +753,6 @@ rangeValue(endate:any,balanceDays:any){
   let currentDate = new Date();
   endate = new Date(endate);
   return  Math.floor((Math.floor((Date.UTC(endate.getFullYear(), endate.getMonth(), endate.getDate())-Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())) /(1000 * 60 * 60 * 24)))/balanceDays);
-
-  // console.log();
-    // console.log(((new Date(endate)).getTime()-Date.now()));
-    // console.log(balanceDays);
-
 }
 
 
@@ -760,6 +785,7 @@ isModalOpen = false;
 
 setOpen(isOpen: boolean) {
   this.isModalOpen = isOpen;
+  console.log("isModalOpen", isOpen);
 }
 
 cancel(){

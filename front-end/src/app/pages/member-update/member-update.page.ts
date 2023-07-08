@@ -129,7 +129,6 @@ export class MemberUpdatePage implements OnInit {
     this.isLoadingResults = true;
     // const Id = localStorage.getItem('ID')    
     console.log(this.idun);
-
     let idux = this.id||this.route.snapshot.paramMap.get('id')||this.idun;
     console.log(idux , this.id, this.idun);
     this.memberApi.update(idux, this.memberForm.value).subscribe((res: any) => {
@@ -147,7 +146,6 @@ export class MemberUpdatePage implements OnInit {
         this.isLoadingResults = false;
       }
       );
-
       this.idu= this.idun;
   }
 

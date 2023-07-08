@@ -9,6 +9,7 @@ import { MemberUpdatePageRoutingModule } from './member-update-routing.module';
 import { MemberUpdatePage } from './member-update.page';
 
 import { Routes, RouterModule } from '@angular/router';
+
 @NgModule({
   imports: [
     CommonModule,

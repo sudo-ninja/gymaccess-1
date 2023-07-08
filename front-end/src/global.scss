@@ -40,3 +40,31 @@ body.scanner-active {
     --background: transparent;
     --ion-background-color: transparent;
   }
+
+.date-modal{
+  --backdrop-opacity:0.6;
+  // --background-color:#000000ab;
+  // &::part(backdrop){
+  //   background-color:transparent;
+  // }
+  &::part(content){
+    width: 80%;
+    height:50%;
+    margin:auto;
+    border-radius:10px;
+  }
+}
+
+.update-modal{
+  --backdrop-opacity:0.6;
+  // --background-color:#000000ab;
+  // &::part(backdrop){
+  //   background-color:transparent;
+  // }
+  &::part(content){
+    width: 80%;
+    height:50%;
+    margin:auto;
+    border-radius:10px;
+  }
+}

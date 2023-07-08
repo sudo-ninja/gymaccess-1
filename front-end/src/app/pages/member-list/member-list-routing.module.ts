@@ -7,7 +7,12 @@ const routes: Routes = [
   {
     path: '',
     component: MemberListPage,
+  },
+  {
+    path: 'member-list:/id',
+    loadChildren: () => import('./attended/attended.module').then( m => m.AttendedPageModule)
   }
+
 
 ];
 
