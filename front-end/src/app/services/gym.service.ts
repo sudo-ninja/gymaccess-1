@@ -6,8 +6,8 @@ import{Gym} from '../models/gym.model';
 import { environment } from 'src/environments/environment.prod';
 
 // const baseUrl = 'http://localhost:3000/api/v1/gyms';
-const baseUrl = environment.SERVER+'/gyms';
-const searchUrl = 'http://localhost:3000/api/v1/gyms/search';
+const baseUrl = environment.SERVER +'/gyms';
+const searchUrl = environment.SERVER +'/gyms/search';
 
 
 @Injectable({
@@ -60,6 +60,7 @@ export class GymService {
 
   wildSearch(user_id: any): Observable<Gym[]> {
     console.log("i m in wild search loop");
+    console.log(searchUrl);
     return this.http.get<Gym[]>(`${searchUrl}/${user_id}`).pipe(catchError(this.errorMgmt));
   }
 // get Gyminformation based on 

@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment.prod';
 
 // const baseUrl = 'http://localhost:3000/api/v1/membercontrols';
 const baseUrl =  environment.SERVER+'/membercontrols';
-const searchUrl = 'http://localhost:3000/api/v1/mcontrol/search/';
+const searchUrl = environment.SERVER+'/mcontrol/search/';
 
 
 @Injectable({

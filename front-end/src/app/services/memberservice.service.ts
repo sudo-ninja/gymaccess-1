@@ -5,8 +5,8 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 import { Member } from '../models/member.model';
 import { environment } from 'src/environments/environment.prod';
 
-const baseUrl = 'http://localhost:3000/api/v1/members';
-const searchUrl = 'http://localhost:3000/api/v1/members/search/';
+const baseUrl = environment.SERVER+'/members';
+const searchUrl = environment.SERVER+'/members/search/';
 
 @Injectable({
   providedIn: 'root'

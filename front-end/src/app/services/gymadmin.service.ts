@@ -5,8 +5,8 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 import { Gymadmin } from '../models/gymadmin.model';
 import { environment } from 'src/environments/environment.prod';
 
-const baseUrl = 'http://localhost:3000/api/v1/gymadmins';
-const searchUrl = 'http://localhost:3000/api/v1/gymadmins/search/';
+const baseUrl = environment.SERVER+'/gymadmins';
+const searchUrl = environment.SERVER+'/gymadmins/search/';
 
 
 @Injectable({

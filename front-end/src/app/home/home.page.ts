@@ -24,7 +24,8 @@ import {GymService} from './../services/gym.service';
 
 import { MemberserviceService } from '../services/memberservice.service';
 
-
+import { App } from '@capacitor/app';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -47,7 +48,8 @@ export class HomePage implements OnInit{
 
   serviceProviders: any; // serviceprovider means admin as he is providing service to members.
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
-  usersUrl:string='http://localhost:3000/api/v1/users';// URL at postman from where all user are fetched
+  // usersUrl:string='http://localhost:3000/api/v1/users';// URL at postman from where all user are fetched
+  userUrl:string= environment.SERVER+'/users';
   originalserviceProvider:any;
   selectedService:any;
   var_code:any;
@@ -92,9 +94,7 @@ export class HomePage implements OnInit{
           console.log(res);
           this.isloggedUserMember = res.isMember;
           this.loggeduserIsAdmin = res.isAdmin;
-          console.log(this.isloggedUserMember);
-
-          
+          console.log(this.isloggedUserMember);         
 
           if(this.isloggedUserMember){
             console.log('Logged User is Member');
@@ -130,7 +130,7 @@ export class HomePage implements OnInit{
       );
        
      
-   
+      console.log(App.getInfo() );
   
   }
 

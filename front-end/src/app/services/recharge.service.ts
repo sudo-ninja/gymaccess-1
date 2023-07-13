@@ -6,8 +6,8 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 import { Recharge } from '../models/recharge';
 import { environment } from 'src/environments/environment.prod';
 
-const baseUrl = 'http://localhost:3000/api/v1/recharges';
-const searchUrl = 'http://localhost:3000/api/v1/Recharges/search/';
+const baseUrl = environment.SERVER+'/recharges';
+const searchUrl = environment.SERVER+'/Recharges/search/';
 
 
 

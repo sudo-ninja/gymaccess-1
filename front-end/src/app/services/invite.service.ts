@@ -5,8 +5,8 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 import{ Invite } from '../models/invite';
 import { environment } from 'src/environments/environment.prod';
 
-const baseUrl = 'http://localhost:3000/api/v1/invite';
-const searchUrl = 'http://localhost:3000/api/v1/invite/search/';
+const baseUrl = environment.SERVER+'/invite';
+const searchUrl = environment.SERVER+'/invite/search/';
 
 
 @Injectable({

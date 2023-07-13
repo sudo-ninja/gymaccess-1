@@ -5,8 +5,8 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 import { Feedback } from '../models/feedback';
 import { environment } from 'src/environments/environment.prod';
 
-const baseUrl = 'http://localhost:3000/api/v1/feedbacks';
-const searchUrl = 'http://localhost:3000/api/v1/feedbacks/search/';
+const baseUrl = environment.SERVER+'/feedbacks';
+const searchUrl = environment.SERVER+'/feedbacks/search/';
 
 
 @Injectable({

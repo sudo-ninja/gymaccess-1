@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 
+import { App } from '@capacitor/app';
+
 //swiper 
 import { register } from 'swiper/element/bundle';
 register();
@@ -19,6 +21,8 @@ export class AppComponent {
     // If using a custom driver:
     // await this.storage.defineDriver(MyCustomDriver)
     await this.storage.create();
+    
   }
+
 
 }

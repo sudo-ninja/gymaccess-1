@@ -9,6 +9,7 @@ import { AlertController, LoadingController } from '@ionic/angular';
 
 import { EmailverificationService } from 'src/app/services/emailverification.service';
 import { UserService } from 'src/app/services/user.service';
+import { environment } from 'src/environments/environment';
 
 
 
@@ -31,9 +32,9 @@ export class LoginPage implements OnInit {
   authForm!: FormGroup;
   isSubmitted  =  false;
 
-  url: string = "http://localhost:3000/api/v1/user/login";
+  // url: string = "http://localhost:3000/api/v1/user/login";
+  url:string=environment.SERVER+"/user/login";
   serverErrorMessage:string;
-
 
   constructor(
     private fb: FormBuilder,

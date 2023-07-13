@@ -5,7 +5,8 @@ import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rx
 import {Banner} from '../models/banner';
 import { environment } from 'src/environments/environment.prod';
 
-const baseUrl = 'http://localhost:3000/api/v1/images';
+// const baseUrl = 'http://localhost:3000/api/v1/images';
+const baseUrl = environment.SERVER+'/images';
 // const searchUrl = 'http://localhost:3000/api/v1/images/search';
 const searchUrl = environment.SERVER+'/images/search';
 
