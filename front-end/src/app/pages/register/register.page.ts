@@ -29,6 +29,7 @@ export class RegisterPage implements OnInit {
   userexist: boolean = false;
   isLoading: boolean = false;
   userVerified: boolean = false;
+  showSpinner:boolean = false; // when user press get verification code 
 
   otpsent: boolean = false;
 
@@ -113,6 +114,7 @@ export class RegisterPage implements OnInit {
 
   // verify email ID at time of signup without saving that to DB
   async sendVerificationCodeSignup() {
+    this.showSpinner = true;
     const loading = await this.loadingController.create();
     await loading.present();
     // first check if user already there in DB and already verfied if already verified then
@@ -173,6 +175,7 @@ verifyEmailSignup() {
 
 
   async verifyAlert() {
+    this.showSpinner = false;
     const alert = await this.alertCtrl.create({
       header: 'Please Enter Verification Code.',
       subHeader: `Code Sent to ${this.email} .`,

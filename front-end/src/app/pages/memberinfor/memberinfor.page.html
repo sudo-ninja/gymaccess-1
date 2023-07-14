@@ -10,13 +10,12 @@ class="ion-no-border"
    </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content overflow-scroll="true" [fullscreen]="true">
   
   <div class="div-0">
-    <ion-label color="dark"> <h2>Report</h2> </ion-label>
-   
-      <ion-item >        
-        <ion-list [inset]="true">
+               
+        <ion-list lines="none" class="ion-margin">
+          <ion-list-header>Report</ion-list-header>
           
             <ion-item>
               <ion-icon name="calendar-outline"></ion-icon>
@@ -46,16 +45,16 @@ class="ion-no-border"
             </ion-item>
           
           
-            <ion-item href="#"> 
+            <!-- <ion-item href="#"> 
               <ion-icon name="cloud-download-outline"></ion-icon>
               <ion-label color="dark"><h2>Download Data </h2> </ion-label>
-            </ion-item>
+            </ion-item> -->
           
         </ion-list> 
-      </ion-item> 
+       
   </div>
 
-  <div class="div-0">
+  <div class="div-1">
     <ion-label color="dark"><h2>My Performance</h2></ion-label>  
          <!-- set min date as Start Date so that it start from that only -->
       <ion-datetime
@@ -65,17 +64,21 @@ class="ion-no-border"
         [highlightedDates]="highlightedDates"
         [showDefaultButtons]="false"
         presentation="date"
-      ></ion-datetime>
-     
+      ></ion-datetime>    
     
   </div> 
 
 
-  <div class="ion-padding">
+  <div class="ion-padding">    
      
-     
-    <ion-button fill="solid"  expand="block" (click)="rechargeRequestAlert()">Recharge Request</ion-button>
-
+    <ion-button 
+    expand="block" 
+    shape="round" 
+    color="primary"   
+    strong="true"
+    fill="solid"   
+    (click)="rechargeRequestAlert()">
+    Recharge Request</ion-button>
     
   </div> 
 

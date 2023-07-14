@@ -12,14 +12,14 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="ion-padding">
+  <ion-content overflow-scroll="true" class="ion-padding">
     <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
 
       <div class="div-0">
         <app-banner [slides]="slides"></app-banner>
-        <ion-button (click)="isscheduleNotification()">Scheduled Notification </ion-button>
+        <!-- <ion-button (click)="isscheduleNotification()">Scheduled Notification </ion-button> -->
       </div>
 
      

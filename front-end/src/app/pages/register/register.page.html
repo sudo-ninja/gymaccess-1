@@ -11,9 +11,14 @@
   <div class="ion-align-items-center" *ngIf="isLoadingResults">
     <ion-spinner name="crescent" color="success" ></ion-spinner>
   </div>
+
+  <div class="ion-align-items-center" *ngIf="showSpinner">
+    <ion-spinner name="crescent" color="success" ></ion-spinner>
+  </div>
+
+
   <div *ngIf="!userVerified">
-    <ion-list lines="none" class="ion-margin">
-  
+    <ion-list lines="none" class="ion-margin">  
 
   <ion-item class="item-has-focus ion-touched ion-valid" class="ion-margin">
     <!-- <ion-label>e-mail</ion-label> -->
@@ -41,13 +46,13 @@
 
   <ion-button 
   expand="block" 
-  class="ion-padding"
   shape="round" 
+  color="light"   
   strong="true"
-  color="light" 
   (click)="sendVerificationCodeSignup()">
   Get Verification Code
   </ion-button>
+
   </ion-list>
 </div>
 
@@ -74,8 +79,7 @@
       required></ion-input>
     </ion-item>
 
-    <ion-item class="item-has-focus ion-touched ion-valid" class="ion-margin">
-      
+    <ion-item class="item-has-focus ion-touched ion-valid" class="ion-margin">      
       <ion-input 
       label="password" 
       labelPlacement="floating" 
@@ -89,29 +93,21 @@
         <ion-button 
         type="submit" 
         [disabled]="!registerForm.valid"
-        color="primary" 
+        color="light" 
         shape="round" 
         strong="true"
         expand="block">
-        Register</ion-button>
+        Register
+      </ion-button>
     </div>
   </ion-list>
   </form> 
 </div>
   <p class="ion-text-center" *ngIf="isLoading"> <ion-spinner></ion-spinner> </p>
   
-  <ion-text color="medium">  <p class="ion-margin-horizontal"> <strong routerLink="/login"><ion-icon name="chevron-back"></ion-icon> Back to login</strong></p></ion-text>
+  <ion-text color="medium">  <p class="ion-margin-horizontal"> <strong routerLink="/login"><ion-icon name="chevron-back"></ion-icon> Back to Login</strong></p></ion-text>
 
-  
-  <ion-item  *ngIf="userexist" class="ion-padding" >
-  <ion-button 
-  type="button"
-  shape="round" 
-  strong="true"
-  expand="block" 
-  color="primary" 
-  >Forget Password</ion-button>
-  </ion-item>
+ 
 
   
   
