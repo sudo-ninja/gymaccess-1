@@ -8,11 +8,11 @@
     </ion-fab>
   </div>
 
-  <div class="ion-align-items-center" *ngIf="isLoadingResults">
+  <div class="spin" *ngIf="isLoadingResults">
     <ion-spinner name="crescent" color="success" ></ion-spinner>
   </div>
 
-  <div class="ion-align-items-center" *ngIf="showSpinner">
+  <div class="spin" *ngIf="showSpinner">
     <ion-spinner name="crescent" color="success" ></ion-spinner>
   </div>
 
@@ -29,6 +29,7 @@
     type="email" 
     name="email" 
     position="floating"
+    (keyup)="onKey($event)"
     required 
     placeholder="Enter Valid Email Address"></ion-input>
   </ion-item>  
@@ -37,9 +38,12 @@
     <ion-input 
     label="Mobile Phone" 
     labelPlacement="floating" 
-    [(ngModel)]="mobile" 
-    type="mobile" 
+    [(ngModel)]="mobile"      
     name="mobile" 
+    type="tel"
+    minlength="9" 
+    maxlength="13"
+    (keyup)="onKey($event)"
     required 
     placeholder="Enter Mobile Number"> </ion-input>
   </ion-item>
@@ -49,6 +53,9 @@
   shape="round" 
   color="light"   
   strong="true"
+  
+  [disabled]="btnstate"
+  
   (click)="sendVerificationCodeSignup()">
   Get Verification Code
   </ion-button>

@@ -21,9 +21,12 @@ export class RegisterPage implements OnInit {
   password!: string;
   mobile!: string;
   username!: string;
+ 
 
   registerForm!: FormGroup;
   isSubmitted = false;
+  isSubmittedGVC = false;
+  btnstate: boolean=false;
 
   isMember: boolean = false;
   userexist: boolean = false;
@@ -101,6 +104,8 @@ export class RegisterPage implements OnInit {
   
 
   async presentAlert(header: string, subheader: string, message: string) {
+    this.isLoadingResults = false;
+    this.showSpinner = false;
     const alert = await this.alertCtrl.create({
       header: header,
       subHeader: subheader,
@@ -112,13 +117,23 @@ export class RegisterPage implements OnInit {
     // console.log('onDidDismiss resolved with role',role);
   }
 
+ 
+//  to keep get verification button disable after first click
+onKey(event: KeyboardEvent) { 
+  // Checking to see if value is empty or not
+  // remember we are using ternary operator here 
+  this.btnstate = (event.target as HTMLInputElement).value === '' ? true:false;
+}
+
   // verify email ID at time of signup without saving that to DB
   async sendVerificationCodeSignup() {
+    // use this tutorial to for button disabled https://tutorialscamp.com/angular-disable-button/
+    this.btnstate = !this.btnstate;
     this.showSpinner = true;
-    const loading = await this.loadingController.create();
-    await loading.present();
-    // first check if user already there in DB and already verfied if already verified then
-    this.isLoadingResults = true;
+    // const loading = await this.loadingController.create();
+    // await loading.present();
+    // // first check if user already there in DB and already verfied if already verified then
+    // this.isLoadingResults = true;
     this.userAPI.getUserbyEmail(this.email).subscribe(
       (res) => {
         // if user exits or not
@@ -136,7 +151,7 @@ export class RegisterPage implements OnInit {
       (error) => {
         this.isLoadingResults = false;
         // console.log(this.isLoadingResults);
-        console.log(error.status);
+        console.log(error.error);
         if (error.status === 404) {
           this.verifyEmailSignup();
           // this.isLoadingResults = true;
@@ -144,7 +159,7 @@ export class RegisterPage implements OnInit {
       }
     );
 
-    await loading.dismiss();
+    // await loading.dismiss();
   }
 
 // user first time signup 
@@ -156,17 +171,19 @@ verifyEmailSignup() {
       console.log(res);
       if (res) {
         this.otpsent = true;
-      }
-      if (this.otpsent) {
         this.isLoadingResults = false;
         this.verifyAlert();
+      }
+      if (this.otpsent) {
+        // this.isLoadingResults = false;
+        // this.verifyAlert();
       }
     },
     (error) => {
       console.log(error);
       if (error.status == 400) {
         this.isLoadingResults = false;
-        this.presentAlert('Alert !', 'Email ID is Wrong', 'try again');
+        this.presentAlert('Alert !', error.error, 'try again');
       }
     }
   );
@@ -182,6 +199,7 @@ verifyEmailSignup() {
       buttons: [
         {
           text: 'Ok',
+          role: 'confirm',
           handler: (alertData) => {
             //takes the data
 
@@ -205,7 +223,7 @@ verifyEmailSignup() {
                   (res) => {
                     console.log(res);
                     // here all goods then redirect to new page or
-                    this.userVerified = true;
+                    this.userVerified = true; // to change div at html page
                     this.registration(res.email);
                     //as password not formed so can not route this
                     // let it be on registration page to form password
@@ -219,12 +237,12 @@ verifyEmailSignup() {
             }
           },
         },
-        {
-          text: 'Resend',
-          handler: (alertData) => {
-            this.sendVerificationCode();
-          },
-        },
+        // {
+        //   text: 'Resend',
+        //   handler: (alertData) => {
+        //     this.sendVerificationCode();
+        //   },
+        // },
       ],
       inputs: [
         {
@@ -241,6 +259,8 @@ verifyEmailSignup() {
   }
 
   sendVerificationCode() {
+    // first disabled button  and enabled that button once alert is present
+  //  this.isSubmittedGVC = true
     // first check if already verfied if already verified then
     this.isLoadingResults = true;
     console.log(this.isLoadingResults);
