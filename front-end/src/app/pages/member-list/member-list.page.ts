@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 // to share invitation code 
 import { Share } from '@capacitor/share';
 //ion modal 
-import { IonModal } from '@ionic/angular';
+import { IonModal, IonSelect, IonSelectOption } from '@ionic/angular';
 
 import { AlertController, IonDatetime, LoadingController, ModalController, ToastController } from '@ionic/angular';
 import { Member } from 'src/app/models/member.model';
@@ -45,6 +45,11 @@ import { BannerService } from 'src/app/services/banner.service';
 import { environment } from 'src/environments/environment.prod';
 import { AttendedPage } from './attended/attended.page';
 
+// for countdown display on screen 
+import { Subscription, interval } from 'rxjs';
+// call ion select and close from ts 
+ 
+
 
  
 @Component({
@@ -53,6 +58,10 @@ import { AttendedPage } from './attended/attended.page';
   styleUrls: ['./member-list.page.scss'],
 })
 export class MemberListPage implements OnInit {
+  //for ion select view here 
+  @ViewChild(IonSelect) select:IonSelect;
+  //for countdown time
+  private subscription: Subscription;
 
   @ViewChild(IonDatetime) datetime:IonDatetime;
   @ViewChild(IonModal) modal: IonModal;
@@ -87,6 +96,10 @@ export class MemberListPage implements OnInit {
   canDismiss = false;
   presentingElement = null;
   
+  // for gym selector visibitly control
+  isItemShown:boolean=false;
+  countdownSeconds: number;
+  countDownStarted:boolean = false;
 
 
   inviteControlForm!: FormGroup;
@@ -625,6 +638,37 @@ async attenRecord(id,event:any){
   // this.isModalOpen = true;
 }
 
+autoShowItem(){
+  this.isItemShown = true;
+  this.select.open();
+  this.startCountdown(30);
+}
+
+// start count down for second
+interval:any;
+startCountdown(seconds) {
+  console.log(this.isItemShown);
+  let counter = seconds;    
+  this.interval = setInterval(() => {
+    console.log(counter);
+    this.countdownSeconds = counter;
+    counter--;      
+    if (counter < 0 ) {
+      clearInterval(this.interval);
+      console.log(this.interval);
+      console.log('Ding!');
+      // this.countDownStarted = false;
+      //write here whatever want after comple 
+      
+      this.isItemShown = false;
+
+    }
+  }, 1000);
+}
+
+
+
+
 // // Startdate and end date of perticular memers
 // async CallmemberDates(id){
 //   const loading = await this.loadingController.create({
@@ -682,8 +726,10 @@ openLock(){
   //call mqtt api and pass lock id of selected gym_id , 
   this.gymApi.getGym(this._gym_id).subscribe({
     next:(res)=>{
-      this.mqttApi.openLock({"topic":res.gym_lockId,"message":"1"}).subscribe({
-        next:(res)=>{}
+      this.mqttApi.openLock({"topic":res.gym_lockId,"message":"1_Duration"}).subscribe({
+        next:(res)=>{
+          console.log(res);
+        }
       }); // to open lock
     }
   });
@@ -707,7 +753,7 @@ openLock(){
 
   onPress(event: any) {
     console.log('press: ', event);
-
+    this.openLock();
   }
 
   // swipe work in android limited phone , need to make backup in case does not work 
@@ -759,7 +805,7 @@ rangeValue(endate:any,balanceDays:any){
 selecthandleChange(ev){
 this.currentGym = ev.target.value;
 this.MyDefaultGymValue = ev.target.value;
-console.log(this.currentGym);
+console.log(ev);
 this._gym_id = this.currentGym;
 console.log(this._gym_id);
 this.getMembers();

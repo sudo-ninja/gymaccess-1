@@ -75,6 +75,7 @@ export class MemberActionPage implements OnInit {
 
   gymId:any;
   lockId:any;
+  gymName:any;
 
   serviceProviders: any; // serviceprovider means admin as he is providing service to members.
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
@@ -230,6 +231,7 @@ export class MemberActionPage implements OnInit {
     try {
       const permission = await this.checkPermission();
       if(!permission) {
+
         return;
       }
       await BarcodeScanner.hideBackground();
@@ -241,15 +243,21 @@ export class MemberActionPage implements OnInit {
       document.querySelector('body').classList.remove('scanner-active');
       this.content_visibility = '';
       if(result?.hasContent) {
-        this.scannedResult = result.content;
+        console.log(result.content);
+                this.scannedResult = result.content;
+        if(this.scannedResult.includes(this.gymId)){
+          this.attendance();//**/ */
+        }else{
+          console.log("not valid qr code");
+          // here make alert showing that not a valid qr code ..
+        }
         console.log(this.scannedResult);
       }
     } catch(e) {
       console.log(e);
       this.stopScan();
     }
-
-    this.attendance();
+    
   }
 
   stopScan() {
@@ -282,6 +290,8 @@ export class MemberActionPage implements OnInit {
       header:header,
       subHeader: subheader,
       message:message,
+      cssClass : 'customRedAlert',
+      mode: 'ios',
       buttons: ['OK'],
     });
     await alert.present();
@@ -406,17 +416,21 @@ async todaySecondAttendance(data:any,email:any){
 
 openLock(email:any){
   console.log("Lock Open Comand Given");    
-         this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
-              this.lockId = data.lockId;
-          });
+        //  this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
+        //       this.lockId = data.lockId;
+        //       this.gymName = data.gym_name;
+        //   });          
+
+          this.lockApi.openLock(
+            {
+              topic:this.lockId,
+              message:"1"
+            }
+          );
+          console.log("Lock succesfull open");
+          this.successAlert("ACCESS ALLOWED","Welcome","");
   
-  this.lockApi.openLock(
-    {
-      topic:this.lockId,
-      message:"1"
-    }
-  );
-  console.log("Lock succesfull open");
+  
   
 
 // need to pass unique Lock ID -- to pass unique lock is , use gym pi query using member email, and get lock ID assign that to unique lock id
@@ -480,6 +494,13 @@ isUserMember(email){
       this.checkoutTime = this.memberOutTime;
       this.checkoutTime  = new Date(this.checkoutTime);
       this.firstAttendance = data.isAttended;
+      // get gym data like gym lock ID,Gym Name also etc.
+      this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
+        this.lockId = data.lockId;
+        this.gymName = data.gym_name;
+    }); 
+    // now pass this lock ID to scanned result to check is its same or not. 
+
 
     }
   });
@@ -654,6 +675,21 @@ handleRefresh(event) {
     event.target.complete();
   }, 2000);
 };
+
+
+// if succesfull lock open then show alert in green color "Access Allowed"
+async successAlert(header:string,subheader:string, message:string) {
+  const alert = await this.alertCtrl.create({
+    header:header,
+    subHeader: subheader,
+    message:message,
+    mode:'ios',
+    cssClass : 'customGreenAlert',
+    buttons: ['OK'],
+  });
+  await alert.present();
+}
+// if any other issue show alert "Access Denied"in red color background
 
 }
 

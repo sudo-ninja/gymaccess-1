@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
+//for previous page
+import { Location } from "@angular/common";
+
 import { GymService } from './../../services/gym.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -58,6 +61,7 @@ export class GymAddPage implements OnInit {
     private userApi:UserService,
     private alertCtrl: AlertController, 
     private modalCtrl: ModalController,
+    private location: Location
 
     
   ) { 
@@ -301,7 +305,8 @@ public findInvalidControls()
 }
 
 gyminformation(){
-  this.router.navigate(['../gymtabs/infor'],{replaceUrl:true});
+  // this.router.navigate(['../gymtabs/infor'],{replaceUrl:true});
+  this.location.back();
 }
 
 

@@ -68,3 +68,15 @@ body.scanner-active {
     border-radius:10px;
   }
 }
+
+.customRedAlert{
+  --background: #FF0000!important;   
+  // --color:#FF0000!important;
+  --border-radius:55px!important;
+ }
+
+ .customGreenAlert{
+  --background: #00ff00!important;   
+  // --color:#FF0000!important;
+  --border-radius:55px!important;
+ }

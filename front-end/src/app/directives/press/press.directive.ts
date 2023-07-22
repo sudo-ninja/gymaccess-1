@@ -11,6 +11,7 @@ export class PressDirective implements OnInit {
     name: 'press',
     enabled: false,
     interval: 251,
+    // interval: 500,
   };
   pressTimeout = null;
   isPressing: boolean = false;
@@ -26,8 +27,9 @@ export class PressDirective implements OnInit {
   
   @HostListener('touchstart', ['$event'])
   @HostListener('touchend', ['$event'])
+
   onPress(event) {
-    // console.log(uid);
+    console.log(event);
     if (!this.pressGesture.enabled) {
       return;
     } // Press is not enabled, don't do anything.

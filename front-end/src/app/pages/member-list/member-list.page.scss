@@ -2,8 +2,11 @@
 ion-select {
   --placeholder-color: #971e49;
   --placeholder-opacity: 1;
-  width: 100%;
-  justify-content: center;
+  width: 80%;
+  // justify-content: center;
+  margin-left: 12px;
+  font-size: .8rem;
+  font-weight: 800;
 }
 
 ion-select::part(placeholder),
@@ -12,6 +15,7 @@ ion-select::part(text) {
 }
 
 ion-searchbar {
+  width: 80%;
   --opacity:10;
   --border-radius: 10px !important;
   --border: 2px solid #ffffff;
@@ -24,6 +28,8 @@ ion-content {
   --background: var(--ion-color-light);
   ion-list {
     background: var(--ion-color-light);
+    padding-top: 0px;
+    padding-bottom: 0px;
     .heading {
       font-family: lato;
     }
@@ -96,7 +102,7 @@ $colors: #a2b9bc,#6b5b95,#feb236, #d64161, #ff7b25, #b2ad7f,  #878f99;
   width: 60px;
   // height: 60px;
   font-weight: 800;
-  font-size: 50px;
+  font-size: 40px;
   }
 
   @for $i from 1 through length($colors) {
@@ -106,22 +112,24 @@ $colors: #a2b9bc,#6b5b95,#feb236, #d64161, #ff7b25, #b2ad7f,  #878f99;
 }
 
 .ion-fab-1 {
-  ion-icon {
-      font-size: 2.5rem;
-  }
+  margin-top: -25px;   
+  margin-right: 5px;
+  // ion-icon {
+  //     font-size: 8.4 rem;
+  // }
 }
 
-  .ion-fab-2 {    
-  
-    ion-fab-button {
-      bottom: 25px !important;;
-      //  margin-bottom: -15px 
-      margin-top: 20px;
-      ion-icon {
-        font-size: 8.5rem;
-    }
-}    
+  .ion-fab-2 {
+  //  margin-top: 10vh;
+   padding-block-end: 10px; 
   }
+
+  ion-fab {
+    margin-top: 20px;
+    ion-icon {
+        font-size: 2.5rem;
+    }
+}
 
   .button-round {
     --width: 70%;
@@ -135,4 +143,18 @@ $colors: #a2b9bc,#6b5b95,#feb236, #d64161, #ff7b25, #b2ad7f,  #878f99;
     // --vertical-align: middle;
     // --padding-start: 10px;
     // --padding-end: 10px;
+  }
+
+  .searchItem{
+    // position: fixed;
+    position: absolute;
+    width: 90%;
+    padding-top: 0px;
+    margin: auto;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    padding: 0;
+    padding-bottom:0;
+    --padding-top: var(--ion-padding, 0px);
+    --padding-bottom: var(--ion-padding, 0px);
   }

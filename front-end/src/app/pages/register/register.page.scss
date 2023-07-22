@@ -48,9 +48,15 @@ ion-button{
 }
 
 ion-text{
-    font-size: 0.8rem;
+    .ion-icon{
+        font-size: 1.2rem;
+    }
+        margin-top: 10px;
+        font-size: 0.8rem;
         padding-left: 5vw;
 }
+
+
 
 // to set spinner in center 
 .spin{

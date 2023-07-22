@@ -66,7 +66,7 @@ export class LoginPage implements OnInit {
       return;
     }
     this.authService.signIn(this.authForm.value);
-    console.log(this.authForm.value);    
+    // console.log(this.authForm.value);    
     this.login(this.authForm.value);
     // this.router.navigateByUrl('/home');
   }
@@ -78,7 +78,7 @@ export class LoginPage implements OnInit {
     //   email: this.email,
     //   password: this.password,
     // }
-      let _email = this.authForm.value.email;
+    let _email = this.authForm.value.email;
     this.http.post(this.url,credentials).subscribe(
       {
         next: (res) =>{
@@ -96,7 +96,7 @@ export class LoginPage implements OnInit {
             // check if email already exist or not ? if not exist redirect to signup page by showing alert
             console.log(error.error);
             // this.verifyEmailSignup();
-            // this.presentAlertLogin('Login Failed',error.error,'try again');
+            this.presentAlertLogin('Login Failed',error.error,'try again');
 
                 }
         }
@@ -162,19 +162,19 @@ emailExist(email_){
       subHeader: subheader,
       message:message,
       buttons: [
-        {
-          text: 'Verify Now',
-          role :'ok',
-          handler: () => {
-            //takes the data
-            console.log("Verifiy Now send Verification OTP mail and verify ")
-        },
-        },
+        // {
+        //   text: 'Verify Now',
+        //   role :'ok',
+        //   handler: () => {
+        //     //takes the data
+        //     console.log("Verifiy Now send Verification OTP mail and verify ")
+        // },
+        // },
         {
           text: 'Cancel',
+          
           handler: () => {
-            console.log("Cancel and Navigate to Login Page ")
-            
+            console.log("Cancel and Navigate to Login Page ")            
           },
         },
       ],

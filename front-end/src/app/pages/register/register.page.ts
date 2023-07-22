@@ -76,15 +76,18 @@ export class RegisterPage implements OnInit {
     if (this.registerForm.invalid) {
       return;
     }
-    console.log(this.registerForm.value);
-
-    
+    // console.log(this.registerForm.value);    
     this.isLoadingResults = true;
     this.userAPI.register(this.registerForm.value).subscribe(
       {
         next: (res) =>{
           console.log(res);
         this.isLoadingResults = false;
+        //** here user verified and registration is done now set user as verified */
+        this.userAPI.update(res._id,{"verified":true}).subscribe(res=>{
+          console.log(res);
+        });
+        /** and then either send to login or home page */
         this.router.navigateByUrl('/login', { replaceUrl: true });
         },        
         error: (e) => {
@@ -224,6 +227,9 @@ verifyEmailSignup() {
                     console.log(res);
                     // here all goods then redirect to new page or
                     this.userVerified = true; // to change div at html page
+                    /** here call API and set user as verified  */
+
+
                     this.registration(res.email);
                     //as password not formed so can not route this
                     // let it be on registration page to form password

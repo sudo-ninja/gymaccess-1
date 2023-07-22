@@ -375,7 +375,7 @@ logs: string[] = [];
   async loggedUserRoleaAlert(header:string,message:string) {
     const alert = await this.alertCtrl.create({
       header:header,
-      backdropDismiss: false,
+      // backdropDismiss: false,
       message:message,
       buttons: [       
         {

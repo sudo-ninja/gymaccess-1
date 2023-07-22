@@ -12,12 +12,18 @@ import{ Router} from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { Gym } from 'src/app/models/gym.model';
 
+// for ifram tag use this 
+import{DomSanitizer,SafeResourceUrl} from '@angular/platform-browser';
+
 @Component({
   selector: 'app-personalinformation',
   templateUrl: './personalinformation.page.html',
   styleUrls: ['./personalinformation.page.scss'],
 })
 export class PersonalinformationPage implements OnInit {
+  // for i frame tag 
+  url:SafeResourceUrl;
+  
   //for countdown time
   private subscription: Subscription;
 
@@ -57,6 +63,7 @@ export class PersonalinformationPage implements OnInit {
   loggeduser: any;
   loggedUserId:any;
 
+//count down 
   countdownSeconds: number;
   countDownStarted:boolean = false;
 
@@ -73,6 +80,8 @@ export class PersonalinformationPage implements OnInit {
     private feedbackApi:FeedbackserviceService,
     private alertCtrl: AlertController,
     private router :Router,
+    // for i frame tag
+    private sanitizer:DomSanitizer,
 
   ) {
     const user = localStorage.getItem('User');
@@ -302,6 +311,17 @@ async gymDeletAlert(header:string,subheader:string, message:string) {
       ],
   });
   await alert.present();
+}
+
+ // no editing work 
+
+
+
+loadMap(){
+   // window.location.href =`https://www.google.com/maps/@${this.member_address_lat},${this.member_address_long},21z`;
+  // https://www.google.com/maps/@26.8539768,75.7255187,15z
+  // https://www.google.com/maps/@${this.member_address_lat},${this.member_address_long},21z
+  this.url = this.sanitizer.bypassSecurityTrustResourceUrl("https://www.google.com/maps/@26.8542161,75.7294025,16z?entry=ttu");
 }
 
 }

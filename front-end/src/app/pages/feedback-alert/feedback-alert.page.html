@@ -6,8 +6,7 @@
     </ion-buttons>
     <ion-item>
       <ion-select 
-        label="Select Gym"
-        placeholder="Select Gym"       
+        mode="ios"      
         (ionChange)="selecthandleChange($event)"
         [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
         slot="end">
