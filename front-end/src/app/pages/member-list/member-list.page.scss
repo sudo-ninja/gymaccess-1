@@ -1,5 +1,6 @@
 
 ion-select {
+  position: absolute;
   --placeholder-color: #971e49;
   --placeholder-opacity: 1;
   width: 80%;
@@ -14,6 +15,9 @@ ion-select::part(text) {
   flex: 0 0 auto;
 }
 
+.itemSelect{
+  position: absolute;
+}
 ion-searchbar {
   width: 80%;
   --opacity:10;

@@ -38,7 +38,8 @@ import { BannerComponent } from './../../components/banner/banner.component';
         QRCodeModule,
         // AppModule
         //import here search component
-        
+        //below code added due to tab function 
+        RouterModule.forChild([{ path: '', component: MemberListPage }])
     ]
 })
 export class MemberListPageModule {}

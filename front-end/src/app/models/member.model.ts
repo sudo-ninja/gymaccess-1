@@ -19,5 +19,6 @@ m_intime?:string;
 m_outtime?:string;
 isAttended?:boolean;
 isSetReminder?:boolean;
+creation_dt?:string;
 
   }

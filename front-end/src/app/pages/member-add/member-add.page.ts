@@ -11,6 +11,8 @@ import { StorageService } from 'src/app/services/storage.service';
 
 import {FormControl} from '@angular/forms';
 
+import { NavController } from '@ionic/angular';
+
 
 
 // import { ErrorStateMatcher } from '@angular/material/core';
@@ -29,7 +31,7 @@ import {FormControl} from '@angular/forms';
   styleUrls: ['./member-add.page.scss'],
   providers:[MemberserviceService]
 })
-export class MemberAddPage implements OnInit {
+export class MemberAddPage {
 
   defaultGymID:any;
   
@@ -75,6 +77,7 @@ export class MemberAddPage implements OnInit {
     private formBuilder: FormBuilder,
     private alertCtrl: AlertController,
     public memberApi:MemberserviceService,
+    private navCtrl : NavController,
    
   ) {
     // get gym id from sesson storage here 
@@ -139,6 +142,26 @@ export class MemberAddPage implements OnInit {
         
       }
 
+      ionViewDidEnter(){
+        console.log("ion view did enter");
+      }
+    
+      ionViewWillLeave(){
+        console.log("ion view will leave");
+      }
+    
+      ionViewDidLeave(){
+        console.log("ion view did leave");
+      }
+    
+      ionViewWillEnter()  {    
+        
+        console.log("ION VIEW WILL ENTER");
+        // get member associated with this gym only
+        // this.getMembers();
+      
+       }
+
       dateTotime(){          
                 const d = new Date(); // Parses a ISO 8601 Date
                 console.log(d.getHours()); // gets the hours in the timezone of the browser.
@@ -161,7 +184,9 @@ export class MemberAddPage implements OnInit {
                 localStorage.setItem('ID',JSON.stringify(id));
                 localStorage.setItem('GYM_ID',JSON.stringify(res.gym_id));
                 this.isLoadingResults = false;
-                this.router.navigate(['/member/', id],{replaceUrl:true});
+                // this.navCtrl.pop();
+                // this.router.navigate(['/member/', id],{replaceUrl:true});
+                this.router.navigateByUrl('/gymtabs/member-list');
               }, 
               error:(err) => {
                 console.log(err);

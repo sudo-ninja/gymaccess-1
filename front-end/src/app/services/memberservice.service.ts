@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, throwError,map,OperatorFunction, tap } from 'rxjs';
+import { catchError, Observable, throwError,map,OperatorFunction, tap, BehaviorSubject, filter } from 'rxjs';
 import { Member } from '../models/member.model';
 import { environment } from 'src/environments/environment.prod';
 
@@ -13,6 +13,9 @@ const searchUrl = environment.SERVER+'/members/search/';
 })
 
 export class MemberserviceService {
+
+  private allMembers$ = new BehaviorSubject<Member[]>(undefined);
+
 
   // baseUri :string = 'http://localhost:3000/api/v1';
 
@@ -84,10 +87,22 @@ export class MemberserviceService {
     return this.http.delete(`${baseUrl}gymid?gym_id=${gymid}`).pipe(catchError(this.errorMgmt));
   }
 
+  //get member by GYM ID
   wildSearch(searchstring: any): Observable<Member[]> {
     console.log("i m in wild search loop");
-    return this.http.get<Member[]>(`${baseUrl}/search/${searchstring}`).pipe(catchError(this.errorMgmt));
+    this.http.get<Member[]>(`${baseUrl}/search/${searchstring}`).subscribe(members=>this.allMembers$.next(members));
+    return this.watchAllMembers().pipe(catchError(this.errorMgmt));
+
+    // return this.http.get(`${baseUrl}/search/${searchstring}`).pipe(map(data =>  data as Member[]));
+    // return this.watchAllMembers().pipe(catchError(this.errorMgmt));
   }
+
+  //to display all members of particular gym
+  watchAllMembers(): Observable<Member[]> {
+    return this.allMembers$.pipe(filter(maybe => !!maybe)); 
+  }
+
+  //assign members to all members of particular gym
 
 
   // Error handling

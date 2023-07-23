@@ -1,10 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 // to share invitation code 
 import { Share } from '@capacitor/share';
 //ion modal 
-import { IonModal, IonSelect, IonSelectOption } from '@ionic/angular';
+import { IonModal, IonSelect, IonSelectOption, NavController } from '@ionic/angular';
 
 import { AlertController, IonDatetime, LoadingController, ModalController, ToastController } from '@ionic/angular';
 import { Member } from 'src/app/models/member.model';
@@ -48,16 +48,24 @@ import { AttendedPage } from './attended/attended.page';
 // for countdown display on screen 
 import { Subscription, interval } from 'rxjs';
 // call ion select and close from ts 
+
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { MemberAddPage } from '../member-add/member-add.page';
+
  
+@UntilDestroy() //always use before @component came from https://www.npmjs.com/package/@ngneat/until-destroy this package
 
 
- 
 @Component({
   selector: 'app-member-list',
   templateUrl: './member-list.page.html',
   styleUrls: ['./member-list.page.scss'],
+
+
 })
-export class MemberListPage implements OnInit {
+
+
+export class MemberListPage  {
   //for ion select view here 
   @ViewChild(IonSelect) select:IonSelect;
   //for countdown time
@@ -65,6 +73,9 @@ export class MemberListPage implements OnInit {
 
   @ViewChild(IonDatetime) datetime:IonDatetime;
   @ViewChild(IonModal) modal: IonModal;
+
+  //member list page is child 
+  @Input() loadMembers_P:any = [];
   //slide show 
   members_slides: any[] = [];
   baseUri : string = environment.SERVER;
@@ -74,7 +85,8 @@ export class MemberListPage implements OnInit {
   BalanceDays_ = localStorage.getItem('balanceDays');
   isButtonSubmit:boolean=false;
 
-  members: Member[] = [];
+  members: any = [];
+  listMembers:Member[] = [];
   mcontrols: Mcontrol[] =[];
   _id :string; // This is an observable
   _email:any;
@@ -144,11 +156,12 @@ export class MemberListPage implements OnInit {
 
   
 
-  public results = [...this.members];
+  // public results = [...this.members];
   start_Date: string;
   end_Date: string;
   currentGymName: string;
   imageUrl: any;
+  loadMembers: Subscription;
 
 
   constructor(
@@ -162,6 +175,7 @@ export class MemberListPage implements OnInit {
     private alertCtrl: AlertController, 
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
+    private navCtrl: NavController,
 
     private formBuilder: FormBuilder,
     private inviteControlApi:McontrolService,
@@ -171,6 +185,7 @@ export class MemberListPage implements OnInit {
     //call mqtt api
     private mqttApi:MqttService,
 
+     
 
     // to store data
     private storageService :StorageService, // storage service is used insted of get set method
@@ -178,7 +193,8 @@ export class MemberListPage implements OnInit {
     // to get native element 
     private elementRef:ElementRef,
     // banner service api
-    private bannerApi:BannerService
+    private bannerApi:BannerService,
+    
 
   ) { 
     const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Gym list page
@@ -200,12 +216,17 @@ export class MemberListPage implements OnInit {
     );
     this.today_ = this.today_*1+604800000;
     console.log(this.today_);
+
+    // check if gets member in consturctor wrk well or not 
+    // this.getMembers();
+    
   }
 
-  ngOnInit() {    
-    // get member associated with this gym only
+  ngOnInit() {
     this.getMembers();
-    // const searchTerm = this.searchField.valueChanges.pipe(
+    console.log("ng on init");
+    // implements OnInit, OnDestroy
+      // const searchTerm = this.searchField.valueChanges.pipe(
     //   startWith(this.searchField.value));
     // console.log(this.searchTerm);
     this.memberControl(); // here its call so that patch value can work
@@ -218,13 +239,36 @@ export class MemberListPage implements OnInit {
     this.callBanner();
     // for background image
     this.background();
-       
+  }
+
+  ionViewDidEnter(){
+    console.log("ion view did enter");
+  }
+
+  ionViewWillLeave(){
+    console.log("ion view will leave");
+  }
+
+  ionViewDidLeave(){
+    console.log("ion view did leave");
+  }
+
+  ionViewWillEnter()  {    
+    
+    console.log("ION VIEW WILL ENTER");
+    // get member associated with this gym only
+    // this.getMembers();
+  
    }
 
-   // if end date of memeber is less than 7 days then set alert and change color to RED
-   checkMemberlastingtime(id:any){
+  //  ionViewWillEnter(){
+  //   this.getMembers();
+  //  }
 
-   }
+  
+    
+
+   
    // call image from back end to display on html page 
    callBanner(){
     this.bannerApi.getImageByGymId("default_memberlist_page").subscribe({            
@@ -283,6 +327,8 @@ async memberControl(){
     });
 }
 
+
+
 async getMembers(){
   const loading = await this.loadingController.create({
     message: 'Loading....'
@@ -292,13 +338,25 @@ async getMembers(){
   this.storageService.store('defaultGymId',this._gym_id);
   localStorage.setItem('gymID',this._gym_id);
   console.log(this._gym_id);
-  await this.memberApi.wildSearch(this._gym_id)
+  // this.loadMembers = this.memberApi.wildSearch(this._gym_id).pipe(untilDestroyed(this)).subscribe(ps => {
+  //   this.members = ps;
+  //   loading.dismiss();
+  // }),err=>{
+  //   console.log(err);
+  //   loading.dismiss();
+  //   };
+  this.loadMembers = this.memberApi.wildSearch(this._gym_id)
   .subscribe(res=>{
-    this.members=res;
+    // console.log(res.slice());
+    this.members=this.sortByLatest(res.slice());
+    // this.members =res.m_name.sort((b, a) => a[0] - b[0]);//does not work
+    // this.listMembers = res;
+    // console.log(this.listMembers);
+    // this.members = this.listMembers;
     // this.memberLastdate = res.m_enddate;
-    console.log(this.members);
-    localStorage.setItem('thisMember',JSON.stringify(res));
-    this.storageService.store('membersList',res);
+    // console.log(this.members);
+    // localStorage.setItem('thisMember',JSON.stringify(res));
+    // this.storageService.store('membersList',res);
     loading.dismiss();
   }),err=>{
     console.log(err);
@@ -307,9 +365,25 @@ async getMembers(){
     
   }
 
+
+  sortByLatest(members) {
+    const byLatest = function(member1,member2) {
+      return member1.m_name.localeCompare(member2.m_name);
+    };
+    return members.slice().sort(byLatest);
+  };
+
+  sortByEndDate(members){    
+    const byLatest = function(member1,member2) {
+      return member1.m_enddate.Compare(member2.m_enddate);
+    };
+    return members.slice().sort(byLatest);
+
+  }
  
   addProduct() {
-    this.router.navigate(['/member-add']);
+    // this.router.navigate(['/member-add']);
+    this.navCtrl.navigateForward('/member-add');
   }
 
   ///////////////////for animation ///////////////
@@ -350,14 +424,22 @@ async getMembers(){
       leaveAnimation   
       }
     );
-    console.log(res => {
-      this.memberApi.getMember(res.id);});
+    console.log(res => {this.memberApi.getMember(res.id);});
     await modal.present();
 
-
   }
+// try to use modal controller for add member 
 
-
+async addMember(){
+  const modal = await this.modalCtrl.create({
+    component: MemberAddPage,     
+    breakpoints: [0, 0.5, 0.8],
+    initialBreakpoint: 0.8, 
+    showBackdrop: false,         
+    }
+  );  
+  await modal.present();
+}
 
 
 
@@ -378,8 +460,7 @@ async getMembers(){
   }
 
   /// Validity Controller by update member control
-  async updateMemberControl(uid:string) {
-    
+  async updateMemberControl(uid:string) {    
     const modal = await this.modalCtrl.create({
     component: MembercontrolPage,
     cssClass:'update-modal',
@@ -641,7 +722,7 @@ async attenRecord(id,event:any){
 autoShowItem(){
   this.isItemShown = true;
   this.select.open();
-  this.startCountdown(30);
+  // this.startCountdown(30); // no need 
 }
 
 // start count down for second
@@ -661,12 +742,14 @@ startCountdown(seconds) {
       //write here whatever want after comple 
       
       this.isItemShown = false;
-
     }
   }, 1000);
 }
 
-
+// ionViewDidLeave():void{
+//   this.loadMembers.unsubscribe();
+//   console.log("ionViewWillLeave called");
+//   }
 
 
 // // Startdate and end date of perticular memers
@@ -733,6 +816,11 @@ openLock(){
       }); // to open lock
     }
   });
+}
+
+
+ngOnDestroy(): void {
+
 }
 
 // //ion date time dismiss button 
@@ -877,3 +965,5 @@ getInitials(firstName:string) {
       await toast.present();
     }
 }
+
+

@@ -9,7 +9,7 @@
 
 <ion-content overflow-scroll="true" class="ion-padding" > 
 
-<ion-fab class="ion-fab-1" slot="fixed" vertical="top" horizontal="end" [edge]="true">
+<ion-fab class=".ion-fab-2" slot="fixed" vertical="top" horizontal="start" [edge]="true">
   <ion-fab-button 
       
       (click)="autoShowItem()"
@@ -20,7 +20,16 @@
   </ion-fab-button>
 </ion-fab>
 
-  <ion-item *ngIf = "isItemShown"> 
+<ion-fab class="ion-fab-1" slot="fixed" vertical="top" horizontal="end" [edge]="true">
+  <ion-fab-button 
+  (click)="addProduct()"
+   >
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>  
+
+
+  <ion-item class="itemSelect" *ngIf = "isItemShown"> 
     <ion-select       
       #selectElem
       interface="action-sheet"
@@ -92,13 +101,7 @@
      </ion-list>
 
 
-    <ion-fab class=".ion-fab-2" slot="fixed" vertical="top" horizontal="start" [edge]="true">
-      <ion-fab-button 
-      (click)="addProduct()"
-       >
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>  
+    
 <!--  -->
 
 

@@ -152,6 +152,10 @@ const routes: Routes = [
     path: 'report-member-gym',
     loadChildren: () => import('./pages/report-member-gym/report-member-gym.module').then( m => m.ReportMemberGymPageModule)
   },
+  {
+    path: 'addlock',
+    loadChildren: () => import('./pages/addlock/addlock.module').then( m => m.AddlockPageModule)
+  },
 
   
 

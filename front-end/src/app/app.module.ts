@@ -34,6 +34,9 @@ import { UserService } from './services/user.service';
 import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
 import { CustomFilterPipe } from './custom-filter-pipe.pipe';
 
+//to kno wnetwork IP address and details
+//to know network ip 
+import { NetworkInterface } from '@awesome-cordova-plugins/network-interface/ngx';
 
 @NgModule({
   declarations: [
@@ -50,11 +53,12 @@ import { CustomFilterPipe } from './custom-filter-pipe.pipe';
     FormsModule,
   ],
   providers: [AuthGuard,UserService,Storage,
-    MemberserviceService,
+    MemberserviceService,  NetworkInterface,
+    
     { 
     provide: RouteReuseStrategy, 
-    useClass: IonicRouteStrategy 
-    },
+    useClass: IonicRouteStrategy,
+        },
     // {
     //   provide: HTTP_INTERCEPTORS,
     //   useClass: HttpConfigInterceptor,
