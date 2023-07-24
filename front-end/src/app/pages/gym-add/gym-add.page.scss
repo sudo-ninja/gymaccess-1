@@ -1,0 +1,14 @@
+ion-header {
+  >ion-toolbar {
+    >ion-buttons {
+      >ion-button {
+      }
+    }
+    >ion-title.ios.title-ios.hydrated {
+            font-size: 15px;
+        font-weight: 700;
+        font-family: system-ui;
+        text-align: center;
+    }
+  }
+}

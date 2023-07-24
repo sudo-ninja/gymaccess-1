@@ -1,0 +1,24 @@
+ion-header {
+  >ion-toolbar {
+    >ion-buttons:nth-of-type(1) {
+      >ion-button {
+        color: --ion-color-primary;
+        >ion-icon {
+            font-size: 1.5rem;
+        }
+      }
+    }
+    >ion-buttons:nth-of-type(2) {
+      >ion-button {
+        color: red;
+        >ion-icon {
+            font-size: 3rem;
+        }
+      }
+    }
+    >ion-title {
+        font-size:16px;
+        font-weight:600;
+    }
+  }
+}

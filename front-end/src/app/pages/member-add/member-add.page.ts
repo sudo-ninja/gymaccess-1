@@ -116,7 +116,7 @@ export class MemberAddPage {
           Validators.pattern('^[0-9]*$')
         ]
         ],
-        'aadhar':[null],
+        'aadhar':['123'],
         'email':[null, [
           Validators.required,
           // Validators.toLowerCase(),

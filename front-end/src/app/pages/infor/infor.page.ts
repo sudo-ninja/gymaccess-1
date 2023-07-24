@@ -49,7 +49,7 @@ export class InforPage implements OnInit {
     public memberApi: MemberserviceService, // to get total numer of members
     // to store daa once fetch
     private storageService: StorageService, // storage service is used insted of get set method
-    
+
     // to navigate page to qr code page
     private router: Router,
     //tostcontrole
@@ -63,6 +63,7 @@ export class InforPage implements OnInit {
       console.log(val);
       this.loggeduser_id = val;
     });
+
     // for select default gym in gym selector
     const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Gym list page
     this.MyDefaultGymValue = JSON.parse(defaultGym)._id;
@@ -248,42 +249,73 @@ export class InforPage implements OnInit {
     await toast.present();
   }
 
+  memberFlag:boolean=false;
   removeGym() {
     console.log(this._gym_id);
     this.memberApi.wildSearch(this._gym_id).subscribe({
       next: (res) => {
-        // if no member retrieve then only delet 
-        if (!res.length) {
-          this.gymApi.delete(this._gym_id).subscribe({
-            next: (res) => {
-              console.log(res);
-              // set local storage with balance gyms so that selection after delet can work properly
-              this.gymApi.wildSearch(this.loggeduser_id).subscribe({
-                next: (data: any) => {
-                  // console.log(data.length);
-                  this.storageService.store('gymList', data);
-                  // console.log(data[0].gym_name); // use this info to make default select GYM value and refer this further https://forum.ionicframework.com/t/ion-select-and-default-values-ionic-4-solved/177550/5
-                  localStorage.setItem('DefaultGym', JSON.stringify(data[0]));
-                  this.router.navigateByUrl('/gymtabs/member-list', {replaceUrl: true,});
-                },
-                error:(err:any)=>{
-                  alert(JSON.stringify(err));
-                }
-              });
-            },
-            error: (err) => {
+        // if no member retrieve then only delete
+        if(res.length){
+          this.memberFlag = true;
+          console.log(res);
+          //  return;
+        }else{this.memberFlag = false;}
+        console.log(this.memberFlag);
+        },
+        error:()=>{},
+    });
+    if(this.memberFlag){
+      this.presentAlert(
+        'Warning !',
+        'Can Not Remove Gym.',
+        'This gym have members.'
+      );
+    }
+    if (!this.memberFlag) {
+          this.gymApi.wildSearch(this.loggeduser_id).subscribe({
+            next: (data: any) => {
+              if (data.length === 1 || data.length < 1) {
+                this.gymApi.delete(this._gym_id).subscribe({
+                  next: (res: any) => { this.router.navigate(['/gym-list/']), { replaceurl: true }; },
+                  error: (err: any) => { alert(JSON.stringify(err));  },
+                  complete:()=>{
+                    return;
+                  }
+                  
+                });
+              }else{
+                this.gymApi.delete(this._gym_id).subscribe({
+                  next: (res) => {
+                    console.log(res);
+                    // set local storage with balance gyms so that selection after delet can work properly
+                    this.gymApi.wildSearch(this.loggeduser_id).subscribe({
+                      next: (data: any) => {
+                        // console.log(data.length);
+                        this.storageService.store('gymList', data);
+                        // console.log(data[0].gym_name); // use this info to make default select GYM value and refer this further https://forum.ionicframework.com/t/ion-select-and-default-values-ionic-4-solved/177550/5
+                        localStorage.setItem('DefaultGym', JSON.stringify(data[0]));
+                        this.router.navigateByUrl('/gymtabs/member-list', {
+                          replaceUrl: true,
+                        });
+                        // return;
+                      },
+                      error: (err: any) => {
+                        // alert(JSON.stringify(err));
+                      },
+                    });
+                  },
+                  error: (err) => {
+                    // alert(JSON.stringify(err));
+                  },
+                });
+              }
+            },error: (err: any) => {
               alert(JSON.stringify(err));
             },
           });
-        } else {
-          this.presentAlert(
-            'Warning !',
-            'Can Not Remove Gym.',
-            'This gym have members.'
-          );
-        }
-      },
-    });
+        //  return;
+        } 
+      
   }
 
   async presentAlert(header: string, subheader: string, message: string) {

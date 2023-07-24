@@ -49,11 +49,13 @@ import { AttendedPage } from './attended/attended.page';
 import { Subscription, interval } from 'rxjs';
 // call ion select and close from ts 
 
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+// import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { MemberAddPage } from '../member-add/member-add.page';
 
+// import {first} from 'rxjs/operators';
+
  
-@UntilDestroy() //always use before @component came from https://www.npmjs.com/package/@ngneat/until-destroy this package
+// @UntilDestroy() //always use before @component came from https://www.npmjs.com/package/@ngneat/until-destroy this package
 
 
 @Component({
@@ -75,7 +77,7 @@ export class MemberListPage  {
   @ViewChild(IonModal) modal: IonModal;
 
   //member list page is child 
-  @Input() loadMembers_P:any = [];
+  // @Input() loadMembers_P:any = [];
   //slide show 
   members_slides: any[] = [];
   baseUri : string = environment.SERVER;
@@ -144,7 +146,7 @@ export class MemberListPage  {
   isSevenDayslefts:boolean = false;
   today_ = Date.now();
 
-  gyms:Gym[]=[];
+  gyms:any=[];
   currentGym :any;
   MyDefaultGymValue:any;
   compareWith:any;
@@ -156,12 +158,16 @@ export class MemberListPage  {
 
   
 
-  // public results = [...this.members];
+  public results = [...this.members];// to be used for search bar
   start_Date: string;
   end_Date: string;
   currentGymName: string;
   imageUrl: any;
   loadMembers: Subscription;
+  gymsResult: unknown;
+  membersCopy: Member[] =[];
+  memberList:any =[];
+  
 
 
   constructor(
@@ -197,10 +203,10 @@ export class MemberListPage  {
     
 
   ) { 
-    const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Gym list page
-    this.MyDefaultGymValue = (JSON.parse(defaultGym))._id;
-    this._gym_id=this.MyDefaultGymValue;
-    console.log(this._gym_id); // this default Gym got from Gym List page ( first added Gym become Default Gym)
+    // const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Gym list page
+    // this.MyDefaultGymValue = (JSON.parse(defaultGym))._id;
+    // this._gym_id=this.MyDefaultGymValue;
+    // console.log(this._gym_id); // this default Gym got from Gym List page ( first added Gym become Default Gym)
     
     
     this.searchField = new FormControl(''); // for search bar
@@ -209,21 +215,30 @@ export class MemberListPage  {
     this.loggeduser=JSON.parse(user!);
     console.log(this.loggeduser._id);
 
-    this.gymApi.wildSearch(this.loggeduser._id).subscribe(
-      (data:any)=>{
-        this.gyms = data; // from here passing data to gym selector  for list of gyms   
-    }
-    );
+   
     this.today_ = this.today_*1+604800000;
     console.log(this.today_);
 
     // check if gets member in consturctor wrk well or not 
     // this.getMembers();
-    
+    // this.getGyms();
+    // for select default gym in gym selector
+    const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Gym list page
+    this.MyDefaultGymValue = JSON.parse(defaultGym)._id;
+    this._gym_id = this.MyDefaultGymValue;
+    console.log(this._gym_id); // this default Gym got from Gym List page ( first added Gym become Default Gym)
+    this.storageService.get('gymList').then((val) => {
+      // console.log(val); // here we store once fetched gym data
+      this.gymsResult = val;
+      console.log(this.gymsResult);
+      this.gyms = this.gymsResult;
+    });
   }
 
   ngOnInit() {
     this.getMembers();
+    this.membersCopy = this.members;
+   
     console.log("ng on init");
     // implements OnInit, OnDestroy
       // const searchTerm = this.searchField.valueChanges.pipe(
@@ -243,6 +258,8 @@ export class MemberListPage  {
 
   ionViewDidEnter(){
     console.log("ion view did enter");
+    // this.getMembers();
+    // this.getGyms();
   }
 
   ionViewWillLeave(){
@@ -251,20 +268,29 @@ export class MemberListPage  {
 
   ionViewDidLeave(){
     console.log("ion view did leave");
+    // this.getMembers();
+    // this.getGyms();
   }
 
   ionViewWillEnter()  {    
     
     console.log("ION VIEW WILL ENTER");
     // get member associated with this gym only
-    // this.getMembers();
+    this.getMembers();
+    this.getGyms();
   
    }
 
-  //  ionViewWillEnter(){
-  //   this.getMembers();
-  //  }
+   async getGyms(){
+    this.gymApi.wildSearch(this.loggeduser._id).subscribe(
+      (data:any)=>{
+        console.log(data.slice());
+        this.gyms = data.slice(); // from here passing data to gym selector  for list of gyms   
+    }
+    );
 
+    
+  }
   
     
 
@@ -330,6 +356,7 @@ async memberControl(){
 
 
 async getMembers(){
+  console.log('get data from member list');
   const loading = await this.loadingController.create({
     message: 'Loading....'
   });
@@ -719,11 +746,11 @@ async attenRecord(id,event:any){
   // this.isModalOpen = true;
 }
 
-autoShowItem(){
-  this.isItemShown = true;
-  this.select.open();
-  // this.startCountdown(30); // no need 
-}
+// autoShowItem(){
+//   // this.isItemShown = true;
+//   // this.select.open();
+//   // this.startCountdown(30); // no need 
+// }
 
 // start count down for second
 interval:any;
@@ -823,6 +850,9 @@ ngOnDestroy(): void {
 
 }
 
+ 
+
+
 // //ion date time dismiss button 
 // close(){
 //   this.datetime.cancel(true);
@@ -909,6 +939,31 @@ searchText:any = '';
 onSearchTextEntered(searchValue:any){
 this.searchText = searchValue;
 console.log(this.searchText);
+}
+
+// for search bar 
+async handleInput(evt) {
+  // this.getMembers();
+  this.membersCopy = this.members;
+  const searchTerm = evt.srcElement.value;
+  if(!searchTerm) {
+    this.getMembers();// if empty load default value
+    return;}
+  console.log(searchTerm);
+  console.log(this.membersCopy);
+  if(Array.isArray(this.membersCopy)){
+  this.members= this.membersCopy.filter(currentMember=>{
+    console.log(currentMember.m_name);
+    if(currentMember.m_name && searchTerm){
+      return (currentMember.m_name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1
+            || currentMember.mobile.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 
+            );
+    }
+  });
+  console.log(this.members);
+}
+  // const query = evt.target.value.toLowerCase();
+  // this.results = this.members.m_name.filter((d) => d.toLowerCase().indexOf(query) > -1);
 }
 
 deletAllMembers(){

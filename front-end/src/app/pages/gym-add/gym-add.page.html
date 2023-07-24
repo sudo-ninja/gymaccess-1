@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button   (click)="gyminformation()"  color="strong">Back</ion-button>
+      <ion-button   (click)="gyminformation()" ><strong>Back</strong></ion-button>
     </ion-buttons>
     <ion-title class="ios title-ios hydrated">Add Gym</ion-title>
   </ion-toolbar>
@@ -62,7 +62,7 @@
 
       <ion-item>
           <ion-label>Location on Map</ion-label>
-          <ion-button slot="end" (click)="getLocation()">Set </ion-button>
+          <ion-button shape="round" slot="end"  (click)="getLocation()">Set </ion-button>
       </ion-item>
 
       <div>
@@ -70,7 +70,7 @@
           type="submit" 
           [disabled]="!gymForm.valid"
           color="primary" 
-          shape="full" 
+          shape="round"
           expand="block">Save</ion-button>
       </div>
     </ion-list>

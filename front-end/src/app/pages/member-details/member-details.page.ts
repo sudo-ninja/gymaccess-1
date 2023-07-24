@@ -97,9 +97,10 @@ isLoadingResults = false;
     await alert.present();
   }
 
-// delet alert 
+// delet alert if press OK then only delet
 async presentAlertDelete(msg:string, id:any){
   const alert = await this.alertController.create({
+    mode: 'ios',
     header :'Warning!',
     message: msg,
     buttons:[
@@ -111,6 +112,7 @@ async presentAlertDelete(msg:string, id:any){
             await this.memberApi.delete(id).subscribe({
             next:(res)=>{
             this.isLoadingResults= false;
+            //delete member attendance also 
             this.attendApi.delete_memberId(this.member._id).subscribe({});
             // delete and set user is member false use update 
             this.userApi.getUserbyEmail(this.member.email).subscribe({

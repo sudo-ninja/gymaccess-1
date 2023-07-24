@@ -37,6 +37,8 @@ import { CustomFilterPipe } from './custom-filter-pipe.pipe';
 //to kno wnetwork IP address and details
 //to know network ip 
 import { NetworkInterface } from '@awesome-cordova-plugins/network-interface/ngx';
+ 
+
 
 @NgModule({
   declarations: [

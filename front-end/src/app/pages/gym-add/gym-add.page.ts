@@ -22,6 +22,7 @@ import { GymadminService } from 'src/app/services/gymadmin.service';
 
 import { AlertController, ModalController } from '@ionic/angular';
 import { environment } from 'src/environments/environment';
+import { StorageService } from 'src/app/services/storage.service';
 
 
 // https://www.positronx.io/mean-stack-tutorial-angular-crud-bootstrap/
@@ -61,8 +62,9 @@ export class GymAddPage implements OnInit {
     private userApi:UserService,
     private alertCtrl: AlertController, 
     private modalCtrl: ModalController,
-    private location: Location
-
+    private location: Location,
+     // to store daa once fetch
+     private storageService: StorageService, // storage service is used insted of get set method
     
   ) { 
     const user = localStorage.getItem('User');
@@ -113,8 +115,18 @@ export class GymAddPage implements OnInit {
     this.gymForm = this.fb.group({
       user_id: [this.loggeduser._id, Validators.required],
       gym_name: ['',Validators.required],
-      gym_emergency: ['',Validators.required],
-      gym_mobile: ['',Validators.required],
+      gym_emergency: ['',[
+        Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(13),
+        Validators.pattern('^[0-9]*$')
+      ]],
+      gym_mobile: ['',[
+        Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(13),
+        Validators.pattern('^[0-9]*$')
+      ]],
       gym_gstin: [''],
       gym_lockId:[''],   
       
@@ -183,6 +195,9 @@ export class GymAddPage implements OnInit {
         // localStorage.setItem('ID',JSON.stringify(id));
         // this.isLoadingResults = false;
       localStorage.setItem('GYM',JSON.stringify(res)) // trick use to transfer added gym info gym list page
+      this.storageService.store('gymList', res);
+      // console.log(data[0].gym_name); // use this info to make default select GYM value and refer this further https://forum.ionicframework.com/t/ion-select-and-default-values-ionic-4-solved/177550/5
+      localStorage.setItem('DefaultGym', JSON.stringify(res[0]));
       /********************************************************* */
       // logic added if any login user add GYM it means he is admin for that gym 
       // if gym successfully added with gym ID then user detail to be added in Gym Admin
@@ -256,16 +271,16 @@ export class GymAddPage implements OnInit {
         'user_id' : ['', [Validators.required]],
         'mobile': ['', [
           Validators.required,
-          // Validators.minLength(10),
-          // Validators.maxLength(13),
-          // Validators.pattern('^[0-9]*$')
+          Validators.minLength(10),
+          Validators.maxLength(13),
+          Validators.pattern('^[0-9]*$')
         ]
         ],
         'email':['', [
           Validators.required,
-          // Validators.minLength(5),
-          // Validators.maxLength(80),
-          // Validators.pattern("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")
+          Validators.minLength(5),
+          Validators.maxLength(80),
+          Validators.pattern("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")
         ]],
         
          })
