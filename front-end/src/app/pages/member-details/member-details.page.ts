@@ -7,6 +7,7 @@ import { Member } from 'src/app/models/member.model';
 import { MemberserviceService } from 'src/app/services/memberservice.service';
 import { UserService } from 'src/app/services/user.service';
 import { AttendanceService } from 'src/app/services/attendance.service';
+import { McontrolService } from 'src/app/services/mcontrol.service';
 
 @Component({
   selector: 'app-member-details',
@@ -47,6 +48,7 @@ isLoadingResults = false;
     public route :ActivatedRoute,
     public memberApi:MemberserviceService,
     private userApi :UserService,
+    private inviteControlApi:McontrolService,
     private attendApi:AttendanceService,
 
   ) { }
@@ -106,12 +108,15 @@ async presentAlertDelete(msg:string, id:any){
     buttons:[
       {
         text : 'Okay',
+        role: 'cancel',
         handler:async ()=>{
                   // console.log("delet",id);
             this.isLoadingResults= true;
             await this.memberApi.delete(id).subscribe({
             next:(res)=>{
             this.isLoadingResults= false;
+            //delet invite code data aso
+            this.deletInviteData(this.member.email);
             //delete member attendance also 
             this.attendApi.delete_memberId(this.member._id).subscribe({});
             // delete and set user is member false use update 
@@ -133,6 +138,7 @@ async presentAlertDelete(msg:string, id:any){
       },
       {
         text : 'Cancel',
+         role: 'confirm',
         handler:async ()=>{
             this.router.navigate(['/gymtabs/member-list']);
         }
@@ -146,6 +152,19 @@ async presentAlertDelete(msg:string, id:any){
     this.presentAlertDelete("Do you really want to Delete?",id)
     
   }
+
+  //delet invitation data from db as soon as mmeber is deleted
+  async deletInviteData(email:any){
+     this.inviteControlApi.getMcontrolEmail(email).subscribe(
+      (res:any)=>{
+        if(!res){ return; }
+        else{
+              console.log(res);
+              this.inviteControlApi.delete(res._id);
+            }
+          });    
+  }
+  
 
   editMember(id){
     this.route.snapshot.paramMap.get(id)

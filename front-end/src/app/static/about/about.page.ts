@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActionSheetController, AlertController } from '@ionic/angular';
+//for app version
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-about',
@@ -8,11 +10,25 @@ import { ActionSheetController, AlertController } from '@ionic/angular';
 })
 export class AboutPage implements OnInit {
 
+
+    
+  appInfo:any;
+  keys:string[] = [];
+
+
   constructor(
     private alertCtrl: AlertController,
   ) { }
 
   ngOnInit() {
+    // for app version 
+     App.getInfo().then((obj)=>{
+    this.appInfo = obj;
+    this.keys = Object.keys(obj);
+  });
+  console.log(this.appInfo.version,"nnnnn",this.keys);   
+
+
   }
 
   uploadlogAlert(){

@@ -1,4 +1,4 @@
-  <ion-header class=" ion-no-border">
+  <ion-header class=" ion-no-border" *ngIf="!scanActive">
     <ion-toolbar>
           <ion-title mode="md" class="ion-no-padding">
             <ion-label>
@@ -9,22 +9,24 @@
           <ion-avatar slot="end">
             <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img>
           </ion-avatar>
-    </ion-toolbar>
+    </ion-toolbar>   
   </ion-header>
 
-  <ion-content overflow-scroll="true" class="ion-padding">
+  <!-- [style.visibility]="content_visibility" -->
+
+  <ion-content overflow-scroll="true" class="ion-padding"  [style.--background]="scanActive ? '#00000000':'#fff' ">
     <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
 
-      <div class="div-0">
+      <div class="div-0" *ngIf="!scanActive">
         <app-banner [slides]="slides"></app-banner>
         <!-- <ion-button (click)="isscheduleNotification()">Scheduled Notification </ion-button> -->
       </div>
 
      
 
-      <div class="div-0">
+      <div class="div-0" *ngIf="!scanActive"  >
         <ion-label class="ion-text-center" color="dark"><strong><h1>Scan QR code to access Gym</h1></strong></ion-label>
        
             <ion-button
@@ -33,11 +35,12 @@
             class="ion-margin"
             (click)="startScan()"
             shape="round"
-            >Tap to Scan </ion-button>
+            >
+            <ion-icon name="scan"></ion-icon>Tap to Scan </ion-button>
          
       </div>
 
-      <div class="div-0">
+      <div class="div-0" class="scanner-hide" *ngIf="!scanActive">
         <ion-label color="dark"><strong><h2><strong>My Account</strong></h2></strong></ion-label>
         <ion-grid [fixed]="true">
           <ion-row>
@@ -75,5 +78,21 @@
           </ion-row>
         </ion-grid>  
       </div>
+
+      <ion-row class="scanner-buttons" *ngIf="scanActive">
+        <ion-col class="ion-no-padding">     
+            <ion-button
+            class="ion-text-center"
+            expand="block"
+            shape="round"
+            (click)="stopScan()"> <ion-icon name="arrow-back"></ion-icon> Back </ion-button>        
+        </ion-col>      
+      </ion-row>
+
+      <div class="scan-box" *ngIf="scanActive"> 
+      </div>
   </ion-content>
+
+
+  
 

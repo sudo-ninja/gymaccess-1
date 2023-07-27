@@ -3,6 +3,8 @@ import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/co
 // to check if logged user is admin or member or none
 import { UserService } from '../services/user.service';
 
+
+
 import{ Router} from '@angular/router';
 import { ActionSheetController, AlertController } from '@ionic/angular';
 
@@ -33,6 +35,9 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit{
+
+  appInfo:any;
+  keys:string[] = [];
 
   ////google map///
   @ViewChild('map', {static: true}) mapElementRef: ElementRef;
@@ -80,7 +85,26 @@ export class HomePage implements OnInit{
     public memberApi:MemberserviceService,   
 
   ) {
-  
+  // for app version 
+ 
+  App.addListener('appStateChange', ({ isActive }) => {
+      console.log('App state changed. Is active?', isActive);
+    });
+    
+    App.addListener('appUrlOpen', data => {
+      console.log('App opened with URL:', data);
+    });
+    
+    App.addListener('appRestoredResult', data => {
+      console.log('Restored state:', data);
+    });
+    
+    const checkAppLaunchUrl = async () => {
+      const { url } = await App.getLaunchUrl();
+    
+      console.log('App opened with URL: ' + url);
+    };
+    ///****//// */
      const user = localStorage.getItem('User')
      console.log(JSON.parse(user!).email );
      console.log(JSON.parse(user!)._id);
@@ -251,44 +275,12 @@ logs: string[] = [];
                           this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true}); 
                           this.updateUserToMember();
                           this.updateMemberInvitedAccepted(this.loggeduserEmail,"Yes");
-                          // this.userApi.getUserbyEmail(this.loggeduserEmail).subscribe((res:any)=>{
-                          //   try {
-                          //     console.log(res);
-                          //   } catch (error) {
-                          //     console.log(error);                              
-                          //   }
-                          // });
-                          // this.userApi.update(this.loggeduserId,{"isMember":true}).subscribe((res:any)=>{
-                          //   console.log(" in update ",res._id);
-                          // },
-                          // (err: any) => {
-                          //   console.log(err);
-                          // });
                         }
-                       });
-                      //find by email id 
-                      //if email match then 
-                      // check time if time valid or not 
-                      // if time is valid 
-                      //then get code from DB 
-                      // pass that code in comparision 
-                      // if match then navigate 
-                      // or else shown error "contact to gym owner"
-                      // console.log('entered code', var_code);                
+                       });            
 
                   }
               },
-            {
-              text: 'Scan QR',
-                  handler: (alertData) => { //takes the data 
-                      const var_code= alertData.name1;
-                      console.log(var_code);
-                      if(var_code =="123456"){
-                        this.router.navigate(['/tabs/member-action'],{replaceUrl:true});
-                  
-                      }
-                    }
-                  }
+           
             ],
       inputs: [
         {
@@ -305,19 +297,20 @@ logs: string[] = [];
   }
 
   checkIfInvited(email:any){
+    console.log(email);
     this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
       console.log("in Check if Invited");
-      console.log(data.length);
+      console.log(data);
       // here try to check if member email exist or not .. if member email is not there then 
       //show alert that you have strill not asscooaited to any gym
       try {
          
         if(data.isInviteAccepted=="Not")
         {
-          console.log("Please ask respective gym admin to invite you to join gym"); 
-          this.presentAlert("Gym Not Joined","Please Ask Gym Admin to Invite to Join Gym","")
+          console.log("Please ask respective property owner to invite you to join property"); 
+          this.presentAlert("Property Not Joined","Please ask property owner to Invite to Join property","")
         }
-        if(data.isInviteAccepted=="Pending")
+        if(data.isInviteAccepted=="pending")
         {
           console.log("Please Enter Invitaion Code"); 
           this.joinGymAlert();
@@ -334,7 +327,7 @@ logs: string[] = [];
 
   }
 
-  updateUserToMember(){
+  async updateUserToMember(){
     this.userApi.update(this.loggeduserId,{"isMember":true}).subscribe(
     {
     next:(res:any)=>{
@@ -347,23 +340,26 @@ logs: string[] = [];
   );
   }
 
-  updateMemberInvitedAccepted(email:any,Yes:any)
+  async updateMemberInvitedAccepted(email:any,Yes:any)
   {
     console.log("in invitaion code setup")
     this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
     this.memberApi.update(data._id,{
       "isInviteAccepted":Yes // Status Change to Yes
-    }).subscribe((res: any) => {
+    }).subscribe({
+      next: (res: any) => {
       const id = res._id;
       console.log('invitaion type change to Yes');
-    }, (err: any) => {
-      console.log(err)
+    }, 
+    error:(err: any) => { console.log(err)  }
     });
+
       });    
   }
 
   async presentAlert(header:string,subheader:string, message:string) {
     const alert = await this.alertCtrl.create({
+      mode:'ios',
       header:header,
       subHeader: subheader,
       message:message,
@@ -374,6 +370,7 @@ logs: string[] = [];
 
   async loggedUserRoleaAlert(header:string,message:string) {
     const alert = await this.alertCtrl.create({
+      mode:'ios',
       header:header,
       // backdropDismiss: false,
       message:message,

@@ -1,108 +1,101 @@
-<ion-searchbar         
-      placeholder ='Search Member'
-      animated="true"
-      [debounce]="1000" 
-      (ionInput)="handleInput($event)"
-     
-
-      animated   
-      >    
-</ion-searchbar> 
+<ion-searchbar placeholder='Search Member' animated="true" [debounce]="1000" (ionInput)="handleInput($event)" animated>
+</ion-searchbar>
 
 
-  <ion-select       
-    #selectElem
-    interface="action-sheet"
-    Open="false"
-    mode="ios"
-    justify="start"
-    aria-label="Gym"
-    placeholder="Select Gym"      
-    (ionChange)="selecthandleChange($event)"
-    [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
-    slot="end">   
-      <ion-select-option 
-        *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>        
-  </ion-select>
+<ion-select #selectElem interface="action-sheet" Open="false" mode="ios" justify="start" aria-label="Gym"
+  placeholder="Select Gym" (ionChange)="selecthandleChange($event)" [compareWith]="compareWith"
+  value="{{MyDefaultGymValue}}" slot="end">
+  <ion-select-option *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
+</ion-select>
 <!-- </ion-item> -->
 
-<ion-content overflow-scroll="true" class="ion-padding" > 
+<ion-content overflow-scroll="true" class="ion-padding">
 
-<ion-fab class=".ion-fab-1" slot="fixed" vertical="top" horizontal="start" [edge]="true">
-  <ion-fab-button 
-      appGesture
-      [gestureOpts]="[{name: 'press'}]"
-      (press)="onPress($event)">
-    <ion-icon name='lock-open'></ion-icon>
-  </ion-fab-button>
-</ion-fab>
+  <ion-fab class=".ion-fab-1" slot="fixed" vertical="top" horizontal="start" [edge]="true">
+    <ion-fab-button appGesture [gestureOpts]="[{name: 'press'}]" (press)="onPress($event)">
+      <ion-icon name='lock-open'></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
-<ion-fab class="ion-fab-1" slot="fixed" vertical="top" horizontal="end" [edge]="true">
-  <ion-fab-button 
-  (click)="addProduct()"   >
-    <ion-icon name="add"></ion-icon>
-  </ion-fab-button>
-</ion-fab>  
+  <ion-fab class="ion-fab-1" slot="fixed" vertical="top" horizontal="end" [edge]="true">
+    <ion-fab-button (click)="addProduct()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
 
-  
+
   <!-- [ngStyle]="{ background-image: background_image }" -->
   <!-- [ngStyle]="{'background-image': 'url(' + background_image + ')'}" -->
   <!-- <div [ngStyle]="{'background-image': ' url(' + imageUrl  + ') no-repeat 0 0'}" >
 <!-- was tryng to set Backgrund image but not success --
   </div> -->
-  
+
   <div>
     <app-banner [slides]="members_slides"></app-banner>
   </div>
 
-   
-        <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-          <ion-refresher-content></ion-refresher-content>
-        </ion-refresher>
 
-       <ion-list lines="none" *ngFor="let m of members " lines="">
-        <ion-div *ngIf="searchText ===''|| m.m_name.toLowerCase().includes(searchText) || m.mobile.toLowerCase().includes(searchText) || m.m_enddate.toLowerCase().includes(searchText)|| m.email.toLowerCase().includes(searchText)">
-                   
-               <ion-item-group>           
-                <ion-item class="ion-padding-vertical popItem">
-                  <ion-thumbnail>
-                  <div class="avatar" (click)="seeAttendance(m._id)"> 
-                    <ion-text color="white">{{getInitials(m.m_name)}}</ion-text>
-                  </div>      
-                 </ion-thumbnail>  
-                  <ion-label>
-                    <ion-note color="dark"><b>{{m.m_name | titlecase}}</b></ion-note>
-                      
-                      <p>
-                        <ion-text color="dark" (click)="CallTel(m.mobile)"><ion-icon name="call"></ion-icon>{{m.mobile}}</ion-text>
-                        <ion-text color="dark"><br> <ion-icon name="calendar"></ion-icon> Last Date:{{m.m_enddate | date }}</ion-text>
-                      </p>                  
-                  </ion-label> 
-                         <ion-icon class="ion-icon" slot="end" name="ellipsis-vertical-outline" debounceTime="700" (click)="presentModal(m._id)"></ion-icon>
-                     
-                     </ion-item>          
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-            <!-- <ion-col debounceTime="700" (click)="presentModal(m._id)" size="1" [ngClass]="+m.m_enddate < today_ ? 'div-vertical-red' : 'div-vertical-green'">
+  <ion-list lines="none" *ngFor="let m of members " lines="">
+    <ion-div
+      *ngIf="searchText ===''|| m.m_name.toLowerCase().includes(searchText) || m.mobile.toLowerCase().includes(searchText) || m.m_enddate.toLowerCase().includes(searchText)|| m.email.toLowerCase().includes(searchText)">
+
+      <ion-item-group>
+        <ion-item class="ion-padding-vertical popItem">
+          <ion-thumbnail>
+            <div class="avatar" (click)="seeAttendance(m._id)">
+              <ion-text color="white">{{getInitials(m.m_name)}}</ion-text>
+            </div>
+          </ion-thumbnail>
+          <ion-label>
+            <ion-note color="dark"><b>{{m.m_name | titlecase}}</b></ion-note>
+
+            <p>
+              <ion-text color="dark" (click)="CallTel(m.mobile)"><ion-icon
+                  name="call"></ion-icon>{{m.mobile}}</ion-text>
+              <ion-text color="dark"><br> <ion-icon name="calendar"></ion-icon> Last Date:{{m.m_enddate | date
+                }}</ion-text>
+            </p>
+          </ion-label>
+
+          <ion-icon 
+          [ngStyle]="{ 'color': (m.m_enddate < today_)? 'red': 'green' }"
+          class="ion-icon"
+           slot="end" 
+           name="ellipsis-vertical-outline" 
+           debounceTime="700"
+            (click)="presentModal(m._id)"></ion-icon>
+
+        </ion-item>
+
+        <!-- <ion-col debounceTime="700" (click)="presentModal(m._id)" size="1" [ngClass]="+m.m_enddate < today_ ? 'div-vertical-red' : 'div-vertical-green'">
               <!-- <ion-div [ngClass]="m.m_enddate < today_ ? 'div-vertical-red' : 'div-vertical-green'">
               </ion-div> --
-            </ion-col> -->             
-            <ion-button class="button-round" *ngIf="m.isInviteAccepted === 'Yes'" [disabled]="isButtonSubmit" color="primary" shape="round" fill="outline" expand="block" (click)="updateMemberControl(m._id)" 
-            (click)="deleteCodeIfacceptedOrExpired(m.email,true)"><ion-icon name="create"></ion-icon>Validity</ion-button>
-            <ion-button *ngIf="m.isInviteAccepted === 'Not'" [disabled]="isButtonSubmit" color="primary" shape="round" fill="outline" expand="block" (click)="inviteMember(m._id)"><ion-icon name="create"></ion-icon>Invite</ion-button>
-            <ion-button *ngIf="m.isInviteAccepted === 'Pending'" [disabled]="isButtonSubmit" color="success" shape="round" fill="outline" expand="block" (click)="inviteMember(m._id)" (click)="deleteCodeIfacceptedOrExpired(m.email,false)"><ion-icon name="create"></ion-icon>Invited</ion-button>
-          
-           
-            </ion-item-group>
-       </ion-div>
-     </ion-list>
+            </ion-col> -->
+        <ion-button class="button-round" *ngIf="m.isInviteAccepted === 'Yes'" [disabled]="isButtonSubmit"
+          color="primary" shape="round" fill="outline" expand="block" (click)="updateMemberControl(m._id)"
+          (click)="deleteCodeIfacceptedOrExpired(m.email,true)"><ion-icon name="create"></ion-icon>Validity</ion-button>
+       
+          <ion-button *ngIf="m.isInviteAccepted === 'Not'" [disabled]="isButtonSubmit" color="primary" shape="round"
+          fill="outline" expand="block" (click)="inviteMember(m._id)"><ion-icon
+            name="create"></ion-icon>Invite</ion-button>
+        
+            <ion-button *ngIf="m.isInviteAccepted === 'pending'" [disabled]="isButtonSubmit" color="success" shape="round"
+          fill="outline" expand="block" (click)="inviteMember(m._id)"
+          (click)="deleteCodeIfacceptedOrExpired(m.email,false)"><ion-icon name="create"></ion-icon>Invited</ion-button>
 
 
-    
-<!--  -->
+      </ion-item-group>
+    </ion-div>
+  </ion-list>
+
+
+
+  <!--  -->
 
 
 </ion-content>
-
- 
- 

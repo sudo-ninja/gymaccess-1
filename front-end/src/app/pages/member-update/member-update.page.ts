@@ -23,7 +23,7 @@ export class MemberUpdatePage implements OnInit {
 
   MemberType = [
     {name:'Member'},{name: 'Staff'}, {name:'Phyiotherepist'}, {name:'Utilities Staff'},{name:'Manager'}];
-  AccessType = [{name:'Paid'}, {name:'Free'}];
+  AccessType = [{name:'paid'}, {name:'free'}];
   accesstype:'';
   membertype:'';
 

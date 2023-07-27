@@ -39,6 +39,8 @@ import { environment } from 'src/environments/environment.prod';
   
 })
 export class MemberActionPage implements OnInit {
+
+  
   baseUri : string = environment.SERVER;
   //slide show 
   slides: any[] = [];
@@ -49,6 +51,9 @@ export class MemberActionPage implements OnInit {
 
   scannedResult:any;
   content_visibility = '';
+  ishidden : boolean = true;
+
+
   dateTime;
 
   attendanceForm!: FormGroup;
@@ -84,6 +89,7 @@ export class MemberActionPage implements OnInit {
   
   originalserviceProvider:any;
   selectedService:any;
+  scanActive: boolean = false;
 
   // install https://github.com/capacitor-community/barcode-scanner plugin 
 
@@ -227,16 +233,25 @@ export class MemberActionPage implements OnInit {
     }
   }
 
+  ngAfterViewInit(){
+    // BarcodeScanner.prepare(); // this iwll startcamea as soon as page open so dont use this
+
+  }
+
   async startScan() {
+    
     try {
       const permission = await this.checkPermission();
       if(!permission) {
-
         return;
       }
-      await BarcodeScanner.hideBackground();
+      await BarcodeScanner.hideBackground();// make background of WebView transparent
+      this.ishidden = false;
+      this.scanActive = true;
+
       document.querySelector('body').classList.add('scanner-active');
       this.content_visibility = 'hidden';
+      this.ishidden = false;
       const result = await BarcodeScanner.startScan();
       console.log(result);
       BarcodeScanner.showBackground();
@@ -244,11 +259,13 @@ export class MemberActionPage implements OnInit {
       this.content_visibility = '';
       if(result?.hasContent) {
         console.log(result.content);
-                this.scannedResult = result.content;
+        this.scannedResult = result.content;
+        this.scanActive = false;
         if(this.scannedResult.includes(this.gymId)){
-          this.attendance();//**/ */
+          this.attendance();//*call attendance */ */
         }else{
           console.log("not valid qr code");
+          this.presentAlert("Warning !","Not a Valid QR Code" , "Try with valid QR code")
           // here make alert showing that not a valid qr code ..
         }
         console.log(this.scannedResult);
@@ -259,12 +276,16 @@ export class MemberActionPage implements OnInit {
     }
     
   }
+ 
 
   stopScan() {
+    console.log("in stop scan");
     BarcodeScanner.showBackground();
     BarcodeScanner.stopScan();
     document.querySelector('body').classList.remove('scanner-active');
     this.content_visibility = '';
+    this.scanActive = false;
+    this.ishidden = true;
   }
 
   ngOnDestroy(): void {

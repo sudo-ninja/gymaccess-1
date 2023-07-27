@@ -261,9 +261,15 @@ export class MembercontrolPage implements OnInit {
         this.idu = res._id;
         // localStorage.setItem('ID', JSON.stringify(this.id));
         this.isLoadingResults = false;
+              
 
-        this.router.navigateByUrl('/gymtabs/member-list', { replaceUrl: true });
-        this.modalCtrl.dismiss();
+        // this.modalCtrl.dismiss();
+        this.modalCtrl.dismiss(
+          () => {
+            // Call the method to do whatever in your home.ts
+               console.log('Modal closed');
+        });
+        this.router.navigateByUrl('/gymtabs/member-list');
       },
       (err: any) => {
         console.log(err);
@@ -341,7 +347,7 @@ export class MembercontrolPage implements OnInit {
   // after that correct memeber action page use same parsing methode for date time
   End_Date: any;
   End_Date_UTC:any;
-  EndDateChange(event) {
+  async EndDateChange(event) {
         console.log(event.detail.value);
     // console.log('Return Value True', event.detail.value);
     this.End_Date_UTC = Date.parse(event.detail.value);
@@ -354,7 +360,7 @@ export class MembercontrolPage implements OnInit {
   Start_Date:any;
   Start_Date_UTC: any;
 
-  StartDateChange(event) {
+  async StartDateChange(event) {
     console.log(event.detail.value);
     console.log('sdate event trigger when touch', event);
     if(event.detail.value){
@@ -380,7 +386,7 @@ export class MembercontrolPage implements OnInit {
   In_Time:any
   In_Time_UTC: any;
 
-  InTimeChange(event) {
+  async InTimeChange(event) {
     console.log("IN TIME ",event);
     // console.log('Return Value True', event.detail.value);
     this.In_Time_UTC = Date.parse(event.detail.value);
@@ -395,7 +401,7 @@ export class MembercontrolPage implements OnInit {
 
   Out_Time: any;
   Out_Time_UTC:any;
-  OutTimeChange(event) {
+  async OutTimeChange(event) {
     console.log("OUT TIME ",event);
     // console.log('Return Value True', event.detail.value);
     this.Out_Time_UTC = Date.parse(event.detail.value);

@@ -36,10 +36,13 @@
 // @import '~swiper/scss/zoom';
 // @import '~@ionic/angular/css/ionic-swiper';
 
+//for QR code scan to keep background transparent
 body.scanner-active {
     --background: transparent;
     --ion-background-color: transparent;
   }
+
+ 
 
 .date-modal{
   --backdrop-opacity:0.6;
@@ -80,3 +83,5 @@ body.scanner-active {
   // --color:#FF0000!important;
   --border-radius:55px!important;
  }
+
+

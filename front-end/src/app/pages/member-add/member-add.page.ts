@@ -44,9 +44,9 @@ export class MemberAddPage {
     email='';
     m_address_lat= '';
     m_address_long= '';
-    memberType='Member';
+    memberType='member';
     m_joindate='';
-    m_accesstype='Paid';
+    m_accesstype='paid';
     isInviteAccepted='';
     m_startdate='';
     m_enddate='';
@@ -124,9 +124,9 @@ export class MemberAddPage {
           Validators.maxLength(80),
           Validators.pattern("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")
         ]],
-        'memberType': ['Member',Validators.required],
+        'memberType': ['member',Validators.required],
         'm_joindate': [Date.now(), Validators.required],
-        'm_accesstype': ['Paid',Validators.required],
+        'm_accesstype': ['paid',Validators.required],
 
         'm_address_lat': ['0'],
         'm_address_long': ['0'],
@@ -139,6 +139,11 @@ export class MemberAddPage {
            //date time all saved in Unix form in DB uniformaly accorss project 
            // as per need reverse calculation done 
       }); 
+
+      // lower case to email input 
+      this.memberForm.get('email').valueChanges.subscribe((event) => {
+        this.memberForm.get('email').setValue(event.toLowerCase(), {emitEvent: false});
+     });
         
       }
 

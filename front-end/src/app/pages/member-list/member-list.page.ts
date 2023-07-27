@@ -143,7 +143,7 @@ export class MemberListPage  {
   tempEmail:any;
   memberId:any;
   memberLastdate:any;
-  isSevenDayslefts:boolean = false;
+  
   today_ = Date.now();
 
   gyms:any=[];
@@ -498,8 +498,14 @@ async addMember(){
   this.memberApi.getMember(uid).subscribe((res)=>{
     console.log(res);
   });
-  await modal.present();
   this.isButtonSubmit=false;
+  // await modal.present();
+  modal.onDidDismiss().then(data => {
+    this.getMembers();
+    console.log('Update Member control Modal Is Closed', data);
+});
+return await modal.present();   
+  
 }
 
 /// see attendnace in calender 
@@ -525,8 +531,7 @@ await modal.present();
   async inviteMember(uid:string){
    console.log(uid);
    this.memberApi.getMember(uid).subscribe((data)=>{
-    try {
-      // console.log(data);
+      console.log(data);
       // console.log(data.isInviteAccepted);
       // console.log(data.email); // this email will search in member control DB if already this exist 
       // once invite accepted or time passed lets delet this from DB so one time only one code is there
@@ -537,17 +542,17 @@ await modal.present();
         
         console.log("disable invitation button");
         this.invitaionButtonDisabled=true;
-     }else if(this.invitaionAccepted==="Pending")
+        return;
+     }else if(this.invitaionAccepted==="pending")
      {
         console.log("call function to get alreay generated code");
         this.CheckIfInvited(uid);
+        return;
      }
      else{  
           this.CodeAlert(uid,'Invitation Code','Please Ask Member to Enter this code in JOIN GYM input *** Code Valid for 3 Days *** ');
       };
-      } catch (error) {
-      throw error;
-    }    
+         
    });
    
 
@@ -557,32 +562,29 @@ await modal.present();
 
   async presentAlert(header:string,subheader:string, message:string) {
     const alert = await this.alertCtrl.create({
+      mode:'ios',
       header:header,
       subHeader: subheader,
       message:message,
       buttons: ['OK'],
+      backdropDismiss: false // <- Here! :)
     });
+    
     await alert.present();
   }
 
   async CodeAlert(uid:any,header:string,message:string){
-
-    var iCode = Math.floor(1000000*Math.random());
-    console.log(iCode);
-    this._invitationcode = iCode;
-    const alert = await this.alertCtrl.create({
-      header: header,
-      subHeader: this._invitationcode.toString(),
-      message: message,
-      buttons: [
-        {
-          text: 'OK',
-          role: 'confirm',
-          handler: () => {
-            this.inviteControl(); // invite control form from FB
-            this.memberApi.getMember(uid).subscribe({
-              next: (res) => {
-                this.member = res;
+    //first check is isInviteAccepted == Not , for that call member API with uid   
+    this.memberApi.getMember(uid).subscribe({
+      next:(res)=>{
+        if(res.isInviteAccepted==='Not'){
+          // Generate Code and add to DB 
+          var iCode = Math.floor(1000000*Math.random());
+          console.log(iCode);
+          this._invitationcode = iCode;
+          //add to DB
+          this.inviteControl(); // invite control form from Form builder
+               this.member = res;
                 console.log(this.member);
                 this._duration = Date.now() + 3 * 60 * 60 * 1000;
                 this.inviteControlForm.patchValue({
@@ -602,25 +604,40 @@ await modal.present();
                         next:(res)=>{
                           this.currentGymName = res.gym_name;
                         },
-                        error:(err)=>{
-                          this.showErrorToast(JSON.stringify(err));
+                        error:(err)=>{ 
+                          // this.showErrorToast(JSON.stringify(err));
                         }
                       });
-                      this.basicShare(this._invitationcode,this.currentGymName)
-                      this.setInvitaion(this.member.email, 'Pending');
+                       }
+                      })
+      }
+        else{
+        console.log("in invite accepted Yes of Pending");
+        }
+      },
+      error:(err)=>{},
+    });
+
+    
+    const alert = await this.alertCtrl.create({
+      mode:'ios',
+      header: header,
+      subHeader: this._invitationcode.toString(),
+      message: message,
+      backdropDismiss: false, // <- Here! :)
+      buttons: [
+        {
+          text: 'OK',
+          role: 'confirm',
+          handler: () => {
+
+                      console.log(this._invitationcode ,"...",this.currentGymName);
+                      this.basicShare(this._invitationcode,this.currentGymName);
+                      this.setInvitaion(this.member.email, 'pending');
                     },
-                    error: (err: any) => {
-                      console.log(err);
-                    },
-                  });
-              },
-              error: (err) => {
-                console.log(err);
-              },
-            });
-          },
-        },
-      ],
+         }
+          ],
+        
     });    
  
     await alert.present();
@@ -643,16 +660,19 @@ await modal.present();
         {
           isInviteAccepted:pending // Status Change to Pending
         });
+        console.log(this.memberId," and data to be updated",this.memberForm.value);
     this.memberApi.update(this.memberId,this.memberForm.value).subscribe({
       next:(res: any) => { console.log('invitaion type change to =',res.isInviteAccepted);         }, 
       error:(err: any) => {console.log(err) }
                });        
     }
-  });    
+  });   
+  this.getMembers(); 
     
   }
 
   async basicShare(invitation_code:any, gym_name){
+
     await Share.share({
       title: `Invitation Code to Join ${gym_name}`,
       text:`${invitation_code}`,
@@ -697,6 +717,7 @@ await modal.present();
   // this needed to use so that invitation code be deleted and if member deleted then 
   //added again then it should not catch olf code.
   deleteCodeIfacceptedOrExpired(email:any,ifAccepted:boolean){    
+    if(ifAccepted){return;};
     this.inviteControlApi.getMcontrolEmail(email).subscribe(
       (res:any)=>{
         if(!res){ return; }

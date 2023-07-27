@@ -2,14 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+
 <!-- for google map -->
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Please always allow permission to use GPS for Google maps</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Please allow permission to use GPS only when app in use for Google maps</string>
 <!--  -->
+
+<!-- for bar code scanner -->
 	<key>NSCameraUsageDescription</key>
-	<string>Please allow us camera access to scan QR codes</string>
+	<string>Please allow camera access to scan QR codes</string>
+<!-- up to here -->
+	
 
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -54,6 +59,19 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<!-- for app version  -->
+	<key>CFBundleURLTypes</key>
+		<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.getcapacitor.capacitor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+			<string>mycustomscheme</string>
+			</array>
+		</dict>
+		</array>
+		<!-- up to here -->
 	
 	<!-- for mail to -->
 	<key>LSApplicationQueriesSchemes</key>

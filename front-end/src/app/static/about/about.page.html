@@ -22,7 +22,16 @@
     
     <ion-item>      
         <ion-label> Current Version </ion-label>     
-    </ion-item>
+        <ion-grid>
+          <ion-row *ngFor="let key of keys">
+            <ion-col style="text-align:right;">{{key}}</ion-col>
+            <ion-col style="text-align:left;font-weight:bold;">{{appInfo[key]}}</ion-col>
+          </ion-row>
+        </ion-grid>
+    
+      </ion-item>
+
+        
 
   </ion-list>
 

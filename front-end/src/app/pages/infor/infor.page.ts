@@ -102,7 +102,10 @@ export class InforPage implements OnInit {
     this.compareWith = this.compareWithFn;
   }
 
-  ionViewWillEnter() {}
+  ionViewWillEnter() {
+    console.log("infor page ion view will enter");
+    this.getMembersData();
+  }
 
   logs: string[] = [];
 
@@ -133,7 +136,7 @@ export class InforPage implements OnInit {
     localStorage.setItem('gymID', this._gym_id);
     console.log(this._gym_id);
 
-    await this.memberApi
+    this.memberApi
       .getMemberType(this._gym_id, 'free')
       .subscribe((data) => {
         console.log(this._gym_id);
@@ -142,7 +145,7 @@ export class InforPage implements OnInit {
         loading.dismiss();
       });
 
-    await this.memberApi
+    this.memberApi
       .getMemberType(this._gym_id, 'paid')
       .subscribe((data) => {
         this.paidMemberResults = data;
@@ -152,7 +155,7 @@ export class InforPage implements OnInit {
         loading.dismiss();
       });
 
-    await this.memberApi
+    this.memberApi
       .getGoingtoEndMember(this._gym_id, this._daysAfter)
       .subscribe((data) => {
         console.log(data);

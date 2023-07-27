@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { Storage } from '@ionic/storage-angular';
 
-import { App } from '@capacitor/app';
+import { Storage } from '@ionic/storage-angular';
 
 //swiper 
 import { register } from 'swiper/element/bundle';
@@ -15,6 +14,8 @@ register();
 export class AppComponent {
   constructor(private storage: Storage) {
     this.storage.create();
+    // to know app version  
+
   }
 
   async ngOnInit() {
@@ -23,6 +24,8 @@ export class AppComponent {
     await this.storage.create();
     
   }
+
+  
 
 
 }
