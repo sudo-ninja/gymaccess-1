@@ -980,6 +980,7 @@ async handleInput(evt) {
             || currentMember.mobile.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 
             );
     }
+    
   });
   console.log(this.members);
 }

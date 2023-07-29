@@ -81,6 +81,8 @@ export class MemberActionPage implements OnInit {
   gymId:any;
   lockId:any;
   gymName:any;
+  compareWith:any;
+  joinedGym:[];
 
   serviceProviders: any; // serviceprovider means admin as he is providing service to members.
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
@@ -90,6 +92,9 @@ export class MemberActionPage implements OnInit {
   originalserviceProvider:any;
   selectedService:any;
   scanActive: boolean = false;
+  currentGym: any;
+  MyDefaultGymValue: any;
+  _gym_id: any;
 
   // install https://github.com/capacitor-community/barcode-scanner plugin 
 
@@ -109,16 +114,6 @@ export class MemberActionPage implements OnInit {
     private bannerApi:BannerService
 
   ) {
-    // this._user.user().subscribe(
-    //   res=>{
-    //     this.addName(res),
-    //     console.log(res);
-    //   },
-    //   error=>{
-    //     // this.router.navigate(['/login'])
-    //     console.log(error)
-    //   });
-
       // to know the status of logged user if he is member or admin
       const user = localStorage.getItem('User')
       this.loggeduser=JSON.parse(user);
@@ -157,6 +152,9 @@ export class MemberActionPage implements OnInit {
   }
 
   ngOnInit() {
+    // to get default data in ion select 
+    this.compareWith = this.compareWithFn; 
+
     // slide show ..
     this.bannerApi.getImageByGymId(this.gymId).subscribe({
       next:res=>{
@@ -711,6 +709,28 @@ async successAlert(header:string,subheader:string, message:string) {
   await alert.present();
 }
 // if any other issue show alert "Access Denied"in red color background
+// to select joined gym in ion select 
+
+selecthandleChange(ev){
+  this.currentGym = ev.target.value;
+  this.MyDefaultGymValue = ev.target.value;
+  console.log(ev);
+  this._gym_id = this.currentGym;
+  console.log(this._gym_id);
+  this.getMembers();
+  this.compareWithFn(this._gym_id,ev.target.value);
+  }
+
+
+  compareWithFn(o1, o2) {
+    return o1 === o2;
+  };
+
+  getMembers() {
+    throw new Error('Method not implemented.');
+  }
+
+  
 
 }
 

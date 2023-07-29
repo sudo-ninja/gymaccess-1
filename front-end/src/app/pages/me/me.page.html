@@ -1,5 +1,9 @@
  
 <ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  
   <div *ngIf="isLoadingResults">
     <ion-spinner *ngIf="isLoadingResults" ></ion-spinner>
   </div>

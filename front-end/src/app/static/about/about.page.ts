@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActionSheetController, AlertController } from '@ionic/angular';
 //for app version
 import { App } from '@capacitor/app';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-about',
@@ -18,7 +19,10 @@ export class AboutPage implements OnInit {
 
   constructor(
     private alertCtrl: AlertController,
-  ) { }
+    private router :Router,
+  ) { 
+    
+  }
 
   ngOnInit() {
     // for app version 
@@ -26,7 +30,7 @@ export class AboutPage implements OnInit {
     this.appInfo = obj;
     this.keys = Object.keys(obj);
   });
-  console.log(this.appInfo.version,"nnnnn",this.keys);   
+  console.log("nnnnn",this.keys);   
 
 
   }
@@ -57,6 +61,11 @@ export class AboutPage implements OnInit {
       ]
     });
     await alert.present();
+  }
+
+  backToSettings(){
+    // navigate back to setting .
+    this.router.navigateByUrl('/settings',{replaceUrl:true});
   }
 
 }

@@ -1,8 +1,8 @@
 ion-content{
 
-  --ion-background-color:#f5f5f5;
+  // --ion-background-color:#f5f5f5;
   div{
-      --ion-background-color:#ffffff;
+      // --ion-background-color:#ffffff;
   }
 }
 .profile-photo {
@@ -147,7 +147,7 @@ ion-content{
 
 
   .ion-item-feedback::part(native) {
-    background: #ffffff;
+    // background: #ffffff;
     // color: #fff;
     height:6rem;
     margin-left: 10px;

@@ -33,3 +33,13 @@ change login page CSS and HTML with good look
 Correct CSS for individual page 1 by 1
 
 
+28-07-23
+if same member is added by other gym ID -- no problem till here 
+
+but as soon as it get invited , it changing the ininvited status of existing member using email search .. change this logic 
+to compre if email id with same gym id is inviting or diffrent .. if its diffrent then genrate alert "User is Already member of Old Gym Name ... ask User to get it Deleted from there"
+
+ member-action page - not updating insant time of validity work on it use ion view will enter
+
+ 
+ 

@@ -67,7 +67,7 @@ export class PersonalinformationPage implements OnInit {
   countdownSeconds: number;
   countDownStarted:boolean = false;
 
-  gyms:Gym[]=[];
+  joinedGyms:any;
 
    
 
@@ -102,6 +102,7 @@ export class PersonalinformationPage implements OnInit {
     this.memberApi
     .getMemberByEmail(this.loggeduser.email)
     .subscribe((data: any) => {
+      // console.log(data); // work on this in VER 2.0 where one member may join more gyms.
       this.gym_id = data.gym_id;
       this.memberName = data.m_name;
       this.memberEmail = data.email;

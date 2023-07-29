@@ -1,5 +1,9 @@
-  <ion-header class=" ion-no-border" *ngIf="!scanActive">
-    <ion-toolbar>
+  
+    <ion-item *ngIf="scanActive" color="tertiary" class="scanner-stop" (click)="stopScan()">
+      <ion-icon name="arrow-back"></ion-icon> <p>Scan and Get Access</p>
+   </ion-item>
+   <ion-header class=" ion-no-border" *ngIf="!scanActive">
+    <ion-toolbar >
           <ion-title mode="md" class="ion-no-padding">
             <ion-label>
               <ion-text color="tertiary">Welcome</ion-text>
@@ -10,6 +14,17 @@
             <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img>
           </ion-avatar>
     </ion-toolbar>   
+    
+    <!-- <ion-item>
+      <ion-select 
+      (ionChange)="selecthandleChange($event)" [compareWith]="compareWith"
+       value="{{MyDefaultGymValue}}"label="Select Joined Property" placeholder="Touch to select"mode="ios" >
+        <ion-select-option value="">No Game Console</ion-select-option>
+        <ion-select-option value="nes">NES</ion-select-option>
+        <ion-select-option value="n64">Nintendo64</ion-select-option>
+      </ion-select>
+      to be used for one member multiple gym added
+    </ion-item> -->
   </ion-header>
 
   <!-- [style.visibility]="content_visibility" -->
@@ -18,6 +33,7 @@
     <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
+    
 
       <div class="div-0" *ngIf="!scanActive">
         <app-banner [slides]="slides"></app-banner>
@@ -79,16 +95,7 @@
         </ion-grid>  
       </div>
 
-      <ion-row class="scanner-buttons" *ngIf="scanActive">
-        <ion-col class="ion-no-padding">     
-            <ion-button
-            class="ion-text-center"
-            expand="block"
-            shape="round"
-            (click)="stopScan()"> <ion-icon name="arrow-back"></ion-icon> Back </ion-button>        
-        </ion-col>      
-      </ion-row>
-
+     
       <div class="scan-box" *ngIf="scanActive"> 
       </div>
   </ion-content>

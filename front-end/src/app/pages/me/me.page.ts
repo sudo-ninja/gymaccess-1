@@ -133,7 +133,11 @@ export class MePage implements OnInit {
         this.gymName= res.gym_name;
         this.gymLocation_lat= res.gym_address_lat;
         this.gymLocation_lng = res.gym_address_long;
-        this.gymEmergencyMobile=res.gym_emergency;          
+        this.gymEmergencyMobile=res.gym_emergency; 
+        
+        // this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((res)=>{
+        //   console.log(res); // in next version make this as  one member may join more gym 
+        // })
       });
     }
      });   
@@ -141,21 +145,24 @@ export class MePage implements OnInit {
   }
 
 
-  ngOnInit() {
-
-    if(this.isloggedUserMember){
-    // this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{        
-    //   this.memberId = data._id;
-    //   this.memberGymId = data.gym_id;
-      this.gymManagement(this.loggeduserIsAdmin);
-      this.rechargeRequestMessage(this.memberId);
-    // });
-  }
-
-  if(this.loggeduserIsAdmin){
-
-  }
+  ngOnInit() {  
     
+  }
+// use so that gym name chage can be apear quickly here 
+  ionViewWillEnter(){
+    console.log("ion view will enter me page");
+    if(this.isloggedUserMember){
+      // this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{        
+      //   this.memberId = data._id;
+      //   this.memberGymId = data.gym_id;
+        this.gymManagement(this.loggeduserIsAdmin);
+        this.rechargeRequestMessage(this.memberId);
+      // });
+    }
+  
+    if(this.loggeduserIsAdmin){
+  
+    }
   }
 
 
@@ -180,6 +187,26 @@ export class MePage implements OnInit {
   }
   getImage(){
     
+  }
+
+  handleRefresh(event) {
+    setTimeout(() => {
+      // Any calls to load data go here
+      if(this.isloggedUserMember){
+        // this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{        
+        //   this.memberId = data._id;
+        //   this.memberGymId = data.gym_id;
+          this.gymManagement(this.loggeduserIsAdmin);
+          this.rechargeRequestMessage(this.memberId);
+        // });
+      }
+    
+      if(this.loggeduserIsAdmin){
+    
+      }
+        
+      event.target.complete();
+    }, 2000);
   }
 
   rechargeDays:any;

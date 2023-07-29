@@ -215,6 +215,7 @@ export class MemberAddPage {
           this.accesstype = e.detail.value;    
         }
 
+        // this for select option use to select paid or free , member or staff..
         handleChange_MT(e) {
           // this.pushLog('ionChange fired with value: ' + e.detail.value);
           console.log(e.detail.value);
