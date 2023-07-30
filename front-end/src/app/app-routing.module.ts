@@ -148,10 +148,8 @@ const routes: Routes = [
     path: 'feedback-alert',
     loadChildren: () => import('./pages/feedback-alert/feedback-alert.module').then( m => m.FeedbackAlertPageModule),
     canActivate: [AuthGuard]
-  },  {
-    path: 'report-member-gym',
-    loadChildren: () => import('./pages/report-member-gym/report-member-gym.module').then( m => m.ReportMemberGymPageModule)
   },
+
   {
     path: 'addlock',
     loadChildren: () => import('./pages/addlock/addlock.module').then( m => m.AddlockPageModule)

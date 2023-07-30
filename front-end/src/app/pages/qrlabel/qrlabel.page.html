@@ -5,17 +5,18 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content class="pagebg" [fullscreen]="true" id="downloadme" #downloadme >
+<ion-content [fullscreen]="true" id="downloadme" #downloadme >
      
         <div id="bg">
-                <ion-label ><h1 class="p">WELCOME</h1>
+                <ion-label><h1 class="p">WELCOME</h1>
                             <h2 class="p">TO</h2>
                             <h1 class="p">{{gymname | uppercase }}</h1>
                 </ion-label>
         </div>
-        <div class="div-1" >
+
+        <div id="qrbox">
             <ion-list  lines="none" class="ion-margin">
-            <ion-label ><h1 class="p1">SCAN ME</h1></ion-label>
+            <ion-label ><h1>SCAN ME</h1></ion-label>
             <ion-item >
                 <div class="center">
                    <qrcode
@@ -28,19 +29,19 @@
                     </qrcode>
                 </div>
             </ion-item>
-            <ion-text ><h2 class="p2">TO GET PROPERTY ACCESS</h2></ion-text>          
+            <ion-text ><h2>TO GET PROPERTY ACCESS</h2></ion-text> 
+                  
             </ion-list>                    
         </div>
         
-        <div class="div-2">
-            <!-- <ion-item class=" item-1">
-                <ion-list lines="none" class="ion-margin">
-                    <!-- <h3 class="p3"> DOWNLOAD THE APP. </h3> -->
-                    <!-- <h3 class= "p3"> GYM ACCESS CONTROl.</h3> -->
-                    <!-- <p slot="end"> powered by <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img></p>               
-                </ion-list>
-            </ion-item> -->
-        </div>
+         
+        <ion-item color="primary">
+            <!-- <ion-thumbnail slot="start">
+                <img alt="App Icon" src="../../../../fotos/icons/AppIconQUL.png" />
+              </ion-thumbnail> -->
+            <ion-label>Use QR UNLOCK App</ion-label>
+        </ion-item>
+      
     
   </ion-content>
 
