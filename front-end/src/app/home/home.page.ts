@@ -498,7 +498,7 @@ async fetchLocation(){
   addMarker(location) {
     let googleMaps: any = this.googleMaps;
     const icon = {
-      url: 'assets/icons/location-pin.png',
+      url: 'fotos/icons/location-pin.png',
       scaledSize: new googleMaps.Size(50, 50), 
     };
     const marker = new googleMaps.Marker({
