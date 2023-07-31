@@ -173,6 +173,12 @@ export class GymAddPage implements OnInit {
       this.gymLAT = localStorage.getItem('gymLat') || data.lat;
       this.gymLNG = localStorage.getItem('gymLng') || data.lng;
     }
+
+    // when close model it will change the page also
+    if(!window.history.state.modal){
+      const modalState = {modal:true};
+      history.pushState(modalState,null);
+      }
     }
     
 

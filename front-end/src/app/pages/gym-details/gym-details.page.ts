@@ -204,5 +204,14 @@ message:any;
     this.new_lat= localStorage.getItem('gymLat');
     this.new_lng = localStorage.getItem('gymLng');
   }
+//when modal closed this will change page in window 
+  if(!window.history.state.modal){
+    const modalState = {modal:true};
+    history.pushState(modalState,null);
+    }
+
   }
+
+
+
 }

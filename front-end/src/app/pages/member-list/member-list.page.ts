@@ -453,6 +453,11 @@ async getMembers(){
     );
     console.log(res => {this.memberApi.getMember(res.id);});
     await modal.present();
+//this will update pafe url when modal is closed
+    if(!window.history.state.modal){
+      const modalState = {modal:true};
+      history.pushState(modalState,null);
+      }
 
   }
 // try to use modal controller for add member 

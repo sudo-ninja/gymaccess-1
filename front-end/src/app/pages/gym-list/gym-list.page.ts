@@ -162,6 +162,11 @@ export class GymListPage implements OnInit {
     console.log(res => {
       this.gymApi.getGym(res.id);});
     await modal.present();
+//this will update page url when modal is closed
+    if(!window.history.state.modal){
+      const modalState = {modal:true};
+      history.pushState(modalState,null);
+      }
   }
 
   deleteGym(gid) {
