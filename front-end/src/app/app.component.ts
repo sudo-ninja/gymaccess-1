@@ -47,7 +47,7 @@ export class AppComponent {
 
         if(this.routerOutlet && this.routerOutlet.canGoBack()){
           this.routerOutlet.pop();
-        }else if (this.router.url === "/home" || this.router.url === "/gymtabs/member-list" || this.router.url === "/tabs/member-action"){
+        }else if (this.router.url === "/home" || this.router.url === "/gymtabs/member-list" || this.router.url === "/tabs/member-action" || this.router.url === "/login"){
           const alert = await this.alertController.create({
             header:"Close App",
             message:"Do you really want to close app?",
@@ -66,7 +66,7 @@ export class AppComponent {
             ]
           });
           await alert.present();
-        }
+        } 
 
       });      
     })
