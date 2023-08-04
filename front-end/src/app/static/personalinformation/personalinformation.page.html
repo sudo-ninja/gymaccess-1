@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button text="Back" defaultHref="settings"> </ion-back-button>
+      <ion-back-button text="Previous" icon="caret-back" (click)="backToSettings()"></ion-back-button>
     </ion-buttons>
     <ion-title>Personal Information</ion-title>
   </ion-toolbar>  
@@ -96,6 +96,24 @@
 
        
   </ion-list>
+</div>
+
+<!-- *ngIf="this.AdminCumMeber" -->
+<div >
+    
+      <ion-button 
+      color="primary"
+      expand="block"
+      shape="round"
+       *ngIf = showMemberButton
+      (click)="showMember()"> Show Member Profile</ion-button>
+      <ion-button 
+      color="primary"
+      expand="block"
+      shape="round"
+      *ngIf = showAdminButton
+      (click)="showAdmin()"> Show Owner Profile</ion-button>
+    
 </div>
 
 <!-- <div>

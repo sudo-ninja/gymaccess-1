@@ -183,6 +183,8 @@ export class MemberAddPage {
         onFormSubmit() {
           this.isLoadingResults = true;
           console.log(this.memberForm.controls['email'].value.toLowerCase());
+          // check here if added member is  admin of any gym or not , if he is admin of any gym then 
+          // show alert that member is admin of Gym name 
           this.memberApi.addMember(this.memberForm.value).subscribe({
             next:(res) => {
                 const id = res._id;

@@ -28,6 +28,8 @@ import { MemberserviceService } from '../services/memberservice.service';
 
 import { App } from '@capacitor/app';
 import { environment } from 'src/environments/environment';
+//call gym gym Admin service
+import { GymadminService } from '../services/gymadmin.service';
 
 @Component({
   selector: 'app-home',
@@ -82,7 +84,9 @@ export class HomePage implements OnInit{
     private renderer: Renderer2,
     private actionSheetCtrl: ActionSheetController,
     private formBuilder: FormBuilder,
-    public memberApi:MemberserviceService,   
+    public memberApi:MemberserviceService,  
+    //gym admin service api
+    private gymAdminApi :GymadminService, 
 
   ) {
   // for app version 
@@ -118,16 +122,27 @@ export class HomePage implements OnInit{
           console.log(res);
           this.isloggedUserMember = res.isMember;
           this.loggeduserIsAdmin = res.isAdmin;
-          console.log(this.isloggedUserMember);         
+          console.log(this.isloggedUserMember);
+          
+          //if same user is member and admin set true then display alert , want to proceed as member or owner ?
+          //based on that route the page 
+          if(this.isloggedUserMember && this.loggeduserIsAdmin){
+            this.ProceedAsMemberOwnerAlert("Proceed as ..","select ");
+          }
 
           if(this.isloggedUserMember){
             console.log('Logged User is Member');
             this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe({
               next:res=>{
                 if(!res){
-                  this.router.navigateByUrl('home', {replaceUrl: true});
+                  this.router.navigateByUrl('home', {replaceUrl: true}); // if no member found of this id then route to home page
                 }else{
-                  this.router.navigateByUrl('/tabs/member-action', {replaceUrl: true});
+                  if(res.isInviteAccepted ==="Yes"){
+                    this.router.navigateByUrl('/tabs/member-action', {replaceUrl: true});
+                  }else{
+                    this.router.navigateByUrl('home', {replaceUrl: true}); // if member have not accepted invitaion yet let him be stay at home page
+                               }
+                  
                 }
               }
             });
@@ -140,7 +155,7 @@ export class HomePage implements OnInit{
             //he may be member or may be first time user only 
             // so let him decide the roll of him self
             console.log('No gym Add by this persom Gym Please');
-                    this.loggedUserRoleaAlert(
+            this.loggedUserRoleaAlert(
                       'Welcome to Gym Access Control',
                       "let's start by ."
                     );
@@ -569,6 +584,52 @@ async fetchLocation(){
     if(this.mapClickListener) this.googleMaps.event.removeListener(this.mapClickListener);
     if(this.markerClickListener) this.googleMaps.event.removeListener(this.markerClickListener);
   }
+
+  // alert to proceed as meber or owner ..
+  async ProceedAsMemberOwnerAlert(header:string,message:string) {
+    const alert = await this.alertCtrl.create({
+      mode:'ios',
+      header:header,
+      // backdropDismiss: false,
+      message:message,
+      buttons: [       
+        {
+          text: 'Member',
+          role: 'member',
+          handler: () => {  
+            this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{
+              console.log(data);
+              if(!data){
+                console.log("no member");
+                this.presentAlert("Property Not Joined Yet !!","Please Ask Property Owner to Invite to Join ","")
+              }else{
+                this.checkIfInvited(this.loggeduserEmail);
+              }
+            });
+          }
+        },
+        {
+          text: 'Owner',
+          role: 'admin',
+          handler: () => { localStorage.setItem('loggedUserId',this.loggeduser._id);
+                           console.log(this.loggeduser._id);
+                           //check here if user already added gym using gym admin table then redirect to
+                           //member list page of that gym or gymlist page
+                           this.gymAdminApi.getGymadminByEmail(this.loggeduserEmail).subscribe((res)=>{
+                            if([res].length >= 0 ){
+                              this.router.navigate(['/gym-list'],{replaceUrl:true});
+                            }
+                           });
+
+                          this.router.navigate(['/gym-add'],{replaceUrl:true});
+                        }
+        },
+      ]
+    });
+    await alert.present();
+  }
+
+
   }
 
 

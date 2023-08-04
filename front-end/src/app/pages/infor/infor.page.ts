@@ -15,6 +15,9 @@ import { LoadingController, ToastController } from '@ionic/angular';
 import { AlertController, ModalController } from '@ionic/angular';
 import { GymDetailsPage } from '../gym-details/gym-details.page';
 
+//call gymAdmin Services
+import { GymadminService } from 'src/app/services/gymadmin.service';
+
 @Component({
   selector: 'app-infor',
   templateUrl: './infor.page.html',
@@ -57,7 +60,9 @@ export class InforPage implements OnInit {
     //modal controller
     private alertCtrl: AlertController,
     private modalCtrl: ModalController,
-    public loadingController: LoadingController
+    public loadingController: LoadingController,
+    //gym admin service API
+    private gymAdminApi:GymadminService
   ) {
     this.storageService.get('loggeduser_id').then((val) => {
       console.log(val);
@@ -277,9 +282,11 @@ export class InforPage implements OnInit {
     if (!this.memberFlag) {
           this.gymApi.wildSearch(this.loggeduser_id).subscribe({
             next: (data: any) => {
-              if (data.length === 1 || data.length < 1) {
+              if (data.length === 1 || data.length < 1) { // this for last gym
                 this.gymApi.delete(this._gym_id).subscribe({
-                  next: (res: any) => { this.router.navigate(['/gym-list/']), { replaceurl: true }; },
+                  next: (res: any) => { 
+                    this.RemoveAdminUsingGymId(this._gym_id);
+                    this.router.navigate(['/gym-list/']), { replaceurl: true }; },
                   error: (err: any) => { alert(JSON.stringify(err));  },
                   complete:()=>{
                     return;
@@ -290,6 +297,7 @@ export class InforPage implements OnInit {
                 this.gymApi.delete(this._gym_id).subscribe({
                   next: (res) => {
                     console.log(res);
+                    this.RemoveAdminUsingGymId(this._gym_id);
                     // set local storage with balance gyms so that selection after delet can work properly
                     this.gymApi.wildSearch(this.loggeduser_id).subscribe({
                       next: (data: any) => {
@@ -330,4 +338,13 @@ export class InforPage implements OnInit {
     });
     await alert.present();
   }
+
+  async RemoveAdminUsingGymId(gymid){
+    this.gymAdminApi.deleteAllofThisGymID(gymid).subscribe((res)=>{
+      console.log(gymid, "successfully Admin dieleted from gym Admin")
+    });
+
+  }
+
+
 }

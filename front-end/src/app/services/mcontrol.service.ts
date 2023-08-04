@@ -39,6 +39,11 @@ export class McontrolService {
     return this.http.get(`${baseUrl}/email/${email}`);
   }
 
+  getMcontrolMemberId(memberId: any): Observable<Mcontrol> {
+    console.log("i m in get  by emailloop");
+    return this.http.get(`${baseUrl}/memberid/member?member_id=${memberId}`);
+  }
+
 
   addMcontrol(data: any): Observable<any> {
     console.log("i m in add member loop");

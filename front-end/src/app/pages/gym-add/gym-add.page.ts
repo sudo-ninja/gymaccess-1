@@ -62,7 +62,7 @@ export class GymAddPage implements OnInit {
     private userApi:UserService,
     private alertCtrl: AlertController, 
     private modalCtrl: ModalController,
-    private location: Location,
+    private location: Location, // this is for browser url not related to geolocation
      // to store daa once fetch
      private storageService: StorageService, // storage service is used insted of get set method
     
@@ -212,10 +212,10 @@ export class GymAddPage implements OnInit {
       /********************************************************** */
      
       this.gymadminApi.getGymadminByEmail(this.loggedUserEmail).subscribe((res)=>{
-        console.log(res);
+        console.log(res[0]);
         // as of now in both case if first time gym add or next time gym add , seprate
         //sepratedata being enterded with all 3 field same but with diffferent gym id.
-        if(res==null){
+        if(res[0]==null){ // here check length
           // first set logged user as Admin
           this.updateUserToAdmin();
           console.log("Null response");
@@ -327,7 +327,7 @@ public findInvalidControls()
 
 gyminformation(){
   // this.router.navigate(['../gymtabs/infor'],{replaceUrl:true});
-  this.location.back();
+  this.location.back(); // to go back url
 }
 
 

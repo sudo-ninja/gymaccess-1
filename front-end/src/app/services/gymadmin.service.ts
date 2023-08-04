@@ -42,7 +42,7 @@ export class GymadminService {
 
  
   getGymadminByEmail(email: any): Observable<Gymadmin> {
-    console.log("i m in get member by email search ");
+    // console.log(`${baseUrl}/email/${email}`);
     return this.http.get(`${baseUrl}/email/${email}`);
   }
 

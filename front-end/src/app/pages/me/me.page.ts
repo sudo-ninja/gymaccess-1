@@ -358,15 +358,17 @@ getInitials(firstName:string) {
 }
 //fetch Location so that if user want to update can update his location
 
+adminSwitchingBlock:boolean =false;
+async ShowIfUserIsMemberAndAdmin(email){
+  this.userApi.getUserbyEmail(email).subscribe((res)=>{
+    if(res.isMember && res.isAdmin){
+      this.adminSwitchingBlock = true;
+    }
+  });
+}
 
-
-// async captureImage(){
-  
-//   const image = await Camera.getPhoto({
-//       quality: 90,
-//       allowEditing: true,
-//       resultType: CameraResultType.Uri
-//     });
-// }
+async switchToAdmin(){
+  //clear all memmroy and exit from app 
+}
 
 }
