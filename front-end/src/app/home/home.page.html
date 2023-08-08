@@ -7,7 +7,7 @@
         </ion-label>
       </ion-title>
       <ion-avatar slot="end">
-        <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img>
+        <img [src]= "userProfileImage" >
       </ion-avatar>
     </ion-toolbar>
   </ion-header>
@@ -19,13 +19,13 @@
         <ion-item>
           <ion-select
              
-            placeholder="My Gym.."
+            placeholder="My Property.."
             (ionChange)="handleChange($event)"
             (ionCancel)="pushLog('ionCancel fired')"
             (ionDismiss)="pushLog('ionDismiss fired')"
           >
-            <ion-select-option value="add">Add Gym</ion-select-option>
-            <ion-select-option value="join">Join Gym</ion-select-option>
+            <ion-select-option value="add">Add Property</ion-select-option>
+            <ion-select-option value="join">Join Property</ion-select-option>
           </ion-select>
         </ion-item>
       </ion-list>
@@ -33,20 +33,7 @@
         <p *ngFor="let log of logs">{{ log }}</p>
       </div> -->
     </div>
-    <div class="map" #map></div>
-    <!-- <ion-list>
-      <ion-item *ngFor="let provider of serviceProviders">
-        <ion-label>
-            {{provider.email}}
-        </ion-label>
-      </ion-item>
-    </ion-list> -->
-  
-    <!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button>
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
-    </ion-fab> -->
+   
   
   </ion-content>
   <ion-footer>

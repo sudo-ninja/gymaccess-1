@@ -43,7 +43,7 @@ export class MemberinforPage implements OnInit {
   memberBalanceDays:any;
   memberEndDate:any;
   memberStartDate:any;
-  // to store dates of gym accessed
+  // to store dates of QrUnlock
   attendedDates:[];
   // to highlight dates 
   highlightedDates:any ;

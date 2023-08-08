@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">gym access</string>
-    <string name="title_activity_main">gym access</string>
-    <string name="package_name">com.jenixindia.gymaccess</string>
-    <string name="custom_url_scheme">com.jenixindia.gymaccess</string>
+    <string name="app_name">qrunlock</string>
+    <string name="title_activity_main">qrunlock</string>
+    <string name="package_name">com.jenixindia.qrunlock</string>
+    <string name="custom_url_scheme">com.jenixindia.qrunlock</string>
+    <string name="server_client_id">651915982135-kjtianuhb3r7ftbpa426jujm559v5l9d.apps.googleusercontent.com</string>
 </resources>

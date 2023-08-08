@@ -71,6 +71,7 @@ export class HomePage implements OnInit{
   userForm!: FormGroup;
   isloggedUserMember: boolean;
   loggeduserIsAdmin: boolean;
+  userProfileImage: string;
 
   constructor(
     private router:Router,
@@ -89,6 +90,9 @@ export class HomePage implements OnInit{
     private gymAdminApi :GymadminService, 
 
   ) {
+
+    this.userProfileImage = localStorage.getItem('ProfileImageUrl');
+      console.log(this.userProfileImage);
   // for app version 
  
   App.addListener('appStateChange', ({ isActive }) => {
@@ -156,7 +160,7 @@ export class HomePage implements OnInit{
             // so let him decide the roll of him self
             console.log('No gym Add by this persom Gym Please');
             this.loggedUserRoleaAlert(
-                      'Welcome to Gym Access Control',
+                      'Welcome to QR-Unlock',
                       "let's start by ."
                     );
                 }
@@ -201,7 +205,7 @@ logs: string[] = [];
         console.log(data);
         if(!data){
           console.log("no member");
-          this.presentAlert("Gym Not Joined Yet !!","Please Ask Gym Admin to Invite to Join Gym","")
+          this.presentAlert("Property Not Joined Yet !!","Please Ask Property Owner to Invite to Join","")
         }else{
           this.checkIfInvited(this.loggeduserEmail);
         }
@@ -231,28 +235,6 @@ logs: string[] = [];
       this.loggeduserId=this.loggeduser._id;
       console.log(JSON.parse(user!)._id); // convert back user info into object so that we can use this info
 
-      //here check if logged user is member then switch direct to member action page 
-      // if logged user is not member then direct to gym list page .
-      // if(this.loggeduser.isMembertype===true){
-      //   console.log("User Is Member as member Type True ");
-      //   this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true}); 
-      //   localStorage.setItem('User',JSON.stringify(this.loggeduser));
-      // }
-
-      
-
-      //once member leave gym he has to again enter invitaion code as his status for member will be false, 
-      //if admin leave the gym then check if there is any other admin or not , if admin is there then only allow 
-      // to leave him gym 
-      // this.username=this.loggeduser.username;
-      //  console.warn(this.loggeduserEmail);
-      // this.http.get(this.usersUrl).subscribe(res=>{
-      //   console.log(res)
-      //   this.serviceProviders=res;
-      //   this.originalserviceProvider=res;
-      // },error=>{
-      //   console.log(error)}
-      //   );
 
     }
       
@@ -263,13 +245,6 @@ logs: string[] = [];
       this.userApi.deleteToken();
       this.router.navigate(['/login'],{replaceUrl:true});
     }
-// onServiceSelected(e){
-//   this.serviceProviders=this.originalserviceProvider;
-//   this.selectedService=e.detail.value;
-//   this.serviceProviders=this.serviceProviders.filter(serviceProve=>{
-//     return serviceProve.service==this.selectedService
-//   })
-// }
 
   // for member join gym alert to get verification code 
   async joinGymAlert() {
@@ -391,14 +366,14 @@ logs: string[] = [];
       message:message,
       buttons: [       
         {
-          text: 'Join Gym',
+          text: 'Join Property',
           role: 'member',
           handler: () => {  
             this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{
               console.log(data);
               if(!data){
                 console.log("no member");
-                this.presentAlert("Gym Not Joined Yet !!","Please Ask Gym Admin to Invite to Join Gym","")
+                this.presentAlert("Property Not Joined Yet !!","Please Ask Property Owner to Invite to Join Property","")
               }else{
                 this.checkIfInvited(this.loggeduserEmail);
               }
@@ -406,7 +381,7 @@ logs: string[] = [];
           }
         },
         {
-          text: 'Add Gym',
+          text: 'Add Property',
           role: 'admin',
           handler: () => { localStorage.setItem('loggedUserId',this.loggeduser._id);
                            console.log(this.loggeduser._id);

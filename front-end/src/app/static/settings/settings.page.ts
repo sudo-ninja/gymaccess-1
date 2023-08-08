@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user.service';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 
 @Component({
@@ -11,6 +12,8 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class SettingsPage implements OnInit {
   loggeduserIsAdmin: boolean;
+  // user for gmail login
+  user = null;
 
   constructor(
     private router:Router,
@@ -31,7 +34,7 @@ export class SettingsPage implements OnInit {
   }
 
 
-  logout(){
+  async logout(){
     // clear all local storage data
     localStorage.clear();
     //if want to clear some perticualr data then use
@@ -40,6 +43,9 @@ export class SettingsPage implements OnInit {
     // nevigate to login page 
     this.userApi.deleteToken();
       this.router.navigate(['/login'],{replaceUrl:true});
+    //google logout
+    await GoogleAuth.signOut();
+    this.user = null ;
      
   }
 }

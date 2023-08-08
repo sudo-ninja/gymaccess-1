@@ -42,8 +42,7 @@
   
     </ion-row>
   </ion-grid>
-   
-  
+     
 
     <div align="right">
       <!-- <ion-button shape="round" strong="true" class="ion-margin-end" color="plant">
@@ -57,20 +56,41 @@
         color="danger" shape="round" strong="true" class="ion-margin-end"
         >SIGN IN
         <ion-icon name="log-in" slot="end"></ion-icon></ion-button>
+
+        <ion-button 
+        mode="ios" 
+        color="danger" 
+        expand="block"
+        shape="round" 
+        strong="true" 
+        (click)="googleSignin()"
+        >Gmail Login
+        <ion-icon name='logo-google' slot="start"></ion-icon></ion-button>
+
+        
   
 
     </div>
-  </ion-list>
-
- 
+  </ion-list> 
    
-</form> 
-<p class="ion-text-center" *ngIf="isLoading"> <ion-spinner></ion-spinner> </p>
+</form>
 
+<!-- <ion-chip>
+      <ion-avatar>
+           <img src="./../../../../fotos/icons/google.svg">
+      </ion-avatar>
+        <ion-label>Gmail Login</ion-label>
+</ion-chip> -->
+
+<p class="ion-text-center" *ngIf="isLoading"> <ion-spinner></ion-spinner> </p>
+<div class="spin" *ngIf = waiting>
+  <ion-spinner name="bubbles"></ion-spinner>
+</div>
 
 <div *ngIf = "serverErrorMessage">
   {{serverErrorMessage}}
 </div>
+
 
 </ion-content>
 

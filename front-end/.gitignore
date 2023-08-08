@@ -72,6 +72,6 @@ environments
 AndroidManiFest.xml
 environment.ts
 environment.prod.ts
-
+ 
 #keys
 qrunlockkeyfile.jks

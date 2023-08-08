@@ -52,6 +52,9 @@ export class GymAddPage implements OnInit {
   gymLAT: string;
   gymLNG: string;
 
+//to check if user is adding first time gym then save that in gymadmin DB 
+  zeroGymByUser:boolean = true;
+
   constructor(
     private router: Router,
     public fb: FormBuilder,
@@ -70,10 +73,19 @@ export class GymAddPage implements OnInit {
     const user = localStorage.getItem('User');
     this.loggeduser=JSON.parse(user!);
     console.log(this.loggeduser._id);
+    this.loggedUserId = this.loggeduser._id;
     // this.mainForm();
 
     // fetch location as soon as page is open 
     this.fetchLocation();
+    //fetch data from gymadmin db if user already added gym or not , use this information to a
+    this.gymadminApi.getGymadminByUserid(this.loggedUserId).subscribe((res)=>{
+      // console.log(JSON.stringify(res).length);
+      console.log(res._id);
+      if(!res._id){ // no data means 
+        this.zeroGymByUser = true;
+      }
+    })
   }
 
   ngOnInit() {
@@ -201,6 +213,7 @@ export class GymAddPage implements OnInit {
         // localStorage.setItem('ID',JSON.stringify(id));
         // this.isLoadingResults = false;
       localStorage.setItem('GYM',JSON.stringify(res)) // trick use to transfer added gym info gym list page
+      
       this.storageService.store('gymList', res);
       // console.log(data[0].gym_name); // use this info to make default select GYM value and refer this further https://forum.ionicframework.com/t/ion-select-and-default-values-ionic-4-solved/177550/5
       localStorage.setItem('DefaultGym', JSON.stringify(res[0]));
@@ -210,31 +223,6 @@ export class GymAddPage implements OnInit {
       //as Gym Admin with Free access and with linked gym ID without any scan 
       //just using access button,
       /********************************************************** */
-     
-      this.gymadminApi.getGymadminByEmail(this.loggedUserEmail).subscribe((res)=>{
-        console.log(res[0]);
-        // as of now in both case if first time gym add or next time gym add , seprate
-        //sepratedata being enterded with all 3 field same but with diffferent gym id.
-        if(res[0]==null){ // here check length
-          // first set logged user as Admin
-          this.updateUserToAdmin();
-          console.log("Null response");
-          //call admin add form
-         this.adminAdd();      
-      // patch value to admin form
-       this.adminForm.patchValue({
-         gym_id : this.gymId,
-         user_id : this.loggeduser._id,
-         mobile : this.loggeduser.mobile,
-         email: this.loggeduser.email,
-       });
-       console.log(this.adminForm);
-          console.log(this.adminForm.value);
-          this.gymadminApi.addGymadmin(this.adminForm.value).subscribe((res)=>{
-            console.log(res);
-          });
-          this.router.navigateByUrl("/gym-list",{replaceUrl:true});
-        }else{
           this.updateUserToAdmin();
           this.adminAdd();      
           // patch value to admin form
@@ -248,8 +236,30 @@ export class GymAddPage implements OnInit {
             console.log(res);
           });
           this.router.navigateByUrl("/gym-list",{replaceUrl:true}); 
-        }
-      })
+     
+      //   if(this.zeroGymByUser){ // here check length // forst time adding gym 
+      //     // first set logged user as Admin
+      //     this.updateUserToAdmin();
+      //     console.log("Null response");
+      //     //call admin add form
+      //    this.adminAdd();      
+      // // patch value to admin form
+      //  this.adminForm.patchValue({
+      //    gym_id : this.gymId,
+      //    user_id : this.loggeduser._id,
+      //    mobile : this.loggeduser.mobile,
+      //    email: this.loggeduser.email,
+      //  });
+      //  console.log(this.adminForm);
+      //     console.log(this.adminForm.value);
+      //     this.gymadminApi.addGymadmin(this.adminForm.value).subscribe((res)=>{
+      //       console.log(res);
+      //     });
+      //     this.router.navigateByUrl("/gym-list",{replaceUrl:true});
+      //   }else{
+
+      //   }
+      
       // if(!this.memberApi.getMemberByEmail(this.loggeduser.email)){
       
       // this.memberApi.addMember (this.adminForm.value).subscribe((res: any) => {

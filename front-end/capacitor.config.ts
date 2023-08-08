@@ -1,9 +1,10 @@
 import { CapacitorConfig } from '@capacitor/cli';
+// import { environment } from 'src/environments/environment.prod';
 
 const config: CapacitorConfig = {
 
-  appId: 'com.jenixindia.gymaccess',
-  appName: 'gym access',
+  appId: 'com.jenixindia.qrunlock',
+  appName: 'qrunlock',
   webDir: 'www',
   bundledWebRuntime: false,
 
@@ -20,7 +21,7 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 500,
       launchAutoHide: true,
-      launchFadeOutDuration: 500,
+      launchFadeOutDuration: 50,
       backgroundColor: "#ffffffff",
       androidSplashResourceName: "splash",
       androidScaleType: "CENTER_CROP",
@@ -34,6 +35,16 @@ const config: CapacitorConfig = {
       // useDialog: true,
     },
 
+    // // google login 
+    GoogleAuth: {
+      scopes: ['profile', 'email'],
+      // androidClientId: ' ',
+      // iosClientId:' ',
+      serverClientId: '651915982135-kjtianuhb3r7ftbpa426jujm559v5l9d.apps.googleusercontent.com',
+      forceCodeForRefreshToken: true,
+    },
+
+     
   },
 
 

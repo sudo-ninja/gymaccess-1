@@ -95,6 +95,7 @@ export class MemberActionPage implements OnInit {
   currentGym: any;
   MyDefaultGymValue: any;
   _gym_id: any;
+  userProfileImage: string;
 
   // install https://github.com/capacitor-community/barcode-scanner plugin 
 
@@ -115,6 +116,8 @@ export class MemberActionPage implements OnInit {
 
   ) {
       // to know the status of logged user if he is member or admin
+      this.userProfileImage = localStorage.getItem('ProfileImageUrl');
+      console.log(this.userProfileImage);
       const user = localStorage.getItem('User')
       this.loggeduser=JSON.parse(user);
       this.loggedUserEmail = this.loggeduser.email;
@@ -730,7 +733,10 @@ selecthandleChange(ev){
     throw new Error('Method not implemented.');
   }
 
-  
+  // route to person information page 
+  personalInformation(){
+    this.router.navigateByUrl('/personalinformation');
+  }
 
 }
 

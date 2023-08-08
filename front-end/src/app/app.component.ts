@@ -4,6 +4,9 @@ import { Storage } from '@ionic/storage-angular';
 
 import{AlertController, IonRouterOutlet, Platform} from '@ionic/angular';
 
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { environment } from 'src/environments/environment';
+
 
 //swiper 
 import { register } from 'swiper/element/bundle';
@@ -26,7 +29,7 @@ export class AppComponent {
 
     ) {
     this.storage.create();
-    // to know app version 
+   
     
     
     this.initializeApp();
@@ -70,6 +73,18 @@ export class AppComponent {
 
       });      
     })
+
+
+    this.platform.ready().then(() => {
+      console.log('READY!')
+      GoogleAuth.initialize(
+        {
+        clientId:environment.androidClientId,
+        scopes: ['profile', 'email'],
+        grantOfflineAccess: true,
+      }
+      )
+    });
   }
   
 

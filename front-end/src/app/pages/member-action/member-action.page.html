@@ -10,10 +10,14 @@
               <p><ion-text color="white"><strong>{{loggedUserName}}</strong></ion-text></p>
             </ion-label>
           </ion-title>
-          <ion-avatar slot="end">
-            <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img>
+          <ion-avatar slot="end" (click)="personalInformation()">
+            <img [src]= "userProfileImage" >
           </ion-avatar>
     </ion-toolbar>   
+
+    <!-- <ion-avatar>
+      <img [src]= "source to image" >
+    </ion-avatar> -->
     
     <!-- <ion-item>
       <ion-select 
@@ -43,7 +47,7 @@
      
 
       <div class="div-0" *ngIf="!scanActive"  >
-        <ion-label class="ion-text-center" color="dark"><strong><h1>Scan QR code to access Gym</h1></strong></ion-label>
+        <ion-label class="ion-text-center" color="dark"><strong><h1>Scan QR code to access</h1></strong></ion-label>
        
             <ion-button
             class="ion-text-center"
@@ -52,7 +56,7 @@
             (click)="startScan()"
             shape="round"
             >
-            <ion-icon name="scan"></ion-icon>Tap to Scan </ion-button>
+            <ion-icon name='qr-code-sharp'></ion-icon><strong>Tap to Scan </strong> </ion-button>
          
       </div>
 

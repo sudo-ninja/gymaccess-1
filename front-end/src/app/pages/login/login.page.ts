@@ -10,6 +10,12 @@ import { AlertController, LoadingController } from '@ionic/angular';
 import { EmailverificationService } from 'src/app/services/emailverification.service';
 import { UserService } from 'src/app/services/user.service';
 import { environment } from 'src/environments/environment';
+//for google login
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import {isPlatform} from '@ionic/angular';
+
+import { ToastController } from '@ionic/angular';
+ 
 
 
 
@@ -36,11 +42,16 @@ export class LoginPage implements OnInit {
   url:string=environment.SERVER+"/user/login";
   serverErrorMessage:string;
 
+  // user for gmail login
+  user = null;
+  waiting: boolean;
+
   constructor(
     private fb: FormBuilder,
     private authService : AuthGuardService,
 		private loadingController: LoadingController,
 		private alertCtrl: AlertController,
+    private toastController: ToastController,
     private router: Router,
     private http:HttpClient,
     private userAPI: UserService,
@@ -48,6 +59,17 @@ export class LoginPage implements OnInit {
   ) {
     if(this.userAPI.isLoggedIn())
     {this.router.navigateByUrl('/home',{replaceUrl:true})};
+    // // this only for web browser 
+    // if(!isPlatform('capacitor')){
+    //   GoogleAuth.initialize(
+    //     {
+    //     clientId: '651915982135-kjtianuhb3r7ftbpa426jujm559v5l9d.apps.googleusercontent.com',
+    //     scopes: ['profile', 'email'],
+    //     grantOfflineAccess: true,
+    //   }
+    //   );
+    // }
+
   }
 
   ngOnInit() {
@@ -92,7 +114,7 @@ export class LoginPage implements OnInit {
         error: (error) => {
             this.serverErrorMessage = error.error;
             this.isLoading=false;
-            this.emailExist(_email);
+            this.emailExistButNotVerified(_email);
             // check if email already exist or not ? if not exist redirect to signup page by showing alert
             console.log(error.error);
             // this.verifyEmailSignup();
@@ -126,7 +148,7 @@ export class LoginPage implements OnInit {
   //     error: (error) => {
   //         this.serverErrorMessage = error.error;
   //         this.isLoading=false;
-  //         this.emailExist(_email);
+  //         this.emailExistButNotVerified(_email);
   //         console.log(error.error);
   //       }
   //     }
@@ -140,7 +162,7 @@ export class LoginPage implements OnInit {
 
 
 //check if email exist or not
-emailExist(email_){
+emailExistButNotVerified(email_){
   this.userAPI.getUserbyEmail(email_).subscribe({
     next:res=>{
       //email exist but not verified 
@@ -154,6 +176,21 @@ emailExist(email_){
       console.log(error.error);
     }
   });
+}
+
+//check email exist for google login 
+async googleMailExist(email){
+  this.userAPI.getUserbyEmail(email).subscribe({
+    next:res=>{
+      //email exist but not verified 
+      // shot email verified input alert , first send verification code and then take input
+      console.log(res);
+    },
+    error:error=>{
+      console.log(error.error);
+    }
+  });
+
 }
 
   async presentAlertLogin(header:string,subheader:string, message:string) {
@@ -391,7 +428,154 @@ async verifiedUser(email_:any) {
   });
 
   await alert.present();
+
 }
+
+// for google login
+async googleSignin(){
+  this.user = await GoogleAuth.signIn(); 
+  if(!this.user){
+    // present alert that user not fetch by gmail 
+    this.presentToast("User Data Not Fetched",1500,"top");    
+  }else{   
+    let profileImageUrl = this.user.imageUrl;
+    let UserName = this.user.givenName.concat(" ",this.user.familyName);
+    console.log('user',this.user , "Name : - ",this.user.name , "Email : - ",this.user.email,"image url:-",profileImageUrl);
+   
+  localStorage.setItem('ProfileImageUrl',profileImageUrl);
+  this.GmailDoesNotExistAddtoDBandSendToHome(this.user.email,UserName);
+  }
+  
+}
+
+async googleRefresh(){
+  const authCode = await GoogleAuth.refresh();
+  console.log('refresh',authCode);
+}
+
+async googleSignOut(){
+  await GoogleAuth.signOut();
+  this.user = null ;
+}
+
+
+async GmailDoesNotExistAddtoDBandSendToHome (email,name){
+  this.waiting= true;
+  this.userAPI.getUserbyEmail(email).subscribe(
+    {
+      next: (res) =>{       
+         
+        let credentials = {
+          email: res.email,
+          password: 'googleuserlogin',
+                }        
+        this.http.post(this.url,credentials).subscribe(
+          {
+            next: async (res) =>{
+              this.userAPI.setToken(res['token']); // to store locally token 
+          localStorage.setItem('User',JSON.stringify(res)) // trick use to transfer login user data to home page by get and set method
+          this.waiting = false;
+          this.router.navigateByUrl('/home',{replaceUrl:true}) // url is replaces so that use cant go back to login page without logout
+          
+          },
+            error: async (error) => {
+                this.serverErrorMessage = error.error;
+                this.waiting = false;
+                this.emailExistButNotVerified(email);
+                // check if email already exist or not ? if not exist redirect to signup page by showing alert
+                console.log(error.error);
+                this.presentAlertLogin('Google Mail Registration Failed..Err-487',error.error,'try again');    
+                    }
+            }
+            );
+    
+        console.log(credentials);
+      },
+      error: async (error) => { // in this loop means user first time logging
+        // this.serverErrorMessage = error.error;
+        // check if email already exist or not ? if not exist redirect to signup page by showing alert
+        console.log(error.error.message.includes('no data found with this ID'));
+        if (error.error.message.includes('no data found with this ID')) {
+          //means no user at DB then add to DB
+          this.waiting = true;
+          this.userAPI
+            .register({
+              username: name,
+              email: email,
+              password: 'googleuserlogin',
+              mobile: 'no mobile',
+              isMember: false,
+              isAdmin: false,
+            })
+            .subscribe({
+              next: (res) => {
+                console.log(res);
+                //** here user verified and registration is done now set user as verified */
+                this.userAPI
+                  .update(res._id, { verified: true })
+                  .subscribe((data) => {
+                    console.log(data);// data here come without token so cant use that data 
+                    });
+// here pass user credentials email and password and get user data and then route to home
+/*********//////////////////////////////********* *//
+let credentials = {
+      email: res.email,
+      password: 'googleuserlogin',
+    }
+    
+    this.http.post(this.url,credentials).subscribe(
+      {
+        next: (res) =>{
+          this.userAPI.setToken(res['token']); // to store locally token 
+      // this.isLoading=false;
+      localStorage.setItem('User',JSON.stringify(res)) // trick use to transfer login user data to home page by get and set method
+      this.waiting = false;
+      this.router.navigateByUrl('/home',{replaceUrl:true}) // url is replaces so that use cant go back to login page without logout
+     
+      },
+        error: (error) => {
+            // this.serverErrorMessage = error.error;
+            this.waiting = false;
+                this.emailExistButNotVerified(email);
+            // check if email already exist or not ? if not exist redirect to signup page by showing alert
+            console.log(error.error);
+            // this.verifyEmailSignup();
+            this.presentAlertLogin('Google User Login Failed ..Err-543',error.error,'try again');
+
+                }
+        }
+        );
+
+    console.log(credentials); 
+              },
+              error: (e) => {
+                // console.error(e)
+                this.waiting = false;
+                // console.log(error)
+                this.isLoadingResults = false;
+                this.presentAlert('Google Registration Failed..Err-556', e.error, 'try again');
+              },
+            });
+        }
+        let errorString = error.error.message;
+        // this.presentAlertLogin('Google Login Failed..Err-561', errorString, 'Try Login by Email');
+      }
+      }
+  
+  )
+  
+}
+
+//toast 
+async presentToast(message_, duration_,position: 'top' | 'middle' | 'bottom') {
+    const toast = await this.toastController.create({
+      message: message_,
+      duration: duration_,
+      position: position,
+    });
+
+    await toast.present();
+  }
 
 
 }

@@ -33,6 +33,11 @@ export class PersonalinformationPage implements OnInit {
 
   loggeduserIsAdmin: boolean = false;
   loggeduserIsMember: boolean = false;
+  AdminCumMember:boolean = false;
+
+  userIsAdmin  :boolean = false;
+  userIsMember :boolean = false;
+  userIsBoth   :boolean = false;
 
   adminName: any;
   adminEmail: any;
@@ -95,58 +100,57 @@ export class PersonalinformationPage implements OnInit {
 
     // const UserIsAdmin = localStorage.getItem('UserIsAdmin');
     // const UserIsMember = localStorage.getItem('UserIsMember');
-
-    this.userApi.getUserbyEmail(this.adminEmail).subscribe((res) => {
-      if (res.isAdmin && res.isMember) {
-        this.AdminCumMeber = true;
-        this.loggeduserIsAdmin = false;
-        this.loggeduserIsMember = false;
-        return;
-      } else if (res.isAdmin) {
-        this.loggeduserIsAdmin = true;
-        this.loggeduserIsMember = false;
-        return;
-      } else {
-        this.loggeduserIsMember = true;
-        this.loggeduserIsAdmin = false;
-      }
-    });
-
     // if (UserIsAdmin === 'true') {
     //   this.loggeduserIsAdmin = true;
     // }
 
-    if (this.loggeduserIsMember) {    
-
-      this.memberApi
-        .getMemberByEmail(this.loggeduser.email)
-        .subscribe((data: any) => {
-          // here check with each data if data.gym_id is same with selected gym ID those id show data only.
-          // console.log(data); // work on this in VER 2.0 where one member may join more gyms.
-          this.gym_id = data.gym_id;
-          this.memberName = data.m_name;
-          this.memberEmail = data.email;
-          this.memberMobile = data.mobile;
-          this.emergencyMobile = data.Emergency_mobile;
-          this.memberJoindate = data.m_joindate;
-          this.memberStartdate = data.m_startdate;
-          this.memberLastdate = data.m_enddate;
-          this.memberIntime = data.m_intime;
-          this.memberOuttime = data.m_outtime;
-          this.memberSetreminder = data.isSetReminder;
-          this.memberAttended = data.isAttended;
-          this.member_address_lat = data.m_address_lat;
-          this.member_address_long = data.m_address_long;
-          this.memberAcceptedinvitation = data.isInviteAccepted;
-          this.memberType = data.memberType;
-          this.memberId = data._id;
-        });
-    }
+    
   }
 
   ngOnInit() {
     //re 180 second means  180 000 milisecon
+    this.setLoggedUserRole();
+    console.log(this.userIsMember);
+
+    if (this.userIsMember) { 
+      this.getMemberInfo(this.adminEmail); 
   }
+}
+
+  async setLoggedUserRole(){
+    console.log(this.adminEmail);
+    this.userApi.getUserbyEmail(this.adminEmail).subscribe((res) => {
+      console.log(res.isMember);
+      if (res.isAdmin && res.isMember) {
+        console.log(res.isMember);
+        this.AdminCumMember = true;
+        this.userIsBoth = true;
+        this.userIsAdmin = false;
+        this.userIsMember = false;
+        return;
+      } else if (res.isAdmin) {
+        console.log(res.isMember);
+        this.loggeduserIsAdmin = true;
+        this.userIsBoth = false;
+        this.userIsAdmin = true;
+        this.userIsMember = false;
+        return;
+      } else if(res.isMember){
+        console.log(res.isMember);
+        this.getMemberInfo(this.adminEmail); 
+        this.loggeduserIsMember = true;
+        this.userIsBoth = false;
+        this.userIsMember = true;
+        this.userIsAdmin = false;
+      }
+    });
+    console.log("Logged User is Member :- ", this.loggeduserIsMember, );
+    console.log("Logged User is Admin :- ", this.loggeduserIsAdmin, );
+    console.log("Logged User is Member and Admin Bth :- ", this.AdminCumMember, );  
+
+  }
+
+  //get mber infor 
 
   //get member information
   async getMemberInfo(email) {
@@ -178,9 +182,9 @@ export class PersonalinformationPage implements OnInit {
     console.log(email);
     this.userApi.getUserbyEmail(email).subscribe((res) => {
       console.log(res._id);
-      this.loggedUserId = res._id;
-      this.loggeduserIsAdmin = res.isAdmin;
-      this.loggeduserIsMember = res.isMember;
+      // this.loggedUserId = res._id;
+      // this.loggeduserIsAdmin = res.isAdmin;
+      // this.loggeduserIsMember = res.isMember;
       this.presentAlert(
         'Are You Sure?',
         '',
@@ -415,18 +419,18 @@ export class PersonalinformationPage implements OnInit {
   // button show profile as Admin and Show Profile as Owner
   // if click Admin then show Admin Block
   // if click Member Block show Member Block
-  AdminCumMeber: boolean = false;
+  // AdminCumMeber: boolean = false;
   showMemberButton: boolean = true;
   showAdminButton: boolean = true;
-  async CheckIfAdminCumMember(email) {
-    this.userApi.getUserbyEmail(email).subscribe((res) => {
-      if (res.isAdmin && res.isMember) {
-        this.AdminCumMeber = true;
-      }
-    });
-  }
+  // async CheckIfAdminCumMember(email) {
+  //   this.userApi.getUserbyEmail(email).subscribe((res) => {
+  //     if (res.isAdmin && res.isMember) {
+  //       this.AdminCumMeber = true;
+  //     }
+  //   });
+  // }
 
-  async showMember() {
+  showMember() {
     this.loggeduserIsMember = true;
     this.loggeduserIsAdmin = false;
     this.showMemberButton = false;
@@ -441,8 +445,11 @@ export class PersonalinformationPage implements OnInit {
   }
 
  backToSettings(){
-  this.router.navigateByUrl('/settings');
-
+  if(this.loggeduserIsMember){
+  this.router.navigateByUrl('/tabs/member-action');
+ }else if (this.loggeduserIsAdmin){
+  this.router.navigateByUrl('/gymtabs/member-list');
  }
+}
 
 }
