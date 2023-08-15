@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 import { UserService } from 'src/app/services/user.service';
@@ -13,7 +13,7 @@ import { Member } from 'src/app/models/member.model';
 import {MemberserviceService} from 'src/app/services/memberservice.service';
 
 import {AttendanceService} from 'src/app/services/attendance.service';
-import { AlertController, LoadingController, ModalController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController, PopoverController } from '@ionic/angular';
 // call service for lock open 
 import { MqttService } from 'src/app/services/mqtt.service';
 // call service of gym for gym lock id
@@ -30,6 +30,9 @@ import { BannerComponent } from '../../components/banner/banner.component';
 // call banner service 
 import { BannerService } from 'src/app/services/banner.service';
 import { environment } from 'src/environments/environment.prod';
+//for google login
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { StorageService } from 'src/app/services/storage.service';
 
 
 @Component({
@@ -39,6 +42,8 @@ import { environment } from 'src/environments/environment.prod';
   
 })
 export class MemberActionPage implements OnInit {
+//get control of popover as used in ng template 
+  @ViewChild('popover') popover: PopoverController;
 
   
   baseUri : string = environment.SERVER;
@@ -69,6 +74,7 @@ export class MemberActionPage implements OnInit {
   memberEndDate:any;
   memberOutTime:any;
   memberInTime:any
+
   unixCurrentDateTime:any;
   
   username:String='';
@@ -82,7 +88,7 @@ export class MemberActionPage implements OnInit {
   lockId:any;
   gymName:any;
   compareWith:any;
-  joinedGym:[];
+  joinedGym:any;
 
   serviceProviders: any; // serviceprovider means admin as he is providing service to members.
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
@@ -96,6 +102,10 @@ export class MemberActionPage implements OnInit {
   MyDefaultGymValue: any;
   _gym_id: any;
   userProfileImage: string;
+  user: null;
+  
+  memberForm!: FormGroup;
+  userMobile: string;
 
   // install https://github.com/capacitor-community/barcode-scanner plugin 
 
@@ -112,7 +122,11 @@ export class MemberActionPage implements OnInit {
     private feedbackApi:FeedbackserviceService,
     public loadingController:LoadingController,
     // banner service api
-    private bannerApi:BannerService
+    private bannerApi:BannerService,
+//user api
+      private userApi:UserService,
+
+  private storageService :StorageService, // storage service is used insted of get set method
 
   ) {
       // to know the status of logged user if he is member or admin
@@ -121,8 +135,11 @@ export class MemberActionPage implements OnInit {
       const user = localStorage.getItem('User')
       this.loggeduser=JSON.parse(user);
       this.loggedUserEmail = this.loggeduser.email;
-      this.isUserMember(this.loggedUserEmail); // to chekc user available in member DB or not?
+
+     
+
       this.loggedUserName = this.loggeduser.username;
+      //this block is used if user deleted by himself or by gym admin then go back to home page
       this._user.getUserbyEmail(this.loggedUserEmail).subscribe(
         res=>{
           // this.addName(res),
@@ -210,13 +227,6 @@ export class MemberActionPage implements OnInit {
       console.log(JSON.parse(user!)); // convert back user info into object so that we can use this info
       this.loggeduser=JSON.parse(user);
       console.log(this.loggeduser._id);
-
-      this.http.get(this.usersUrl).subscribe(res=>{
-        // console.log(res)
-        // this.serviceProviders=res;
-        // this.originalserviceProvider=res;
-      },error=>{
-        console.log(error)});
     }
   }
 
@@ -238,6 +248,51 @@ export class MemberActionPage implements OnInit {
     // BarcodeScanner.prepare(); // this iwll startcamea as soon as page open so dont use this
 
   }
+
+  ionViewWillEnter(){
+     this.isUserMember(this.loggedUserEmail); // to chekc user available in member DB or not?
+    console.log("Ion View Will Enter");
+    
+  }
+
+  async getMemberofGymId(gymid){
+      this.getMemberbyGymIdandEmail(gymid,this.loggedUserEmail);
+      this.popover.dismiss(); // to close popover
+    }
+
+  async getMemberbyGymIdandEmail(gymid,email){
+    console.log("🚀 ~ file: member-action.page.ts:260 ~ MemberActionPage ~ getMemberbyGym̥IdandEmail ~ getMemberbyGym̥IdandEmail:")
+    //set default GYM id from here to be used on other pages 
+    console.log(gymid);
+    localStorage.setItem('defaultGymId',gymid);
+        this.storageService.set('defaultGymId',gymid);// to save gymid as default for other page use 
+    this.storageService.get('defaultGymId').then((val)=>{
+      console.log(val);
+    });
+      this.memberApi.getMemberByEmailOfGymId(email,gymid).subscribe((data)=>{
+      console.log(data);
+      this.memberId = data._id;
+      this.memberEndDate = Number(data.m_enddate); // in Unix millisecond formate
+      this.memberOutTime = Number(data.m_outtime);// in Unix milisecond
+      this.memberInTime = Number(data.m_intime);// in unix milisecond
+      this.gymId = data.gym_id; // get gym ID
+      this.lastDate = this.memberEndDate;
+      this.lastDate = new Date(this.lastDate);
+      const Time = (this.memberEndDate)-(new Date().getTime())
+      this.daysLeft = Math.floor(Time / (1000 * 3600 * 24)) + 1;
+      this.checkinTime = this.memberInTime;
+      this.checkinTime = new Date(this.checkinTime);
+      this.checkoutTime = this.memberOutTime;
+      this.checkoutTime  = new Date(this.checkoutTime);
+      this.firstAttendance = data.isAttended;
+  //     // get gym data like gym lock ID,Gym Name also etc.
+      this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
+        this.lockId = data.lockId;
+        this.gymName = data.gym_name;   
+   });
+      
+  });
+}
 
   async startScan() {
     
@@ -262,6 +317,7 @@ export class MemberActionPage implements OnInit {
         console.log(result.content);
         this.scannedResult = result.content;
         this.scanActive = false;
+        /***** here below code working for attendance */
         if(this.scannedResult.includes(this.gymId)){
           this.attendance();//*call attendance */ */
         }else{
@@ -495,38 +551,42 @@ return(c * r);
 
 //check if user exist as member or not ?
 // if he is not member or deleted by gym then page must route back to home page 
-isUserMember(email){
+async isUserMember(email){
   //search member DB for this email 
+  this.getMemberByEmailandGymId(email);
+}
+
+async getMemberByEmailandGymId(email){
   this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
-    console.log(data);
+    console.log(data); // here in version two check with email and gym id 
     if(!data){      
       this.router.navigateByUrl('/home',{replaceUrl: true,});
     }else{
-      this.memberId = data._id;
-      this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
-      this.memberOutTime = data.m_outtime*1 // in Unix milisecond
-      this.memberInTime = data.m_intime*1// in unix milisecond
-      this.gymId = data.gym_id // get gym ID
-      this.lastDate = this.memberEndDate;
-      this.lastDate = new Date(this.lastDate);
-      const Time = (this.memberEndDate)-(new Date().getTime())
-      this.daysLeft = Math.floor(Time / (1000 * 3600 * 24)) + 1;
-      this.checkinTime = this.memberInTime;
-      this.checkinTime = new Date(this.checkinTime);
-      this.checkoutTime = this.memberOutTime;
-      this.checkoutTime  = new Date(this.checkoutTime);
-      this.firstAttendance = data.isAttended;
-      // get gym data like gym lock ID,Gym Name also etc.
-      this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
-        this.lockId = data.lockId;
-        this.gymName = data.gym_name;
-    }); 
+       this.savedJoinedGyms(email);
+       this.getMemberbyGymIdandEmail(data.gym_id,email);
+    //   this.memberId = data._id;
+    //   this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
+    //   this.memberOutTime = data.m_outtime*1 // in Unix milisecond
+    //   this.memberInTime = data.m_intime*1// in unix milisecond
+    //   this.gymId = data.gym_id // get gym ID
+    //   this.lastDate = this.memberEndDate;
+    //   this.lastDate = new Date(this.lastDate);
+    //   const Time = (this.memberEndDate)-(new Date().getTime())
+    //   this.daysLeft = Math.floor(Time / (1000 * 3600 * 24)) + 1;
+    //   this.checkinTime = this.memberInTime;
+    //   this.checkinTime = new Date(this.checkinTime);
+    //   this.checkoutTime = this.memberOutTime;
+    //   this.checkoutTime  = new Date(this.checkoutTime);
+    //   this.firstAttendance = data.isAttended;
+    //   // get gym data like gym lock ID,Gym Name also etc.
+    //   this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
+    //     this.lockId = data.lockId;
+    //     this.gymName = data.gym_name;
+    // }); 
     // now pass this lock ID to scanned result to check is its same or not. 
-
-
     }
   });
-  
+
 }
 
 balanceDaysLeft(){
@@ -735,8 +795,170 @@ selecthandleChange(ev){
 
   // route to person information page 
   personalInformation(){
+    console.log("this.memberId",this.memberId); // show personal information based on member ID 
     this.router.navigateByUrl('/personalinformation');
   }
+
+  //joined gymlist save in array 
+  async savedJoinedGyms(email){
+    this.memberApi.getMemberByEmail(email).subscribe((res)=>{
+      //as of now it will show only 1 member ..but need to change at back end to show more members
+      //make change and back end use find instead of findone.
+       this.gymApi.getGym(res.gym_id).subscribe((res)=>{
+        this.joinedGym = 
+          [
+            {"_id":res._id,              
+            "user_id":res.user_id,              
+             "gym_name":res.gym_name,
+            },
+            // {
+            //   "_id":"64d28fa2947d5e4c92193652",              
+            //   "user_id":"64d28f66947d5e4c92193648",              
+            //    "gym_name":"jenix india gym",              
+                       
+            //   },
+
+            //   {
+            //     "_id":"64d28fa2947d5e4c92193652",              
+            //     "user_id":"64d28f66947d5e4c92193648",              
+            //      "gym_name":"jenix india gym",              
+                             
+            //     }
+          ]      
+       });
+    });
+  }
+
+  async joinMore(){
+    console.log("join more ");
+    //present alert telling to join scan the QR code of Owner Property.
+
+    
+     this.popover.dismiss();
+  }
+
+  //to join more property 
+  async ScanToJoin(event){//based on this event check from 
+    this.startScantoJoin();
+  }
+
+  async startScantoJoin(){  
+      try {
+        const permission = await this.checkPermission();
+        if(!permission) {
+          return;
+        }
+        await BarcodeScanner.hideBackground();// make background of WebView transparent
+        this.ishidden = false;
+        this.scanActive = true;
+  
+        document.querySelector('body').classList.add('scanner-active');
+        this.content_visibility = 'hidden';
+        this.ishidden = false;
+        const result = await BarcodeScanner.startScan();
+        console.log(result);
+        BarcodeScanner.showBackground();
+        document.querySelector('body').classList.remove('scanner-active');
+        this.content_visibility = '';
+        if(result?.hasContent) {
+          console.log(result.content);
+          this.scannedResult = result.content;
+          this.scanActive = false;
+           /** use this scanned result and pass add to by gym id */
+          console.log(this.scannedResult);
+          this.checkGymId(this.scannedResult);
+        }
+      } catch(e) {
+        console.log(e);
+        this.stopScan();
+      }       
+
+  }
+
+  //search gymID based on scanned result 
+  async checkGymId( scannedRes){
+    
+    this.gymApi.getGym(scannedRes).subscribe((res)=>{
+      if(res==null){
+        console.log("not valid qr code");
+        this.presentAlert("Warning !","Not a Valid QR Code" , "Try with valid QR code");
+        return;
+      }else{
+        //check if logged user is already member of this gym id 
+        this.memberApi.getMemberByEmailOfGymId(this.loggedUserEmail,scannedRes).subscribe((data)=>{
+          if(!data){
+            this.addMebyGymId(res._id);
+
+          }else {
+            this.presentAlert(" Wrong Selection!","You Are Already Member of this Gym","Contact Admin!");
+          }
+        });
+
+        
+      }
+
+    });
+  }
+
+  //add member using gymID
+  async addMebyGymId(gymid){
+    this._user.getUserbyEmail(this.loggedUserEmail).subscribe((res)=>{
+      this.userMobile = res.mobile;
+    });
+    //to get mobile number either ask user to enter or get from previous joined information 
+    //here using from previus joined gym and member id 
+
+    this.memberForm = this.formBuilder.group({
+      'gym_id' : [gymid, Validators.required],
+      'm_name' : [this.loggedUserName, Validators.required],
+      'Emergency_mobile': [this.userMobile, Validators.required],
+      'mobile': [this.userMobile, Validators.required],
+      'aadhar':['345'], // 345 means added by member , 123 means added by owner
+      'email':[this.loggedUserEmail, Validators.required],
+      'memberType': ['member',Validators.required],
+      'm_joindate': [Date.now(), Validators.required],
+      'm_accesstype': ['paid',Validators.required],
+      'm_address_lat': ['0'],
+      'm_address_long': ['0'],
+        'm_startdate':[Date.now()],
+        'm_enddate':[Date.now()],
+        'm_validdays':['0'],
+        'm_intime':[Date.now()],
+        'm_outtime':[Date.now()],
+        'isInviteAccepted':['No'],
+         //date time all saved in Unix form in DB uniformaly accorss project 
+         // as per need reverse calculation done 
+    });
+
+    this.memberApi.addMember(this.memberForm).subscribe((res)=>{
+      if(!res){
+        this.presentAlert("ALERT !","Something Went Wrong","Try again");
+      }else{
+        this.presentAlert("Successfully Added","Wait For Gym Admin Approval","");
+        //get gym details
+        this.gymApi.getGym(gymid).subscribe((res)=>{
+          this.storageService.store('joinedGymList', res);
+        });
+        
+      // console.log(data[0].gym_name); // use this info to make default select GYM value and refer this further https://forum.ionicframework.com/t/ion-select-and-default-values-ionic-4-solved/177550/5
+     
+      }
+    });
+  }
+
+
+  async logout(){
+    // clear all local storage data
+    localStorage.clear();
+    this.userApi.deleteToken();
+      this.router.navigate(['/login'],{replaceUrl:true});
+    //google logout
+    await GoogleAuth.signOut();
+    this.user = null ;
+    this.popover.dismiss();
+  }
+
+
 
 }
 

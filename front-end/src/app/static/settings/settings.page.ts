@@ -37,10 +37,6 @@ export class SettingsPage implements OnInit {
   async logout(){
     // clear all local storage data
     localStorage.clear();
-    //if want to clear some perticualr data then use
-    // localStorage.removeItem('user'); // this will clear only user data
-    //clear all session storage data
-    // nevigate to login page 
     this.userApi.deleteToken();
       this.router.navigate(['/login'],{replaceUrl:true});
     //google logout

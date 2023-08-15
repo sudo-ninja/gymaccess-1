@@ -2,9 +2,16 @@
 </ion-searchbar>
 
 
-<ion-select #selectElem interface="action-sheet" Open="false" mode="ios" justify="start" aria-label="Gym"
-  placeholder="Select Gym" (ionChange)="selecthandleChange($event)" [compareWith]="compareWith"
-  value="{{MyDefaultGymValue}}" slot="end">
+<ion-select 
+#selectElem 
+interface="action-sheet" 
+Open="false" 
+mode="ios" justify="start" aria-label="Gym"
+  placeholder="Select Gym" 
+  (ionChange)="selecthandleChange($event)" 
+  [compareWith]="compareWith"
+  value="{{MyDefaultGymValue}}" 
+  slot="end">
   <ion-select-option *ngFor="let gym of gyms" value="{{gym._id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
 </ion-select>
 <!-- </ion-item> -->

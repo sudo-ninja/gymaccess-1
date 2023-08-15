@@ -7,7 +7,24 @@ class="ion-no-border"
     <ion-buttons slot="start">
       <ion-back-button default-href="/member-action"></ion-back-button>
     </ion-buttons>
+    <ion-list slot="end">
+      <ion-item>
+        <ion-select
+          aria-label="Joined"
+          [compareWith]="compareWithFn"
+          placeholder="Change Property"
+          (ionChange)="selecthandleChange($event)"
+          value="{{MyDefaultGymValue}}"
+          mode="ios"
+          multiple="false"
+          shape="round"
+        >
+          <ion-select-option *ngFor="let gym  of joinedGym" [value]="gym._id">{{ gym.gym_name | uppercase}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
    </ion-toolbar>
+   
 </ion-header>
 
 <ion-content overflow-scroll="true" [fullscreen]="true">

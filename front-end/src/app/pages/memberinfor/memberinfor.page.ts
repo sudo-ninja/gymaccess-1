@@ -26,6 +26,7 @@ import { GmapPage } from '../gmap/gmap.page';
 import { FeedbackserviceService } from 'src/app/services/feedbackservice.service';
 import { Feedback } from 'src/app/models/feedback';
 import { highlighteDate } from 'src/app/models/highlighteDate';
+import { GymService } from 'src/app/services/gym.service';
 
  
 
@@ -35,6 +36,10 @@ import { highlighteDate } from 'src/app/models/highlighteDate';
   styleUrls: ['./memberinfor.page.scss'],
 })
 export class MemberinforPage implements OnInit {
+
+  currentGym : any;
+  defaultJoinedGym :any;
+  joinedGym:any=[];
 
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
   loggeduserName:any;
@@ -62,13 +67,16 @@ export class MemberinforPage implements OnInit {
   
   gymId: any;
   lastDate: any;
+  MyDefaultGymValue:any;
+  _gym_id: any;
 
   constructor(
     private AttendanceApi:AttendanceService,
     private RechargeApi: RechargeService,
     private feedbackApi : FeedbackserviceService,
     private memberApi:MemberserviceService,
-    public router :Router,
+    private gymApi:GymService,
+    private router :Router,
     public loadingController:LoadingController,
     private alertController: AlertController,
     private modalCtrl: ModalController,
@@ -81,10 +89,23 @@ export class MemberinforPage implements OnInit {
     console.log(this.loggeduser._id);
     this.loggeduserName = this.loggeduser.username;
     this.storageService.store('loggeduser_id',this.loggeduser._id);
-     this.storageService.get('loggeduser_id').then((val)=>{
-      console.log(val);
+
+    this.storageService.get('defaultGymId').then((gd)=>{
+      this.MyDefaultGymValue = gd;
+    });
+
+    this.MyDefaultGymValue = localStorage.getItem('defaultGymId');
+    console.log("My Default Gym value",this.MyDefaultGymValue);
+
+    this.storageService.get('joinedGymList').then((val) => {
+      // console.log(val); // here we store once fetched gym data
+        // this.joinedGym = val;
+    });
+
+     this.storageService.get('defaultJoinedGym').then((val)=>{
+      console.log("line number 93 ", val);
      });
-     this.isUserMember(this.loggeduser.email);
+     this.isUserMember(this.loggeduser.email,this.MyDefaultGymValue);
 
 // get member by email , get ID from here 
 
@@ -117,6 +138,21 @@ console.log(this.memberID);
 // this.getMemberAttendances(this.memberId);
   }
 
+  ionViewWillEnter(){
+    this.savedJoinedGyms(this.loggeduser.email);
+    console.log("Ion View WIll Enter in Member infor page");
+    this.storageService.get('defaultGymId').then((gd)=>{
+      this.MyDefaultGymValue = gd;
+    });
+
+    this.MyDefaultGymValue = localStorage.getItem('defaultGymId');
+    console.log("My Default Gym value",this.MyDefaultGymValue);
+
+    this.storageService.get('joinedGymList').then((val) => {
+      // console.log(val); // here we store once fetched gym data
+        // this.joinedGym = val;
+    });
+  }
  
 
   
@@ -131,9 +167,8 @@ Start_Date:any;
 Start_Date_ISO:any;
 //check if user exist as member or not ?
 // if he is not member or deleted by gym then page must route back to home page 
-isUserMember(email){
-  //search member DB for this email 
-  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
+isUserMember(email,gymid){
+  this.memberApi.getMemberByEmailOfGymId(email,gymid).subscribe((data:any)=>{
     console.log(new Date(data.m_startdate*1));
     console.log(this.Start_Date);
       console.log(this.Start_Date_ISO);
@@ -398,6 +433,55 @@ async rechargeRequestAlertFirst(){
      ':' + pad(tzOffset % 60);
  };
 
+ //joined gymlist save in array 
+ async savedJoinedGyms(email){
+  this.memberApi.getMemberByEmail(email).subscribe((res)=>{
+    //as of now it will show only 1 member ..but need to change at back end to show more members
+    //make change and back end use find instead of findone.
+     this.gymApi.getGym(res.gym_id).subscribe((res)=>{
+      this.joinedGym = 
+        [
+          {"_id":res._id,              
+          "user_id":res.user_id,              
+           "gym_name":res.gym_name,
+          },
+          // {
+          //   "_id":"64d28fa2947d5e4c92193652",              
+          //   "user_id":"64d28f66947d5e4c92193648",              
+          //    "gym_name":"jenix india gym",              
+                     
+          //   },
+
+          //   {
+          //     "_id":"64d28fa2947d5e4c921933677",              
+          //     "user_id":"64d28f66947d5e4c92193648",              
+          //      "gym_name":"jenix india",              
+                           
+          //     }
+        ]      
+     });
+  });
+
+   
+}
+
+selecthandleChange(ev){
+  console.log(ev.target.value);
+  this.currentGym = ev.target.value;
+  this.MyDefaultGymValue = ev.target.value;
+  console.log(this.MyDefaultGymValue);
+  // console.log(ev);
+  this._gym_id = this.currentGym;
+  // console.log(this._gym_id);
+  this.isUserMember(this.loggeduser.email,this.MyDefaultGymValue);  
+  }
+
+compareWithFn(o1, o2) {
+    // return o1 && o2 ? o1._id == o2._id : o1 == o2;
+    return o1 === o2;
+  }
+
+  
 
 
 }

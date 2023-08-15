@@ -1,3 +1,4 @@
+
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -39,6 +40,7 @@ import { CustomFilterPipe } from './custom-filter-pipe.pipe';
 import { NetworkInterface } from '@awesome-cordova-plugins/network-interface/ngx';
  
 
+import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
 
 @NgModule({
   declarations: [
@@ -60,7 +62,7 @@ import { NetworkInterface } from '@awesome-cordova-plugins/network-interface/ngx
     { 
     provide: RouteReuseStrategy, 
     useClass: IonicRouteStrategy,
-        },
+        },AppVersion,
     // {
     //   provide: HTTP_INTERCEPTORS,
     //   useClass: HttpConfigInterceptor,

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, Observable, throwError,map,OperatorFunction, tap, BehaviorSubject, filter } from 'rxjs';
 import { Member } from '../models/member.model';
 import { environment } from 'src/environments/environment.prod';
@@ -94,6 +94,20 @@ export class MemberserviceService {
     return this.watchAllMembers().pipe(catchError(this.errorMgmt));
 
     // return this.http.get(`${baseUrl}/search/${searchstring}`).pipe(map(data =>  data as Member[]));
+    // return this.watchAllMembers().pipe(catchError(this.errorMgmt));
+  }
+
+   //get member by GYM ID and email
+   getMemberByEmailOfGymId(email:any,gym_id:any): Observable<Member> {
+    console.log("i m in wild search loop");
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append("email",email);
+    queryParams = queryParams.append("gym_id",gym_id);
+    console.log(`${baseUrl}/gym_mail/`,{params:queryParams});
+    return this.http.get<Member>(`${baseUrl}/gym_mail/`,{params:queryParams}).pipe(catchError(this.errorMgmt));
+    // catchError(this.errorMgmt);    
+
+    // this.http.get(`${baseUrl}/gym_mail/`,{params:queryParams}).pipe(map(data =>  data as Member[]));
     // return this.watchAllMembers().pipe(catchError(this.errorMgmt));
   }
 

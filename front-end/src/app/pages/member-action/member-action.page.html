@@ -6,13 +6,45 @@
     <ion-toolbar >
           <ion-title mode="md" class="ion-no-padding">
             <ion-label>
-              <ion-text color="tertiary">Welcome</ion-text>
+              <ion-text color="tertiary">Welcome to {{gymName}}</ion-text>
               <p><ion-text color="white"><strong>{{loggedUserName}}</strong></ion-text></p>
             </ion-label>
           </ion-title>
-          <ion-avatar slot="end" (click)="personalInformation()">
+          <ion-avatar slot="start" (click)="personalInformation()">
             <img [src]= "userProfileImage" >
           </ion-avatar>
+          <ion-buttons slot="end">
+            <ion-button fill="clear" id="popover">
+              <ion-icon class="ion-icon" slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-popover mod="ios" #popover trigger="popover" triggerAction="click">
+            <ng-template>
+              <ion-content>
+                <ion-list-header>
+                  <ion-label><strong>Joined Property's</strong></ion-label>
+                </ion-list-header>
+                <ion-list *ngFor="let gym of joinedGym" >
+                  <ion-item (click)="getMemberofGymId(gym._id)">
+                    <ion-label>{{gym.gym_name}}</ion-label>
+                  </ion-item>                  
+                </ion-list>
+                <ion-item (click)="joinMore()">
+                  <ion-label color="success"><strong>
+                    Join Other Property
+                  </strong>
+                </ion-label>
+                </ion-item>
+                <ion-item (click)="logout()">
+                  <ion-label color="danger"><strong>
+                    LOGOUT
+                  </strong>
+                </ion-label>
+                </ion-item>
+                
+              </ion-content>
+            </ng-template>
+          </ion-popover>
     </ion-toolbar>   
 
     <!-- <ion-avatar>
@@ -61,7 +93,7 @@
       </div>
 
       <div class="div-0" class="scanner-hide" *ngIf="!scanActive">
-        <ion-label color="dark"><strong><h2><strong>My Account</strong></h2></strong></ion-label>
+        <ion-label color="primary"><strong><h2><strong>My Account in {{gymName}}</strong></h2></strong></ion-label>
         <ion-grid [fixed]="true">
           <ion-row>
             <ion-col> 
@@ -80,6 +112,7 @@
           </ion-col>
 
             <ion-col>
+
               <ion-list [inset]="true" lines="none">
                 <ion-item>
                   <ion-label color="dark"><h2><strong>Allowed Time</strong></h2> </ion-label>                   

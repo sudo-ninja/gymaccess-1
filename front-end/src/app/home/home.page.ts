@@ -30,6 +30,7 @@ import { App } from '@capacitor/app';
 import { environment } from 'src/environments/environment';
 //call gym gym Admin service
 import { GymadminService } from '../services/gymadmin.service';
+import { StorageService } from '../services/storage.service';
 
 @Component({
   selector: 'app-home',
@@ -88,7 +89,8 @@ export class HomePage implements OnInit{
     public memberApi:MemberserviceService,  
     //gym admin service api
     private gymAdminApi :GymadminService, 
-
+    //use storage service instead of get set
+    private storageService :StorageService, // storage service is used insted of get set method
   ) {
 
     this.userProfileImage = localStorage.getItem('ProfileImageUrl');
@@ -261,10 +263,17 @@ logs: string[] = [];
                        this.mcontrol_s.getMcontrolEmail(this.loggeduserEmail).subscribe((data)=>{
                         this.invitationCode = data.inviteCode;
                         if(var_code === this.invitationCode){
+                          this.memberApi.getMember(data._id).subscribe((res)=>{
+                            this.gymApi.getGym(res.gym_id).subscribe((gym)=>{
+                              this.storageService.store('joinedGymList',gym);
+                            });
+                            
+                          });
                           console.log("code matched");
                           this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true}); 
                           this.updateUserToMember();
-                          this.updateMemberInvitedAccepted(this.loggeduserEmail,"Yes");
+                          this.updateMemberInvitedAccepted(this.loggeduserEmail,"Yes",data._id);
+                          //delete mcontrol_s code as its purpose is solved
                         }
                        });            
 
@@ -330,7 +339,7 @@ logs: string[] = [];
   );
   }
 
-  async updateMemberInvitedAccepted(email:any,Yes:any)
+  async updateMemberInvitedAccepted(email:any,Yes:any, MControlId:any)
   {
     console.log("in invitaion code setup")
     this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
@@ -340,11 +349,19 @@ logs: string[] = [];
       next: (res: any) => {
       const id = res._id;
       console.log('invitaion type change to Yes');
+      this.deletInvitationCodeData(MControlId); //delet code once updated invitation accepted is updated
     }, 
     error:(err: any) => { console.log(err)  }
     });
 
       });    
+  }
+
+  //delet invitiation code detail once member status is updated to accepted .
+  async deletInvitationCodeData(id){
+    this.mcontrol_s.delete(id).subscribe((res)=>{
+        console.log(res); 
+    })
   }
 
   async presentAlert(header:string,subheader:string, message:string) {

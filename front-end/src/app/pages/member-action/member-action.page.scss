@@ -23,10 +23,15 @@ ion-header {
           width:2.5rem;
           //border-radius:50%;
           //position:relative;
+          margin-right:10px;
           border:1px solid var(--ion-color-tertiary);
           ion-img {
             max-width: 100%;
           }
+}
+.ion-icon{
+  font-size:2.2rem;
+  color: var(--ion-color-primary);
 }
     }
 

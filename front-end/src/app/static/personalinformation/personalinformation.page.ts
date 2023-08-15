@@ -98,13 +98,6 @@ export class PersonalinformationPage implements OnInit {
     this.adminMobile = this.loggeduser.mobile;
     this.adminEmail = this.loggeduser.email;
 
-    // const UserIsAdmin = localStorage.getItem('UserIsAdmin');
-    // const UserIsMember = localStorage.getItem('UserIsMember');
-    // if (UserIsAdmin === 'true') {
-    //   this.loggeduserIsAdmin = true;
-    // }
-
-    
   }
 
   ngOnInit() {

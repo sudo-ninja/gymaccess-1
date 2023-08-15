@@ -7,10 +7,16 @@ import{AlertController, IonRouterOutlet, Platform} from '@ionic/angular';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { environment } from 'src/environments/environment';
 
+//to get app version using cordova plugin 
+import { HttpClientModule } from '@angular/common/http';
+import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
+import { AppUpdate } from '@capawesome/capacitor-app-update';
+
 
 //swiper 
 import { register } from 'swiper/element/bundle';
 import { Router } from '@angular/router';
+import { UpdateService } from './services/update.service';
 register();
 
 @Component({
@@ -26,10 +32,27 @@ export class AppComponent {
     private platform:Platform,
     private alertController:AlertController,
     private router:Router,
-
+    // private appVersion: AppVersion
+    private updateService:UpdateService,
+  
     ) {
     this.storage.create();
-   
+    
+    this.platform.ready().then(()=>{
+      this.updateService.checkForUpdate();
+    });
+
+// console.log(this.appVersion.getAppName());
+// console.log(this.appVersion.getPackageName());
+// console.log(this.appVersion.getVersionCode());
+// console.log(this.appVersion.getVersionNumber());  
+const getCurrentAppVersion = async () => {
+  const result = await AppUpdate.getAppUpdateInfo();
+  console.log(result);
+  return result.currentVersion;
+};
+
+// console.log(this.getCurrentAppVersion);
     
     
     this.initializeApp();
