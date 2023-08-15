@@ -77,6 +77,7 @@ export class PersonalinformationPage implements OnInit {
   countDownStarted: boolean = false;
 
   joinedGyms: any;
+  joinedGymName: string;
 
   constructor(
     private memberApi: MemberserviceService,
@@ -168,8 +169,15 @@ export class PersonalinformationPage implements OnInit {
       this.memberAcceptedinvitation = data.isInviteAccepted;
       this.memberType = data.memberType;
       this.memberId = data._id;
-    });
+      this.getJoinedGymDetails(this.gym_id);
+    });   
   }
+
+    async getJoinedGymDetails(gymid){
+      this.gymApi.getGym(gymid).subscribe((res)=>{
+        this.joinedGymName = res.gym_name;
+      });
+    }
 
   onDeleteAccount(email: any) {
     console.log(email);

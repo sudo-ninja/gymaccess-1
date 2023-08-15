@@ -36,15 +36,13 @@
     <ion-item>
       <ion-label>Emergency Number : {{emergencyMobile | uppercase}}</ion-label>
     </ion-item>
-<!-- 
-    <ion-item (click)="loadMap()">
-      <ion-label>Location on Map </ion-label>
-      <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
-      <iframe *ngIf="url" width="100%" height="100%" [src]="url" target="_parent"></iframe>
-    </ion-item> -->
 
-    <ion-item>
-      <ion-label>Gym Invitation Accepted : {{memberAcceptedinvitation | uppercase}} </ion-label>
+    <ion-item >
+      <ion-label>Name of Joined Property : {{ joinedGymName | uppercase}}</ion-label>
+    </ion-item>
+
+    <ion-item>      
+      <ion-label>Property Invitation Accepted : {{memberAcceptedinvitation | uppercase}} </ion-label>
     </ion-item>
 
     <ion-item>
