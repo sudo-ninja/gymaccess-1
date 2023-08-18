@@ -24,7 +24,7 @@
                 <ion-list-header>
                   <ion-label><strong>Joined Property's</strong></ion-label>
                 </ion-list-header>
-                <ion-list *ngFor="let gym of joinedGym" >
+                <ion-list *ngFor="let gym of joinedGyms" >
                   <ion-item (click)="getMemberofGymId(gym._id)">
                     <ion-label>{{gym.gym_name}}</ion-label>
                   </ion-item>                  

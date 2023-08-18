@@ -82,65 +82,54 @@ export class MembertabsPage implements OnInit {
 
 
   async getMemberByEmailandGymId(email){
-  this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
-    console.log(data); // here in version two check with email and gym id 
-    if(!data){      
-      this.router.navigateByUrl('/home',{replaceUrl: true,});
-    }else{
-       this.savedJoinedGyms(email);
-      this.memberId = data._id;
-      this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
-      this.memberOutTime = data.m_outtime*1 // in Unix milisecond
-      this.memberInTime = data.m_intime*1// in unix milisecond
-      this.gymId = data.gym_id // get gym ID
-      this.lastDate = this.memberEndDate;
-      this.lastDate = new Date(this.lastDate);
-      const Time = (this.memberEndDate)-(new Date().getTime())
-      this.daysLeft = Math.floor(Time / (1000 * 3600 * 24)) + 1;
-      this.checkinTime = this.memberInTime;
-      this.checkinTime = new Date(this.checkinTime);
-      this.checkoutTime = this.memberOutTime;
-      this.checkoutTime  = new Date(this.checkoutTime);
-      this.firstAttendance = data.isAttended;
-      // get gym data like gym lock ID,Gym Name also etc.
-      this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
-        this.lockId = data.lockId;
-        this.gymName = data.gym_name;
-    }); 
-    // now pass this lock ID to scanned result to check is its same or not. 
-    }
-  });
-
-}
+    this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
+      console.log(data); // here in version two check with email and gym id 
+      if(!data){      
+        this.router.navigateByUrl('/home',{replaceUrl: true,});
+      }else{
+         this.savedJoinedGyms(email);
+         this.getMemberbyGymIdandEmail(localStorage.getItem('defaultjoinedGymId'),email); 
+      }
+    });
+  
+  }
 
 //joined gymlist save in array 
 async savedJoinedGyms(email){
   this.memberApi.getMemberByEmail(email).subscribe((res)=>{
+    console.log(res);
     //as of now it will show only 1 member ..but need to change at back end to show more members
     //make change and back end use find instead of findone.
-     this.gymApi.getGym(res.gym_id).subscribe((res)=>{
-      this.joinedGym = 
-        [
-          {"_id":res._id,              
-          "user_id":res.user_id,              
-           "gym_name":res.gym_name,
-          },
-          // {
-          //   "_id":"64d28fa2947d5e4c92193652",              
-          //   "user_id":"64d28f66947d5e4c92193648",              
-          //    "gym_name":"jenix india gym",              
-                     
-          //   },
-
-          //   {
-          //     "_id":"64d28fa2947d5e4c92193652",              
-          //     "user_id":"64d28f66947d5e4c92193648",              
-          //      "gym_name":"jenix india gym",              
-                           
-          //     }
-        ]      
-     });
+    
   });
+}
+
+async getMemberbyGymIdandEmail(gymid,email){
+  console.log("🚀 ~ file: member-action.page.ts:260 ~ MemberActionPage ~ getMemberbyGym̥IdandEmail ~ getMemberbyGym̥IdandEmail:",gymid);
+  //set default GYM id from here to be used on other pages  
+    this.memberApi.getMemberByEmailOfGymId(email,gymid).subscribe((data)=>{
+    console.log(data);
+    this.memberId = data._id;
+    this.memberEndDate = Number(data.m_enddate); // in Unix millisecond formate
+    this.memberOutTime = Number(data.m_outtime);// in Unix milisecond
+    this.memberInTime = Number(data.m_intime);// in unix milisecond
+    this.gymId = data.gym_id; // get gym ID
+    this.lastDate = this.memberEndDate;
+    this.lastDate = new Date(this.lastDate);
+    const Time = (this.memberEndDate)-(new Date().getTime())
+    this.daysLeft = Math.floor(Time / (1000 * 3600 * 24)) + 1;
+    this.checkinTime = this.memberInTime;
+    this.checkinTime = new Date(this.checkinTime);
+    this.checkoutTime = this.memberOutTime;
+    this.checkoutTime  = new Date(this.checkoutTime);
+    this.firstAttendance = data.isAttended;
+    // get gym data like gym lock ID,Gym Name also etc.
+    this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
+      this.lockId = data.lockId;
+      this.gymName = data.gym_name;   
+ });
+    
+});
 }
 
 }

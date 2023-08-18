@@ -45,6 +45,7 @@ export class LoginPage implements OnInit {
   // user for gmail login
   user = null;
   waiting: boolean;
+  entered_mobile: any;
 
   constructor(
     private fb: FormBuilder,
@@ -433,14 +434,31 @@ async verifiedUser(email_:any) {
 
 // for google login
 async googleSignin(){
-  this.user = await GoogleAuth.signIn(); 
+  console.log("google sign in ");
+  this.user = await GoogleAuth.signIn();
+  console.log(this.user);
   if(!this.user){
     // present alert that user not fetch by gmail 
     this.presentToast("User Data Not Fetched",1500,"top");    
-  }else{   
+  }else{  
+    console.log(this.user); 
+    // check if user already exist in user db search by email 
+    this.waiting= true;
+      this.userAPI.getUserbyEmail(this.user.email).subscribe((res)=>{
+        console.log(res); // here data comes without token .
+         this.waiting= false;
+        if(res.verified){
+          let profileImageUrl = this.user.imageUrl;
+          localStorage.setItem('ProfileImageUrl',profileImageUrl);
+          // this.GoogleuserLogin(res.email); // here with token data will go to home page
+          // return;  
+        }
+        // return;
+      });
+    // if no user found then only go below 
     let profileImageUrl = this.user.imageUrl;
     let UserName = this.user.givenName.concat(" ",this.user.familyName);
-    console.log('user',this.user , "Name : - ",this.user.name , "Email : - ",this.user.email,"image url:-",profileImageUrl);
+    console.log('user-',this.user , "Name:- ",UserName , "Email : - ",this.user.email,"image url:-",profileImageUrl);
    
   localStorage.setItem('ProfileImageUrl',profileImageUrl);
   this.GmailDoesNotExistAddtoDBandSendToHome(this.user.email,UserName);
@@ -461,10 +479,11 @@ async googleSignOut(){
 
 async GmailDoesNotExistAddtoDBandSendToHome (email,name){
   this.waiting= true;
+  //check if email exist ,if email exit check if its verified ? if verified then only google login
   this.userAPI.getUserbyEmail(email).subscribe(
     {
-      next: (res) =>{       
-         
+      next: (res) =>{ 
+        console.log("verified user :-",res.verified);         
         let credentials = {
           email: res.email,
           password: 'googleuserlogin',
@@ -472,7 +491,7 @@ async GmailDoesNotExistAddtoDBandSendToHome (email,name){
         this.http.post(this.url,credentials).subscribe(
           {
             next: async (res) =>{
-              this.userAPI.setToken(res['token']); // to store locally token 
+          this.userAPI.setToken(res['token']); // to store locally token 
           localStorage.setItem('User',JSON.stringify(res)) // trick use to transfer login user data to home page by get and set method
           this.waiting = false;
           this.router.navigateByUrl('/home',{replaceUrl:true}) // url is replaces so that use cant go back to login page without logout
@@ -484,7 +503,7 @@ async GmailDoesNotExistAddtoDBandSendToHome (email,name){
                 this.emailExistButNotVerified(email);
                 // check if email already exist or not ? if not exist redirect to signup page by showing alert
                 console.log(error.error);
-                this.presentAlertLogin('Google Mail Registration Failed..Err-487',error.error,'try again');    
+                this.presentAlertLogin('Google Mail Registration Failed..Err-502',error.error,'try again');    
                     }
             }
             );
@@ -498,72 +517,49 @@ async GmailDoesNotExistAddtoDBandSendToHome (email,name){
         if (error.error.message.includes('no data found with this ID')) {
           //means no user at DB then add to DB
           this.waiting = true;
-          this.userAPI
-            .register({
-              username: name,
-              email: email,
-              password: 'googleuserlogin',
-              mobile: 'no mobile',
-              isMember: false,
-              isAdmin: false,
-            })
-            .subscribe({
-              next: (res) => {
-                console.log(res);
-                //** here user verified and registration is done now set user as verified */
-                this.userAPI
-                  .update(res._id, { verified: true })
-                  .subscribe((data) => {
-                    console.log(data);// data here come without token so cant use that data 
-                    });
-// here pass user credentials email and password and get user data and then route to home
-/*********//////////////////////////////********* *//
-let credentials = {
-      email: res.email,
-      password: 'googleuserlogin',
+          /**here can show present input alert and get mobile number as input , show backdrop dismiss flase
+           * and then pass that input mobile number to user mobile.           
+           */
+          this.mobileNumberInputAlert(name,email,'googleuserlogin');
+          
+      }
     }
     
-    this.http.post(this.url,credentials).subscribe(
-      {
-        next: (res) =>{
-          this.userAPI.setToken(res['token']); // to store locally token 
-      // this.isLoading=false;
-      localStorage.setItem('User',JSON.stringify(res)) // trick use to transfer login user data to home page by get and set method
-      this.waiting = false;
-      this.router.navigateByUrl('/home',{replaceUrl:true}) // url is replaces so that use cant go back to login page without logout
-     
-      },
-        error: (error) => {
-            // this.serverErrorMessage = error.error;
-            this.waiting = false;
-                this.emailExistButNotVerified(email);
-            // check if email already exist or not ? if not exist redirect to signup page by showing alert
-            console.log(error.error);
-            // this.verifyEmailSignup();
-            this.presentAlertLogin('Google User Login Failed ..Err-543',error.error,'try again');
-
-                }
-        }
-        );
-
-    console.log(credentials); 
-              },
-              error: (e) => {
-                // console.error(e)
-                this.waiting = false;
-                // console.log(error)
-                this.isLoadingResults = false;
-                this.presentAlert('Google Registration Failed..Err-556', e.error, 'try again');
-              },
-            });
-        }
-        let errorString = error.error.message;
-        // this.presentAlertLogin('Google Login Failed..Err-561', errorString, 'Try Login by Email');
-      }
-      }
+  });
   
-  )
+
   
+}
+
+async GoogleuserLogin(email){
+  let credentials = {
+    "email": email,
+    "password": "googleuserlogin",
+  }
+  
+  this.http.post(this.url,credentials).subscribe(
+    {
+      next: (res) =>{
+        this.userAPI.setToken(res['token']); // to store locally token 
+    // this.isLoading=false;
+    localStorage.setItem('User',JSON.stringify(res)) // trick use to transfer login user data to home page by get and set method
+    this.waiting = false;
+    this.router.navigateByUrl('/home',{replaceUrl:true}) // url is replaces so that use cant go back to login page without logout
+   
+    },
+      error: (error) => {
+          // this.serverErrorMessage = error.error;
+          this.waiting = false;
+              // this.emailExistButNotVerified(email);
+          // check if email already exist or not ? if not exist redirect to signup page by showing alert
+          console.log(error.error);
+          // this.verifyEmailSignup();
+          this.presentAlertLogin('Google User Login Failed ..Err-543',error.error,'try again');
+
+              }
+      }
+      );
+
 }
 
 //toast 
@@ -578,7 +574,77 @@ async presentToast(message_, duration_,position: 'top' | 'middle' | 'bottom') {
   }
 
 
+  // mobile number input alert 
+  // for member join gym alert to get verification code 
+  async mobileNumberInputAlert(name,email,password) {
+    this.waiting = false;;
+    const alert = await this.alertCtrl.create({
+      mode:'ios',
+      backdropDismiss : false,
+      header: 'Please enter Mobile Number',
+      buttons: [
+                {
+                  text: 'Ok',
+                  handler: (alertData) => { //takes the data 
+                      const ent_mobile= alertData.code_entered;
+                      console.log(ent_mobile);                     
+                      this.entered_mobile = ent_mobile;
+                      this.GoogleRegistrationFirstTime(name,email,this.entered_mobile,password);
+                     },
+                    }
+            ],
+      inputs: [
+        {
+          name:'code_entered',
+          placeholder: 'Mobile Number',
+          attributes: {
+                        maxlength: 13,
+                        minlength: 10,
+                      },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  //google registration 
+  async GoogleRegistrationFirstTime(name,email,mobile,password){
+    this.waiting = true;
+          this.userAPI
+            .googleUser_Register({
+              "username": name,
+              "email": email,
+              "password": password,
+              "mobile": mobile,
+              "isMember": false,
+              "isAdmin": false,
+            })
+            .subscribe({
+              next: (res) => {
+                console.log(res);
+                //** here user verified and registration is done now set user as verified */
+                this.userAPI.update(res._id, { "verified": true }).subscribe((data) => { 
+                  console.log(data);// data here come without token so cant use that data 
+                  this.GoogleuserLogin(res.email);// this will get verified token data
+                    });
+// here pass user credentials email and password and get user data with token and then route to home
+/*********//////////////////////////////********* *//            
+              },
+              error: (e) => {
+                this.waiting = false;
+                this.isLoadingResults = false;
+                this.presentAlert('Google Registration Failed..Err-549', e.error, 'try again');
+              },
+
+            });
+        }
+        
+        // this.presentAlertLogin('Google Login Failed..Err-561', errorString, 'Try Login by Email');
 }
+
+
+
 
 // change design of login page 
 // login by email 

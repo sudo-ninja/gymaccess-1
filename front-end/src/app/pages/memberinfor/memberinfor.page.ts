@@ -438,28 +438,7 @@ async rechargeRequestAlertFirst(){
   this.memberApi.getMemberByEmail(email).subscribe((res)=>{
     //as of now it will show only 1 member ..but need to change at back end to show more members
     //make change and back end use find instead of findone.
-     this.gymApi.getGym(res.gym_id).subscribe((res)=>{
-      this.joinedGym = 
-        [
-          {"_id":res._id,              
-          "user_id":res.user_id,              
-           "gym_name":res.gym_name,
-          },
-          // {
-          //   "_id":"64d28fa2947d5e4c92193652",              
-          //   "user_id":"64d28f66947d5e4c92193648",              
-          //    "gym_name":"jenix india gym",              
-                     
-          //   },
-
-          //   {
-          //     "_id":"64d28fa2947d5e4c921933677",              
-          //     "user_id":"64d28f66947d5e4c92193648",              
-          //      "gym_name":"jenix india",              
-                           
-          //     }
-        ]      
-     });
+     
   });
 
    

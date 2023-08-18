@@ -88,7 +88,9 @@ export class MemberActionPage implements OnInit {
   lockId:any;
   gymName:any;
   compareWith:any;
-  joinedGym:any;
+  joinedGyms:any[]=[];
+  defaultGymId:any;
+
 
   serviceProviders: any; // serviceprovider means admin as he is providing service to members.
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
@@ -106,6 +108,7 @@ export class MemberActionPage implements OnInit {
   
   memberForm!: FormGroup;
   userMobile: string;
+  defaultGymId_store: string;
 
   // install https://github.com/capacitor-community/barcode-scanner plugin 
 
@@ -135,7 +138,7 @@ export class MemberActionPage implements OnInit {
       const user = localStorage.getItem('User')
       this.loggeduser=JSON.parse(user);
       this.loggedUserEmail = this.loggeduser.email;
-
+      console.log(this.loggedUserEmail);
      
 
       this.loggedUserName = this.loggeduser.username;
@@ -163,7 +166,15 @@ export class MemberActionPage implements OnInit {
       // to get current user location as soon as page is opened
       this.fetchLocation();
       console.log(this.memberEndDate);
-      
+      //get default gym list data 
+       console.log("DEFAULT GYM ID IN CONSTRUCTOR ",localStorage.getItem('defaultjoinedGymId'));
+       this.defaultGymId_store = localStorage.getItem('defaultjoinedGymId');
+       
+
+      this.storageService.get('joinedGymList').then((val)=>{
+      console.log(val);
+    });
+
   }
 
   addName(data:any){
@@ -172,8 +183,12 @@ export class MemberActionPage implements OnInit {
   }
 
   ngOnInit() {
+    // this.isUserMember(this.loggeduser.email);
     // to get default data in ion select 
-    this.compareWith = this.compareWithFn; 
+    this.compareWith = this.compareWithFn;
+
+    // this.getMemberofGymId(this.defaultGymId_store);
+
 
     // slide show ..
     this.bannerApi.getImageByGymId(this.gymId).subscribe({
@@ -251,24 +266,22 @@ export class MemberActionPage implements OnInit {
 
   ionViewWillEnter(){
      this.isUserMember(this.loggedUserEmail); // to chekc user available in member DB or not?
-    console.log("Ion View Will Enter");
+    //  this.getMemberofGymId(this.defaultGymId_store);
+     console.log("Ion View Will Enter");
     
   }
 
   async getMemberofGymId(gymid){
+    console.log("GYM ID from getMemberbyGymID : 275 ",gymid);
       this.getMemberbyGymIdandEmail(gymid,this.loggedUserEmail);
       this.popover.dismiss(); // to close popover
     }
 
   async getMemberbyGymIdandEmail(gymid,email){
-    console.log("🚀 ~ file: member-action.page.ts:260 ~ MemberActionPage ~ getMemberbyGym̥IdandEmail ~ getMemberbyGym̥IdandEmail:")
+    console.log("🚀 ~ file: member-action.page.ts:281 ~ MemberActionPage ~ getMemberbyGym̥IdandEmail ~ getMemberbyGym̥IdandEmail:")
     //set default GYM id from here to be used on other pages 
-    console.log(gymid);
-    localStorage.setItem('defaultGymId',gymid);
-        this.storageService.set('defaultGymId',gymid);// to save gymid as default for other page use 
-    this.storageService.get('defaultGymId').then((val)=>{
-      console.log(val);
-    });
+    console.log("GYM ID in side GetMemberby Gym ID and Email 283- ",gymid,"Email:-",email);
+     
       this.memberApi.getMemberByEmailOfGymId(email,gymid).subscribe((data)=>{
       console.log(data);
       this.memberId = data._id;
@@ -285,7 +298,7 @@ export class MemberActionPage implements OnInit {
       this.checkoutTime = this.memberOutTime;
       this.checkoutTime  = new Date(this.checkoutTime);
       this.firstAttendance = data.isAttended;
-  //     // get gym data like gym lock ID,Gym Name also etc.
+      // get gym data like gym lock ID,Gym Name also etc.
       this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
         this.lockId = data.lockId;
         this.gymName = data.gym_name;   
@@ -553,37 +566,18 @@ return(c * r);
 // if he is not member or deleted by gym then page must route back to home page 
 async isUserMember(email){
   //search member DB for this email 
-  this.getMemberByEmailandGymId(email);
+  this.getmemberbyEmail(email);
 }
 
-async getMemberByEmailandGymId(email){
+async getmemberbyEmail(email){
   this.memberApi.getMemberByEmail(email).subscribe((data:any)=>{
     console.log(data); // here in version two check with email and gym id 
     if(!data){      
       this.router.navigateByUrl('/home',{replaceUrl: true,});
     }else{
        this.savedJoinedGyms(email);
-       this.getMemberbyGymIdandEmail(data.gym_id,email);
-    //   this.memberId = data._id;
-    //   this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
-    //   this.memberOutTime = data.m_outtime*1 // in Unix milisecond
-    //   this.memberInTime = data.m_intime*1// in unix milisecond
-    //   this.gymId = data.gym_id // get gym ID
-    //   this.lastDate = this.memberEndDate;
-    //   this.lastDate = new Date(this.lastDate);
-    //   const Time = (this.memberEndDate)-(new Date().getTime())
-    //   this.daysLeft = Math.floor(Time / (1000 * 3600 * 24)) + 1;
-    //   this.checkinTime = this.memberInTime;
-    //   this.checkinTime = new Date(this.checkinTime);
-    //   this.checkoutTime = this.memberOutTime;
-    //   this.checkoutTime  = new Date(this.checkoutTime);
-    //   this.firstAttendance = data.isAttended;
-    //   // get gym data like gym lock ID,Gym Name also etc.
-    //   this.gymApi.getGym(this.gymId).subscribe((data:any)=>{
-    //     this.lockId = data.lockId;
-    //     this.gymName = data.gym_name;
-    // }); 
-    // now pass this lock ID to scanned result to check is its same or not. 
+       this.getMemberbyGymIdandEmail(this.defaultGymId_store,email);
+// now pass this lock ID to scanned result to check is its same or not. 
     }
   });
 
@@ -801,31 +795,17 @@ selecthandleChange(ev){
 
   //joined gymlist save in array 
   async savedJoinedGyms(email){
+    
     this.memberApi.getMemberByEmail(email).subscribe((res)=>{
       //as of now it will show only 1 member ..but need to change at back end to show more members
       //make change and back end use find instead of findone.
-       this.gymApi.getGym(res.gym_id).subscribe((res)=>{
-        this.joinedGym = 
-          [
-            {"_id":res._id,              
-            "user_id":res.user_id,              
-             "gym_name":res.gym_name,
-            },
-            // {
-            //   "_id":"64d28fa2947d5e4c92193652",              
-            //   "user_id":"64d28f66947d5e4c92193648",              
-            //    "gym_name":"jenix india gym",              
-                       
-            //   },
+      for (let i = 0; i <res.length; i++) {
+        // make array of image objects
+        // this.joinedGyms.push(
+          console.log(this.gymApi.getGym(res[i].gym_id).subscribe((data)=>{return data;}));
+        // );
+      };
 
-            //   {
-            //     "_id":"64d28fa2947d5e4c92193652",              
-            //     "user_id":"64d28f66947d5e4c92193648",              
-            //      "gym_name":"jenix india gym",              
-                             
-            //     }
-          ]      
-       });
     });
   }
 

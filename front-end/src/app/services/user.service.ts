@@ -28,6 +28,15 @@ constructor(private http:HttpClient,
     catchError(this.errorMgmt));
   }
 
+  //google user registration 
+  googleUser_Register(body:any): Observable<any> {
+    console.log(body);
+    let url = `${this.url}/user/googleUser_register`;
+    console.log(url);
+    return this.http.post(url,body,this.noAuthHeader).pipe(tap((dat:any)=>console.log(`Added with ID =${dat._id}`)),
+    catchError(this.errorMgmt));
+  }
+
   
   login(authCredentials) {
     console.log(this.url);

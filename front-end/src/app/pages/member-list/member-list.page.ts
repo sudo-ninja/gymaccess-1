@@ -184,7 +184,7 @@ export class MemberListPage  {
     private navCtrl: NavController,
 
     private formBuilder: FormBuilder,
-    private inviteControlApi:McontrolService,
+    private memberInviteControlApi:McontrolService,
     public memberApi:MemberserviceService,
     private attendApi:AttendanceService,
 
@@ -600,7 +600,7 @@ await modal.present();
                   duration: this._duration,
                 });
 
-                this.inviteControlApi
+                this.memberInviteControlApi
                   .addMcontrol(this.inviteControlForm.value)
                   .subscribe({
                     next: (res: any) => {
@@ -638,7 +638,7 @@ await modal.present();
 
                       console.log(this._invitationcode ,"...",this.currentGymName);
                       this.basicShare(this._invitationcode,this.currentGymName);
-                      this.setInvitaion(this.member.email, 'pending');
+                      this.setInvitaion(this.member._id, 'pending');
                     },
          }
           ],
@@ -656,22 +656,17 @@ await modal.present();
     }, 2000);
   };
 
-  setInvitaion(email:any,pending:any){  
+  setInvitaion(memberId:any,pending:any){  
     // console.log("in invitaion code setup")
-    this.memberApi.getMemberByEmail(email).subscribe({
-      next:(data: any)=>{
-      this.memberId = data._id
-      this.memberForm.patchValue(
+        this.memberForm.patchValue(
         {
           isInviteAccepted:pending // Status Change to Pending
         });
         console.log(this.memberId," and data to be updated",this.memberForm.value);
-    this.memberApi.update(this.memberId,this.memberForm.value).subscribe({
+    this.memberApi.update(memberId,this.memberForm.value).subscribe({
       next:(res: any) => { console.log('invitaion type change to =',res.isInviteAccepted);         }, 
       error:(err: any) => {console.log(err) }
-               });        
-    }
-  });   
+               });           
   this.getMembers(); 
     
   }
@@ -691,7 +686,7 @@ await modal.present();
       try {
         this.tempEmail = res.email;
         console.log(this.tempEmail);
-        this.inviteControlApi.getMcontrolEmail(this.tempEmail).subscribe((res:any)=>{
+        this.memberInviteControlApi.getMcontrolEmail(this.tempEmail).subscribe((res:any)=>{
           try {
           console.log(res);
           if(res.inviteCode)
@@ -723,7 +718,7 @@ await modal.present();
   //added again then it should not catch olf code.
   deleteCodeIfacceptedOrExpired(email:any,ifAccepted:boolean){    
     if(ifAccepted){return;};
-    this.inviteControlApi.getMcontrolEmail(email).subscribe(
+    this.memberInviteControlApi.getMcontrolEmail(email).subscribe(
       (res:any)=>{
         if(!res){ return; }
         else{
@@ -732,13 +727,13 @@ await modal.present();
               this.tempDuration = res.duration;
               if(ifAccepted){
                 console.log(this.tempid);
-                this.inviteControlApi.delete(this.tempid).subscribe((res)=>{
+                this.memberInviteControlApi.delete(this.tempid).subscribe((res)=>{
                   console.log(res);
                 });      
               }else{
                 console.log(this.tempDuration);
                 if(Date.now()>this.tempDuration){
-                  this.inviteControlApi.delete(this.tempid).subscribe((res)=>{
+                  this.memberInviteControlApi.delete(this.tempid).subscribe((res)=>{
                     console.log(res);
                 });
               };            

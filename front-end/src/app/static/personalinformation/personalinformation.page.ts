@@ -107,7 +107,7 @@ export class PersonalinformationPage implements OnInit {
     console.log(this.userIsMember);
 
     if (this.userIsMember) { 
-      this.getMemberInfo(this.adminEmail); 
+      // this.getMemberInfo(this.adminEmail); 
   }
 }
 
@@ -131,7 +131,7 @@ export class PersonalinformationPage implements OnInit {
         return;
       } else if(res.isMember){
         console.log(res.isMember);
-        this.getMemberInfo(this.adminEmail); 
+        // this.getMemberInfo(this.adminEmail); 
         this.loggeduserIsMember = true;
         this.userIsBoth = false;
         this.userIsMember = true;
@@ -147,11 +147,9 @@ export class PersonalinformationPage implements OnInit {
   //get mber infor 
 
   //get member information
-  async getMemberInfo(email) {
-    this.memberApi.getMemberByEmail(email).subscribe((data: any) => {
-      if (data.length > 1) {
-      }
-      // console.log(data); // work on this in VER 2.0 where one member may join more gyms.
+  async getMemberInfo(email,gymID) {
+    this.memberApi.getMemberByEmailOfGymId(email,gymID).subscribe((data: any) => {
+            // console.log(data); // work on this in VER 2.0 where one member may join more gyms.
       this.gym_id = data.gym_id;
       this.memberName = data.m_name;
       this.memberEmail = data.email;
@@ -169,7 +167,7 @@ export class PersonalinformationPage implements OnInit {
       this.memberAcceptedinvitation = data.isInviteAccepted;
       this.memberType = data.memberType;
       this.memberId = data._id;
-      this.getJoinedGymDetails(this.gym_id);
+     
     });   
   }
 

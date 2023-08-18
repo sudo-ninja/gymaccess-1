@@ -82,7 +82,7 @@ export class HomePage implements OnInit{
     public gymApi:GymService,
     /////google map///
     private gmaps: GmapsService,
-    private mcontrol_s: McontrolService,
+    private memberControlApi: McontrolService,
     private renderer: Renderer2,
     private actionSheetCtrl: ActionSheetController,
     private formBuilder: FormBuilder,
@@ -134,16 +134,22 @@ export class HomePage implements OnInit{
           //based on that route the page 
           if(this.isloggedUserMember && this.loggeduserIsAdmin){
             this.ProceedAsMemberOwnerAlert("Proceed as ..","select ");
+            // if user is member , it means he have already joined some gym .. 
+            // find member ID of that gym , if multiple gym then ask user to select gym for proceed 
+
+            // if logged user is admin , it means he has already added gym then ask him to select gym to proceed
           }
 
           if(this.isloggedUserMember){
             console.log('Logged User is Member');
             this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe({
+            
               next:res=>{
-                if(!res){
+                console.log(res);
+                if(!res[0]){
                   this.router.navigateByUrl('home', {replaceUrl: true}); // if no member found of this id then route to home page
                 }else{
-                  if(res.isInviteAccepted ==="Yes"){
+                  if(res[0].isInviteAccepted ==="Yes"){
                     this.router.navigateByUrl('/tabs/member-action', {replaceUrl: true});
                   }else{
                     this.router.navigateByUrl('home', {replaceUrl: true}); // if member have not accepted invitaion yet let him be stay at home page
@@ -203,15 +209,16 @@ logs: string[] = [];
 
     }else if (e.detail.value=="join") {
       console.log(e.detail.value) ;
-      this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{
-        console.log(data);
-        if(!data){
-          console.log("no member");
-          this.presentAlert("Property Not Joined Yet !!","Please Ask Property Owner to Invite to Join","")
-        }else{
-          this.checkIfInvited(this.loggeduserEmail);
-        }
-      });
+      this.checkIfInvited(this.loggeduserEmail);
+      // this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{
+        // console.log(data);
+        // if(!data[0]){
+        //   console.log("no member");
+        //   this.presentAlert("Property Not Joined Yet !!","Please Ask Property Owner to Invite to Join","")
+        // }else{
+        //   this.checkIfInvited(this.loggeduserEmail);
+        // }
+      // });
       // this.checkIfInvited(this.loggeduserEmail);
       // this.joinGymAlert();
      }
@@ -251,6 +258,7 @@ logs: string[] = [];
   // for member join gym alert to get verification code 
   async joinGymAlert() {
     const alert = await this.alertCtrl.create({
+      mode:'ios',
       header: 'Please enter Verification Code',
       buttons: [
                 {
@@ -260,20 +268,21 @@ logs: string[] = [];
                       console.log(var_code);
                       // call mcontrol service 
                       console.log(this.loggeduserEmail);
-                       this.mcontrol_s.getMcontrolEmail(this.loggeduserEmail).subscribe((data)=>{
+                       this.memberControlApi.getMcontrolEmail(this.loggeduserEmail).subscribe((data)=>{
                         this.invitationCode = data.inviteCode;
                         if(var_code === this.invitationCode){
-                          this.memberApi.getMember(data._id).subscribe((res)=>{
+                          this.memberApi.getMember(data.member_id).subscribe((res)=>{
                             this.gymApi.getGym(res.gym_id).subscribe((gym)=>{
+                              localStorage.setItem('defaultjoinedGymId',gym._id);
                               this.storageService.store('joinedGymList',gym);
                             });
                             
                           });
                           console.log("code matched");
                           this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true}); 
-                          this.updateUserToMember();
-                          this.updateMemberInvitedAccepted(this.loggeduserEmail,"Yes",data._id);
-                          //delete mcontrol_s code as its purpose is solved
+                          this.updateUserToMember(); // here make back end table there insert joined GYm array 
+                          this.updateMemberInvitedAccepted(data.member_id,"Yes",data._id);
+                          //delete memberControlApi code as its purpose is solved
                         }
                        });            
 
@@ -297,32 +306,29 @@ logs: string[] = [];
 
   checkIfInvited(email:any){
     console.log(email);
-    this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
-      console.log("in Check if Invited");
-      console.log(data);
-      // here try to check if member email exist or not .. if member email is not there then 
-      //show alert that you have strill not asscooaited to any gym
-      try {
-         
-        if(data.isInviteAccepted=="Not")
-        {
-          console.log("Please ask respective property owner to invite you to join property"); 
-          this.presentAlert("Property Not Joined","Please ask property owner to Invite to Join property","")
-        }
-        if(data.isInviteAccepted=="pending")
-        {
-          console.log("Please Enter Invitaion Code"); 
-          this.joinGymAlert();
-        }
-        if(data.isInviteAccepted=="Yes")
-        {
-          this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true}); 
-         }
-
-      } catch (error) {
-        throw error;
-      }
-    });
+    // member control api get detail by email id
+    this.memberControlApi.getMcontrolEmail(email).subscribe(
+      {
+        next:(res:any)=>{
+            console.log(res);
+            if(!res){
+              console.log("Please ask respective property owner to invite you to join property"); 
+              this.presentAlert("Property Not Joined","Please ask property owner to Invite to Join property","")
+              return;
+            }else{
+              console.log("Please Enter Invitaion Code"); 
+                this.joinGymAlert();
+            } },
+       error:(err: any) => {
+              console.log(err.error.message);
+              if(err.error.message.includes("no data found with this ID")){
+                this.presentAlert("No Invitation Yet !","Please ask property owner to Invite to Join property","")
+              return;
+              }
+            }
+    }
+    );
+    
 
   }
 
@@ -339,11 +345,10 @@ logs: string[] = [];
   );
   }
 
-  async updateMemberInvitedAccepted(email:any,Yes:any, MControlId:any)
+  async updateMemberInvitedAccepted(MemberId:any,Yes:any, MControlId:any)
   {
-    console.log("in invitaion code setup")
-    this.memberApi.getMemberByEmail(email).subscribe((data: any)=>{
-    this.memberApi.update(data._id,{
+    console.log("in invitaion code setup");
+    this.memberApi.update(MemberId,{
       "isInviteAccepted":Yes // Status Change to Yes
     }).subscribe({
       next: (res: any) => {
@@ -352,14 +357,12 @@ logs: string[] = [];
       this.deletInvitationCodeData(MControlId); //delet code once updated invitation accepted is updated
     }, 
     error:(err: any) => { console.log(err)  }
-    });
-
-      });    
+    });    
   }
 
   //delet invitiation code detail once member status is updated to accepted .
   async deletInvitationCodeData(id){
-    this.mcontrol_s.delete(id).subscribe((res)=>{
+    this.memberControlApi.delete(id).subscribe((res)=>{
         console.log(res); 
     })
   }
@@ -473,109 +476,109 @@ async fetchLocation(){
 }
 
   //////////////google map///////////////////////
-  ngAfterViewInit() {
-    this.loadMap();
-  }
+  // ngAfterViewInit() {
+  //   this.loadMap();
+  // }
 
-  async loadMap() {
-    try {
-      let googleMaps: any = await this.gmaps.loadGoogleMaps();
-      this.googleMaps = googleMaps;
-      const mapEl = this.mapElementRef.nativeElement;
-      const location = new googleMaps.LatLng(this.center.lat, this.center.lng);
-      this.map = new googleMaps.Map(mapEl, {
-        center: location,
-        zoom: 12,
-      });
-      this.renderer.addClass(mapEl, 'visible'); /// this making to show map here we can put some condition to show or not the map
-      this.addMarker(location);
-      this.onMapClick();
-    } catch(e) {
-      console.log(e);
-    }
-  }
+  // async loadMap() {
+  //   try {
+  //     let googleMaps: any = await this.gmaps.loadGoogleMaps();
+  //     this.googleMaps = googleMaps;
+  //     const mapEl = this.mapElementRef.nativeElement;
+  //     const location = new googleMaps.LatLng(this.center.lat, this.center.lng);
+  //     this.map = new googleMaps.Map(mapEl, {
+  //       center: location,
+  //       zoom: 12,
+  //     });
+  //     this.renderer.addClass(mapEl, 'visible'); /// this making to show map here we can put some condition to show or not the map
+  //     this.addMarker(location);
+  //     this.onMapClick();
+  //   } catch(e) {
+  //     console.log(e);
+  //   }
+  // }
 
-  onMapClick() {
-    this.mapClickListener = this.googleMaps.event.addListener(this.map, "click", (mapsMouseEvent) => {
-      console.log(mapsMouseEvent.latLng.toJSON());
-      this.addMarker(mapsMouseEvent.latLng);
-    });
-  }
+  // onMapClick() {
+  //   this.mapClickListener = this.googleMaps.event.addListener(this.map, "click", (mapsMouseEvent) => {
+  //     console.log(mapsMouseEvent.latLng.toJSON());
+  //     this.addMarker(mapsMouseEvent.latLng);
+  //   });
+  // }
 
-  addMarker(location) {
-    let googleMaps: any = this.googleMaps;
-    const icon = {
-      url: 'fotos/icons/location-pin.png',
-      scaledSize: new googleMaps.Size(50, 50), 
-    };
-    const marker = new googleMaps.Marker({
-      position: location,
-      map: this.map,
-      icon: icon,
-      draggable: true, // it its true marker can be drag and drop
-      // dragging: true,
-      animation: googleMaps.Animation.DROP
-    });
-    console.log(marker.position.lat());
-    console.log(marker.position.lng());
-    this.markers.push(marker);
-    console.log('markers: ', this.markers);
-    // this.presentActionSheet();
-    this.markerClickListener = this.googleMaps.event.addListener(marker, 'click', () => {
-      console.log('markerclick', marker);
+  // addMarker(location) {
+  //   let googleMaps: any = this.googleMaps;
+  //   const icon = {
+  //     url: 'fotos/icons/location-pin.png',
+  //     scaledSize: new googleMaps.Size(50, 50), 
+  //   };
+  //   const marker = new googleMaps.Marker({
+  //     position: location,
+  //     map: this.map,
+  //     icon: icon,
+  //     draggable: true, // it its true marker can be drag and drop
+  //     // dragging: true,
+  //     animation: googleMaps.Animation.DROP
+  //   });
+  //   console.log(marker.position.lat());
+  //   console.log(marker.position.lng());
+  //   this.markers.push(marker);
+  //   console.log('markers: ', this.markers);
+  //   // this.presentActionSheet();
+  //   this.markerClickListener = this.googleMaps.event.addListener(marker, 'click', () => {
+  //     console.log('markerclick', marker);
       
-      this.checkAndRemoveMarker(marker);
-      console.log('markers: ', this.markers);
-    });
-  }
+  //     this.checkAndRemoveMarker(marker);
+  //     console.log('markers: ', this.markers);
+  //   });
+  // }
 
-  checkAndRemoveMarker(marker) {
-    const index = this.markers.findIndex(x => x.position.lat() == marker.position.lat() && x.position.lng() == marker.position.lng());
-    console.log('is marker already: ', index);
-    if(index >= 0) {
-      this.markers[index].setMap(null); // just to remove image of marker so that map is clear so set map null
-      this.markers.splice(index, 1); // this to remove marker position from array we can use latest array position
-      console.log(index);
-      return;
-    }
-  }
+  // checkAndRemoveMarker(marker) {
+  //   const index = this.markers.findIndex(x => x.position.lat() == marker.position.lat() && x.position.lng() == marker.position.lng());
+  //   console.log('is marker already: ', index);
+  //   if(index >= 0) {
+  //     this.markers[index].setMap(null); // just to remove image of marker so that map is clear so set map null
+  //     this.markers.splice(index, 1); // this to remove marker position from array we can use latest array position
+  //     console.log(index);
+  //     return;
+  //   }
+  // }
 
-  async presentActionSheet() {
-    const actionSheet = await this.actionSheetCtrl.create({
-      header: 'Added Marker',
-      subHeader: '',
-      buttons: [
-        {
-          text: 'Remove',
-          role: 'destructive',
-          data: {
-            action: 'delete',
-          },
-        },
-        {
-          text: 'Save',
-          data: {
-            action: 'share',
-          },
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          data: {
-            action: 'cancel',
-          },
-        },
-      ],
-    });
+  // async presentActionSheet() {
+  //   const actionSheet = await this.actionSheetCtrl.create({
+  //     header: 'Added Marker',
+  //     subHeader: '',
+  //     buttons: [
+  //       {
+  //         text: 'Remove',
+  //         role: 'destructive',
+  //         data: {
+  //           action: 'delete',
+  //         },
+  //       },
+  //       {
+  //         text: 'Save',
+  //         data: {
+  //           action: 'share',
+  //         },
+  //       },
+  //       {
+  //         text: 'Cancel',
+  //         role: 'cancel',
+  //         data: {
+  //           action: 'cancel',
+  //         },
+  //       },
+  //     ],
+  //   });
 
-    await actionSheet.present();
-  }
+  //   await actionSheet.present();
+  // }
 
-  ngOnDestroy() {
-    // this.googleMaps.event.removeAllListeners();
-    if(this.mapClickListener) this.googleMaps.event.removeListener(this.mapClickListener);
-    if(this.markerClickListener) this.googleMaps.event.removeListener(this.markerClickListener);
-  }
+  // ngOnDestroy() {
+  //   // this.googleMaps.event.removeAllListeners();
+  //   if(this.mapClickListener) this.googleMaps.event.removeListener(this.mapClickListener);
+  //   if(this.markerClickListener) this.googleMaps.event.removeListener(this.markerClickListener);
+  // }
 
   // alert to proceed as meber or owner ..
   async ProceedAsMemberOwnerAlert(header:string,message:string) {
@@ -590,13 +593,8 @@ async fetchLocation(){
           role: 'member',
           handler: () => {  
             this.memberApi.getMemberByEmail(this.loggeduserEmail).subscribe((data)=>{
-              console.log(data);
-              if(!data){
-                console.log("no member");
-                this.presentAlert("Property Not Joined Yet !!","Please Ask Property Owner to Invite to Join ","")
-              }else{
-                this.checkIfInvited(this.loggeduserEmail);
-              }
+              console.log(data[0].gym_id); // here possible get 2 or more gym data then 
+              
             });
           }
         },

@@ -21,7 +21,12 @@ export class MemberserviceService {
 
   baseUri : string = environment.SERVER;
   
-  headers = new HttpHeaders().set('Content-Type', 'application/json');
+  headers = new HttpHeaders()
+            .set('Content-Type', 'application/json')
+            .set('Access-Control-Allow-Origin', '*')
+            .set('Content-Type', 'application/x-www-form-urlencoded');
+            
+
 
   constructor(private http: HttpClient) { }
 
@@ -52,11 +57,11 @@ export class MemberserviceService {
   }
 
 
-  getMemberByEmail(email: any): Observable<Member> {
+  getMemberByEmail(email: any): Observable<Member[]> {
     console.log("i m in get member by email search ");
     console.log(email);
     console.log(`${baseUrl}/email/${email}`);
-    return this.http.get(`${baseUrl}/email/${email}`);
+    return this.http.get<Member[]>(`${baseUrl}/email/${email}`);
   }
 
   addMember(data: any): Observable<any> {
@@ -98,17 +103,24 @@ export class MemberserviceService {
   }
 
    //get member by GYM ID and email
-   getMemberByEmailOfGymId(email:any,gym_id:any): Observable<Member> {
-    console.log("i m in wild search loop");
-    let queryParams = new HttpParams();
-    queryParams = queryParams.append("email",email);
-    queryParams = queryParams.append("gym_id",gym_id);
-    console.log(`${baseUrl}/gym_mail/`,{params:queryParams});
-    return this.http.get<Member>(`${baseUrl}/gym_mail/`,{params:queryParams}).pipe(catchError(this.errorMgmt));
-    // catchError(this.errorMgmt);    
-
-    // this.http.get(`${baseUrl}/gym_mail/`,{params:queryParams}).pipe(map(data =>  data as Member[]));
+   getMemberByEmailOfGymId(email,gym_id):Observable<Member> {
+    console.log("i m in getMemberByEmailOfGymId   search loop");
+    // let queryParams = {
+    //   "email": email,
+    // //   "gym_id": gym_id,
+    // // }
+    // let queryParams = new HttpParams();
+    // // .set('email',email)
+    // // .set('gym_id',gym_id);
+    // queryParams = queryParams.append('email',email);
+    // queryParams = queryParams.append('gym_id',gym_id);
+    // console.log(`${baseUrl}/gym_mail/`,{params:queryParams});
+    // return this.http.post(`${baseUrl}/gym_mail_post/`,queryParams).pipe(catchError(this.errorMgmt));
+    // catchError(this.errorMgmt); 
+    // this.http.get<Member>(`${baseUrl}/gym_mail/`,{params:queryParams});
     // return this.watchAllMembers().pipe(catchError(this.errorMgmt));
+    console.log(`${baseUrl}/gym_mail?email=${email}&gym_id=${gym_id}`);
+    return this.http.get(`${baseUrl}/gym_mail?email=${email}&gym_id=${gym_id}`).pipe(catchError(this.errorMgmt));
   }
 
   //to display all members of particular gym

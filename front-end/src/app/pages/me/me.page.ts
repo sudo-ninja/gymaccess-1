@@ -124,9 +124,9 @@ export class MePage implements OnInit {
         return;
       }else{
         console.log(res);
-      this.memberGymId = res.gym_id;
-      this.memberId = res._id;
-      this.memberName = res.m_name;
+      this.memberGymId = res[0].gym_id;
+      this.memberId = res[0]._id;
+      this.memberName = res[0].m_name;
       console.log(this.memberGymId);
 
       this.gymApi.getGym(this.memberGymId).subscribe((res)=>{
