@@ -39,7 +39,7 @@ export class MemberinforPage implements OnInit {
 
   currentGym : any;
   defaultJoinedGym :any;
-  joinedGym:any=[];
+  joinedGyms:any[] =[];
 
   loggeduser: any; // serviceprovider means admin as he is providing service to members.
   loggeduserName:any;
@@ -69,6 +69,7 @@ export class MemberinforPage implements OnInit {
   lastDate: any;
   MyDefaultGymValue:any;
   _gym_id: any;
+  MyDefaultGymValueId: any;
 
   constructor(
     private AttendanceApi:AttendanceService,
@@ -94,17 +95,16 @@ export class MemberinforPage implements OnInit {
       this.MyDefaultGymValue = gd;
     });
 
-    this.MyDefaultGymValue = localStorage.getItem('defaultGymId');
+    this.MyDefaultGymValue = localStorage.getItem('defaultjoinedGymId');
     console.log("My Default Gym value",this.MyDefaultGymValue);
 
-    this.storageService.get('joinedGymList').then((val) => {
-      // console.log(val); // here we store once fetched gym data
-        // this.joinedGym = val;
-    });
+   
 
-     this.storageService.get('defaultJoinedGym').then((val)=>{
-      console.log("line number 93 ", val);
-     });
+    //     this.storageService.get('joinedGymList').then((val)=>{
+      
+    //   this.joinedGyms.push(val);
+    //   console.log("line number 103 XXXXXXXXXXXXXXXXXXXXXXX ", this.joinedGyms);
+    //  });
      this.isUserMember(this.loggeduser.email,this.MyDefaultGymValue);
 
 // get member by email , get ID from here 
@@ -141,17 +141,17 @@ console.log(this.memberID);
   ionViewWillEnter(){
     this.savedJoinedGyms(this.loggeduser.email);
     console.log("Ion View WIll Enter in Member infor page");
-    this.storageService.get('defaultGymId').then((gd)=>{
-      this.MyDefaultGymValue = gd;
-    });
+    // this.storageService.get('defaultGymId').then((gd)=>{
+    //   this.MyDefaultGymValue = gd;
+    // });
 
-    this.MyDefaultGymValue = localStorage.getItem('defaultGymId');
-    console.log("My Default Gym value",this.MyDefaultGymValue);
+    // this.MyDefaultGymValue = localStorage.getItem('defaultGymId');
+    // console.log("My Default Gym value",this.MyDefaultGymValue);
 
-    this.storageService.get('joinedGymList').then((val) => {
-      // console.log(val); // here we store once fetched gym data
-        // this.joinedGym = val;
-    });
+    // this.storageService.get('joinedGymList').then((val) => {
+    //   // console.log(val); // here we store once fetched gym data
+    //     // this.joinedGyms = val;
+    // });
   }
  
 
@@ -169,14 +169,14 @@ Start_Date_ISO:any;
 // if he is not member or deleted by gym then page must route back to home page 
 isUserMember(email,gymid){
   this.memberApi.getMemberByEmailOfGymId(email,gymid).subscribe((data:any)=>{
-    console.log(new Date(data.m_startdate*1));
-    console.log(this.Start_Date);
-      console.log(this.Start_Date_ISO);
-      console.log(this.memberStartDate);
-    this.memberID = data._id;
+    // console.log(new Date(data.m_startdate*1));
+    // console.log(this.Start_Date);
+    //   console.log(this.Start_Date_ISO);
+    //   console.log(this.memberStartDate);    
     if(!data){      
       this.router.navigateByUrl('/home',{replaceUrl: true,});
     }else{
+      this.memberID = data._id;
       console.log(data._id);
       this.memberId = data._id;
       this.memberEndDate = data.m_enddate*1; // in Unix millisecond formate
@@ -211,6 +211,10 @@ isUserMember(email,gymid){
 getMemberAttendances(mId:any){
   console.log(mId);
 this.AttendanceApi.getMemberAttendance(mId).subscribe((data:any)=>{
+  console.log("Attendance Data KKKKKKKKKKGGGGGGGGGGGGHHHJJ****************",data.length);
+  if(data.length===0){
+    console.log("Not Yet Attended");
+  }else{ 
   this.attendedDates = data[0].checkin_date;
   console.log(this.attendedDates);
   this.memberAttendances = data.length;
@@ -225,6 +229,8 @@ this.AttendanceApi.getMemberAttendance(mId).subscribe((data:any)=>{
     );
    }
    this.highlightedDates = this.highlightedDates_m;
+
+  } 
 });
 
 console.log(this.highlightedDates_m);
@@ -434,14 +440,18 @@ async rechargeRequestAlertFirst(){
  };
 
  //joined gymlist save in array 
- async savedJoinedGyms(email){
+//joined gymlist save in array 
+async savedJoinedGyms(email){
+  console.log("+++++++++++++++++++");
   this.memberApi.getMemberByEmail(email).subscribe((res)=>{
-    //as of now it will show only 1 member ..but need to change at back end to show more members
-    //make change and back end use find instead of findone.
-     
+    for (let i = 0; i <res.length; i++) {
+         this.gymApi.getGym(res[i].gym_id).subscribe((data)=>{
+          console.log("DATA FROM SAVED JOINED GYM ******",data);
+          this.joinedGyms.push(data);      
+          });
+    };
   });
-
-   
+  console.log("UUUUUUUU****",this.joinedGyms);
 }
 
 selecthandleChange(ev){
@@ -449,15 +459,15 @@ selecthandleChange(ev){
   this.currentGym = ev.target.value;
   this.MyDefaultGymValue = ev.target.value;
   console.log(this.MyDefaultGymValue);
-  // console.log(ev);
+  console.log(ev);
   this._gym_id = this.currentGym;
   // console.log(this._gym_id);
   this.isUserMember(this.loggeduser.email,this.MyDefaultGymValue);  
   }
 
 compareWithFn(o1, o2) {
-    // return o1 && o2 ? o1._id == o2._id : o1 == o2;
-    return o1 === o2;
+    return o1 && o2 ? o1._id == o2._id : o1 == o2;
+    // return o1 === o2;
   }
 
   

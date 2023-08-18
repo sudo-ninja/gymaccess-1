@@ -795,30 +795,33 @@ selecthandleChange(ev){
 
   //joined gymlist save in array 
   async savedJoinedGyms(email){
-    
+    console.log("+++++++++++++++++++");
     this.memberApi.getMemberByEmail(email).subscribe((res)=>{
       //as of now it will show only 1 member ..but need to change at back end to show more members
       //make change and back end use find instead of findone.
       for (let i = 0; i <res.length; i++) {
         // make array of image objects
         // this.joinedGyms.push(
-          console.log(this.gymApi.getGym(res[i].gym_id).subscribe((data)=>{return data;}));
+          this.gymApi.getGym(res[i].gym_id).subscribe((data)=>{
+            console.log("DATA FROM SAVED JOINED GYM ******",data);
+            this.joinedGyms.push(data);
+        
+            });
         // );
       };
-
     });
+    console.log("UUUUUUUU****",this.joinedGyms);
   }
 
   async joinMore(){
     console.log("join more ");
     //present alert telling to join scan the QR code of Owner Property.
-
-    
+    this.ScanToJoin();    
      this.popover.dismiss();
   }
 
   //to join more property 
-  async ScanToJoin(event){//based on this event check from 
+  async ScanToJoin(){//based on this event check from where this coming
     this.startScantoJoin();
   }
 

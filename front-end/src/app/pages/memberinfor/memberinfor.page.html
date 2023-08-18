@@ -19,7 +19,7 @@ class="ion-no-border"
           multiple="false"
           shape="round"
         >
-          <ion-select-option *ngFor="let gym  of joinedGym" [value]="gym._id">{{ gym.gym_name | uppercase}}</ion-select-option>
+          <ion-select-option *ngFor="let gym  of joinedGyms" [value]="gym._id">{{ gym.gym_name | uppercase}}</ion-select-option>
         </ion-select>
       </ion-item>
     </ion-list>

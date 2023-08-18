@@ -98,6 +98,7 @@ export class PersonalinformationPage implements OnInit {
     this.adminName = this.loggeduser.username;
     this.adminMobile = this.loggeduser.mobile;
     this.adminEmail = this.loggeduser.email;
+    // get default gym and selected gym using ion select same use in infor page and then change data based on member id 
 
   }
 

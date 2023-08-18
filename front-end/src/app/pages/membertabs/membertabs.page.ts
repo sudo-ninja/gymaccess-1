@@ -99,8 +99,7 @@ async savedJoinedGyms(email){
   this.memberApi.getMemberByEmail(email).subscribe((res)=>{
     console.log(res);
     //as of now it will show only 1 member ..but need to change at back end to show more members
-    //make change and back end use find instead of findone.
-    
+    //make change and back end use find instead of findone.    
   });
 }
 
