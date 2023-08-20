@@ -151,6 +151,7 @@ export class HomePage implements OnInit{
                 }else{
                   if(res[0].isInviteAccepted ==="Yes"){
                     this.router.navigateByUrl('/tabs/member-action', {replaceUrl: true});
+                    localStorage.setItem('defaultjoinedGymId',res[0].gym_id);
                   }else{
                     this.router.navigateByUrl('home', {replaceUrl: true}); // if member have not accepted invitaion yet let him be stay at home page
                                }
@@ -274,6 +275,7 @@ logs: string[] = [];
                           this.memberApi.getMember(data.member_id).subscribe((res)=>{
                             this.gymApi.getGym(res.gym_id).subscribe((gym)=>{
                               localStorage.setItem('defaultjoinedGymId',gym._id);
+                              this.storageService.store('defaultjoinedGymId',gym._id);
                               this.storageService.store('joinedGymList',gym);
                             });
                             
@@ -349,12 +351,16 @@ logs: string[] = [];
   {
     console.log("in invitaion code setup");
     this.memberApi.update(MemberId,{
-      "isInviteAccepted":Yes // Status Change to Yes
+      "isInviteAccepted":"Yes" // Status Change to Yes
     }).subscribe({
       next: (res: any) => {
       const id = res._id;
       console.log('invitaion type change to Yes');
+      if(res.isInviteAccepted == "Yes"){
       this.deletInvitationCodeData(MControlId); //delet code once updated invitation accepted is updated
+      }else{
+        console.log("Member Data not Updated to Invitation Accepted");
+      }
     }, 
     error:(err: any) => { console.log(err)  }
     });    

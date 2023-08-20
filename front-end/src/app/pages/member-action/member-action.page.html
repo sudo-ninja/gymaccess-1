@@ -13,19 +13,34 @@
           <ion-avatar slot="start" (click)="personalInformation()">
             <img [src]= "userProfileImage" >
           </ion-avatar>
+          
+          <!-- <ion-select 
+          #selectElem 
+            mode="ios"
+            aria-label="Property"
+            placeholder="Select Property" 
+            (ionChange)="selecthandleChange($event)" 
+            [compareWith]="compareWith"
+            value="{{MyDefaultJoinedGymValue}}" 
+            slot="end">
+            <ion-select-option *ngFor="let gym of joinedGyms" value="{{gym.gym_id}}"> {{gym.gym_name | uppercase}}</ion-select-option>
+            <ion-select-option value="banana">Banana</ion-select-option>
+          </ion-select> -->
           <ion-buttons slot="end">
             <ion-button fill="clear" id="popover">
               <ion-icon class="ion-icon" slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
             </ion-button>
           </ion-buttons>
-          <ion-popover mod="ios" #popover trigger="popover" triggerAction="click">
+		  
+		  
+ <ion-popover mod="ios" #popover trigger="popover" triggerAction="click">
             <ng-template>
               <ion-content>
                 <ion-list-header>
                   <ion-label><strong>Joined Property's</strong></ion-label>
                 </ion-list-header>
                 <ion-list *ngFor="let gym of joinedGyms" >
-                  <ion-item (click)="getMemberofGymId(gym._id)">
+                  <ion-item (click)="getMemberofGymId(gym.gym_id)">
                     <ion-label>{{gym.gym_name}}</ion-label>
                   </ion-item>                  
                 </ion-list>

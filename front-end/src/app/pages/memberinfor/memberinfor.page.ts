@@ -91,10 +91,9 @@ export class MemberinforPage implements OnInit {
     this.loggeduserName = this.loggeduser.username;
     this.storageService.store('loggeduser_id',this.loggeduser._id);
 
-    this.storageService.get('defaultGymId').then((gd)=>{
-      this.MyDefaultGymValue = gd;
+    this.storageService.get('defaultjoinedGymId').then(value=>{
+      this.MyDefaultGymValue = value;  
     });
-
     this.MyDefaultGymValue = localStorage.getItem('defaultjoinedGymId');
     console.log("My Default Gym value",this.MyDefaultGymValue);
 
@@ -105,7 +104,7 @@ export class MemberinforPage implements OnInit {
     //   this.joinedGyms.push(val);
     //   console.log("line number 103 XXXXXXXXXXXXXXXXXXXXXXX ", this.joinedGyms);
     //  });
-     this.isUserMember(this.loggeduser.email,this.MyDefaultGymValue);
+    //  this.isUserMember(this.loggeduser.email,this.MyDefaultGymValue);
 
 // get member by email , get ID from here 
 
@@ -140,18 +139,8 @@ console.log(this.memberID);
 
   ionViewWillEnter(){
     this.savedJoinedGyms(this.loggeduser.email);
+    this.isUserMember(this.loggeduser.email,this.MyDefaultGymValue);
     console.log("Ion View WIll Enter in Member infor page");
-    // this.storageService.get('defaultGymId').then((gd)=>{
-    //   this.MyDefaultGymValue = gd;
-    // });
-
-    // this.MyDefaultGymValue = localStorage.getItem('defaultGymId');
-    // console.log("My Default Gym value",this.MyDefaultGymValue);
-
-    // this.storageService.get('joinedGymList').then((val) => {
-    //   // console.log(val); // here we store once fetched gym data
-    //     // this.joinedGyms = val;
-    // });
   }
  
 
@@ -446,12 +435,15 @@ async savedJoinedGyms(email){
   this.memberApi.getMemberByEmail(email).subscribe((res)=>{
     for (let i = 0; i <res.length; i++) {
          this.gymApi.getGym(res[i].gym_id).subscribe((data)=>{
-          console.log("DATA FROM SAVED JOINED GYM ******",data);
-          this.joinedGyms.push(data);      
+          if(!this.joinedGyms.includes(data)){
+            console.log("DATA FROM SAVED JOINED GYM ******",data);
+            this.joinedGyms.push(data); 
+          } return;    
           });
     };
   });
   console.log("UUUUUUUU****",this.joinedGyms);
+
 }
 
 selecthandleChange(ev){

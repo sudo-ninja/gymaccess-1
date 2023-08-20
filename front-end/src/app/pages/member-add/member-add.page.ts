@@ -5,6 +5,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {MemberserviceService} from 'src/app/services/memberservice.service';
 import { AlertController, ModalController } from '@ionic/angular';
 import { parseISO } from 'date-fns';
+//get gym details
+import { GymService } from 'src/app/services/gym.service';
 
 // to get storage
 import { StorageService } from 'src/app/services/storage.service';
@@ -37,6 +39,7 @@ export class MemberAddPage {
   
   memberForm!: FormGroup;
     gym_id='';
+    gym_name='';
     m_name='';
     Emergency_mobile='';
     mobile= '';
@@ -68,6 +71,9 @@ export class MemberAddPage {
     // used to conver input text value into lowercase
   _textValue:string
   defaultTime:any;
+  gym_name_: string;
+  default_gym: string;
+  default_gym_name: string;
 
 
 
@@ -78,10 +84,18 @@ export class MemberAddPage {
     private alertCtrl: AlertController,
     public memberApi:MemberserviceService,
     private navCtrl : NavController,
+    private gymApi:GymService,
    
   ) {
     // get gym id from sesson storage here 
-    this.defaultGymID =sessionStorage.getItem('defaultGymId'); 
+    this.default_gym = localStorage.getItem('DefaultGym');
+    console.log(this.default_gym);
+    
+     
+    this.gymApi.getGym(this.defaultGymID).subscribe((res)=>{
+      console.log(res);
+    });
+    
     console.log("Default Gym ID..=", this.defaultGymID);
     // this.defaultTime= Date().toLocaleString();
     this.defaultTime = Date.now();
@@ -96,8 +110,16 @@ export class MemberAddPage {
       // this.selectAccessType(this.AccessType);
       // this.selectMemberType(this.MemberType);
       console.log("GYM ID FROM GYM PAGE..= ",localStorage.getItem('gymID'));
+      this.gymApi.getGym(localStorage.getItem('gymID')).subscribe(res=>{
+        console.log(res.gym_name);
+        this.default_gym_name = res.gym_name;
+      })
+      console.log("GYM Name FROM GYM PAGE..= ",this.default_gym_name);
+
+
       this.memberForm = this.formBuilder.group({
         'gym_id' : [localStorage.getItem('gymID'), Validators.required],
+        'gym_name':[this.default_gym_name],
         'm_name' : [null, [
           Validators.required,
           Validators.minLength(3),

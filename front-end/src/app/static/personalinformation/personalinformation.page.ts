@@ -31,13 +31,13 @@ export class PersonalinformationPage implements OnInit {
   //for countdown time
   private subscription: Subscription;
 
-  loggeduserIsAdmin: boolean = false;
-  loggeduserIsMember: boolean = false;
-  AdminCumMember:boolean = false;
+  loggeduserIsAdmin: boolean ;
+  loggeduserIsMember: boolean ;
+  AdminCumMember:boolean ;
 
-  userIsAdmin  :boolean = false;
-  userIsMember :boolean = false;
-  userIsBoth   :boolean = false;
+  userIsAdmin  :boolean;
+  userIsMember :boolean;
+  userIsBoth   :boolean;
 
   adminName: any;
   adminEmail: any;
@@ -76,8 +76,11 @@ export class PersonalinformationPage implements OnInit {
   countdownSeconds: number;
   countDownStarted: boolean = false;
 
-  joinedGyms: any;
+  joinedGyms:any []=[]; //initialize empty array so that it can store data using push 
   joinedGymName: string;
+  currentGym: any;
+  MyDefaultGymValue: any;
+  _gym_id: any;
 
   constructor(
     private memberApi: MemberserviceService,
@@ -100,19 +103,29 @@ export class PersonalinformationPage implements OnInit {
     this.adminEmail = this.loggeduser.email;
     // get default gym and selected gym using ion select same use in infor page and then change data based on member id 
 
+    this.MyDefaultGymValue = localStorage.getItem('defaultjoinedGymId');
+    console.log("My Default Gym value",this.MyDefaultGymValue);
+
+    this.setLoggedUserRole();
+
   }
 
   ngOnInit() {
     //re 180 second means  180 000 milisecon
-    this.setLoggedUserRole();
+    // this.setLoggedUserRole();
+    this.savedJoinedGyms(this.loggeduser.email);
     console.log(this.userIsMember);
 
     if (this.userIsMember) { 
-      // this.getMemberInfo(this.adminEmail); 
+      this.getMemberInfo(this.adminEmail,this.MyDefaultGymValue); 
   }
 }
 
   async setLoggedUserRole(){
+    this.loggeduserIsAdmin = false;
+    this.loggeduserIsMember = false;
+    this.AdminCumMember = false;
+
     console.log(this.adminEmail);
     this.userApi.getUserbyEmail(this.adminEmail).subscribe((res) => {
       console.log(res.isMember);
@@ -132,7 +145,7 @@ export class PersonalinformationPage implements OnInit {
         return;
       } else if(res.isMember){
         console.log(res.isMember);
-        // this.getMemberInfo(this.adminEmail); 
+        this.getMemberInfo(this.adminEmail,this.MyDefaultGymValue); 
         this.loggeduserIsMember = true;
         this.userIsBoth = false;
         this.userIsMember = true;
@@ -167,9 +180,10 @@ export class PersonalinformationPage implements OnInit {
       this.member_address_long = data.m_address_long;
       this.memberAcceptedinvitation = data.isInviteAccepted;
       this.memberType = data.memberType;
-      this.memberId = data._id;
-     
-    });   
+      this.memberId = data._id;     
+    });  
+    
+    this.getJoinedGymDetails(gymID)
   }
 
     async getJoinedGymDetails(gymid){
@@ -179,6 +193,13 @@ export class PersonalinformationPage implements OnInit {
     }
 
   onDeleteAccount(email: any) {
+    //check if user is member or admin ..
+    //if user is member 
+    // then check if multiple gym is joined 
+    //if multiple gym is joined then show alert to select gym from where specific gym id is picked up 
+    //then make delet request and send request to admin 
+    //if admin accept then only delet
+    
     console.log(email);
     this.userApi.getUserbyEmail(email).subscribe((res) => {
       console.log(res._id);
@@ -451,5 +472,41 @@ export class PersonalinformationPage implements OnInit {
   this.router.navigateByUrl('/gymtabs/member-list');
  }
 }
+
+ionViewWillEnter(){
+
+  // this.savedJoinedGyms(this.loggeduser.email);
+  console.log("Ion View WIll Enter in Personal Information page");
+}
+
+//joined gymlist save in array 
+async savedJoinedGyms(email){
+  console.log("+++++++++++++++++++",email);
+  this.memberApi.getMemberByEmail(email).subscribe((res)=>{
+    for (let i = 0; i <res.length; i++) {
+         this.gymApi.getGym(res[i].gym_id).subscribe((data)=>{
+          console.log("DATA FROM SAVED JOINED OF PERSONAL INFORMATION GYM ******",data);
+          this.joinedGyms.push(data);      
+          });
+    };
+  });
+  console.log("UUUUUUUU****",this.joinedGyms);
+}
+
+selecthandleChange(ev){
+  console.log(ev.target.value);
+  this.currentGym = ev.target.value;
+  this.MyDefaultGymValue = ev.target.value;
+  console.log(this.MyDefaultGymValue);
+  console.log(ev);
+  this._gym_id = this.currentGym;
+  // console.log(this._gym_id);
+  // this.isUserMember(this.loggeduser.email,this.MyDefaultGymValue);  
+  }
+
+compareWith(o1, o2) {
+    return o1 && o2 ? o1._id == o2._id : o1 == o2;
+    // return o1 === o2;
+  }
 
 }

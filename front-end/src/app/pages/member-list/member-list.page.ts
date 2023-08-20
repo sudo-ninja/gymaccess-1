@@ -223,9 +223,9 @@ export class MemberListPage  {
     // this.getMembers();
     // this.getGyms();
     // for select default gym in gym selector
-    const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Gym list page
-    this.MyDefaultGymValue = JSON.parse(defaultGym)._id;
-    this._gym_id = this.MyDefaultGymValue;
+    const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Add Gym as soon as Gym Added first gym become Gym list page
+    this.MyDefaultGymValue = JSON.parse(defaultGym)._id; // key value saved as string so parse this to get object data
+    this._gym_id = this.MyDefaultGymValue; // intial value of gym is taken as default value 
     console.log(this._gym_id); // this default Gym got from Gym List page ( first added Gym become Default Gym)
     this.storageService.get('gymList').then((val) => {
       // console.log(val); // here we store once fetched gym data
@@ -282,14 +282,12 @@ export class MemberListPage  {
    }
 
    async getGyms(){
-    this.gymApi.wildSearch(this.loggeduser._id).subscribe(
+    this.gymApi.wildSearch(this.loggeduser._id).subscribe( // search gym by email ID
       (data:any)=>{
         console.log(data.slice());
         this.gyms = data.slice(); // from here passing data to gym selector  for list of gyms   
     }
-    );
-
-    
+    );    
   }
   
     
@@ -945,7 +943,7 @@ selecthandleChange(ev){
 this.currentGym = ev.target.value;
 this.MyDefaultGymValue = ev.target.value;
 console.log(ev);
-this._gym_id = this.currentGym;
+this._gym_id = this.currentGym; // this is changing defalt GYM ID for admin app as _gym_id is useed as gymID in local storage
 console.log(this._gym_id);
 this.getMembers();
 this.compareWithFn(this._gym_id,ev.target.value);

@@ -47,6 +47,7 @@ export class GymAddPage implements OnInit {
   loggedUserEmail:any;  
   
   gymId:any;
+  gymIdName:any;
 // for modal controller
   @ViewChild(GmapPage, {static : true}) gmap : GmapPage;
   gymLAT: string;
@@ -210,6 +211,7 @@ export class GymAddPage implements OnInit {
     } else {
       return this.gymApi.addGym(this.gymForm.value).subscribe((res: any) => {
         this.gymId = res._id;
+        this.gymIdName = res.gym_name;
         // localStorage.setItem('ID',JSON.stringify(id));
         // this.isLoadingResults = false;
       localStorage.setItem('GYM',JSON.stringify(res)) // trick use to transfer added gym info gym list page

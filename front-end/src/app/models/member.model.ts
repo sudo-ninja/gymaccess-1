@@ -2,6 +2,7 @@ export class Member {
 _id?:any;
 m_name?:string;
 gym_id?:string;
+gym_name?:string;
 email?:string;
 aadhar?:string;
 mobile?:string;

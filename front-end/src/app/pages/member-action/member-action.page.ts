@@ -33,6 +33,7 @@ import { environment } from 'src/environments/environment.prod';
 //for google login
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { StorageService } from 'src/app/services/storage.service';
+import { McontrolService } from 'src/app/services/mcontrol.service';
 
 
 @Component({
@@ -101,14 +102,15 @@ export class MemberActionPage implements OnInit {
   selectedService:any;
   scanActive: boolean = false;
   currentGym: any;
-  MyDefaultGymValue: any;
+  MyDefaultJoinedGymValue: any;
   _gym_id: any;
   userProfileImage: string;
   user: null;
   
   memberForm!: FormGroup;
   userMobile: string;
-  defaultGymId_store: string;
+  defaultGymId_store: any;
+  joiningGymName: string;
 
   // install https://github.com/capacitor-community/barcode-scanner plugin 
 
@@ -128,6 +130,8 @@ export class MemberActionPage implements OnInit {
     private bannerApi:BannerService,
 //user api
       private userApi:UserService,
+      // member control service to check if user is invited or not
+      private memberControlApi: McontrolService,
 
   private storageService :StorageService, // storage service is used insted of get set method
 
@@ -168,12 +172,24 @@ export class MemberActionPage implements OnInit {
       console.log(this.memberEndDate);
       //get default gym list data 
        console.log("DEFAULT GYM ID IN CONSTRUCTOR ",localStorage.getItem('defaultjoinedGymId'));
-       this.defaultGymId_store = localStorage.getItem('defaultjoinedGymId');
+       this.storageService.get('defaultjoinedGymId').then(value=>{
+        this.defaultGymId_store = value;
+       });
+      //  this.defaultGymId_store = localStorage.getItem('defaultjoinedGymId');
        
 
       this.storageService.get('joinedGymList').then((val)=>{
       console.log(val);
     });
+
+
+
+    
+    this.MyDefaultJoinedGymValue = localStorage.getItem('defaultjoinedGymId'); // got default GYM value from Add Gym as soon as Gym Added first gym become Gym list page
+  //  this.MyDefaultJoinedGymValue = JSON.parse(defaultGym)._id; // key value saved as string so parse this to get object data
+   this._gym_id = this.MyDefaultJoinedGymValue; // intial value of gym is taken as default value 
+   console.log("this gym id ***** constructor 187",this._gym_id);
+ 
 
   }
 
@@ -184,6 +200,7 @@ export class MemberActionPage implements OnInit {
 
   ngOnInit() {
     // this.isUserMember(this.loggeduser.email);
+    this.getMembers();
     // to get default data in ion select 
     this.compareWith = this.compareWithFn;
 
@@ -265,16 +282,30 @@ export class MemberActionPage implements OnInit {
   }
 
   ionViewWillEnter(){
-     this.isUserMember(this.loggedUserEmail); // to chekc user available in member DB or not?
+    //  this.isUserMember(this.loggedUserEmail); // to chekc user available in member DB or not?
     //  this.getMemberofGymId(this.defaultGymId_store);
      console.log("Ion View Will Enter");
+     this.getMembers();
+     this.getGyms();
     
   }
 
+  async getGyms(){
+    this.memberApi.getMemberByEmail(this.loggeduser.email).subscribe( // search member by email ID
+      (data:any)=>{
+        console.log(data.slice());
+        this.joinedGyms = data.slice(); // from here passing data to gym selector  for list of gyms   
+    }
+    );    
+  }  
+
   async getMemberofGymId(gymid){
     console.log("GYM ID from getMemberbyGymID : 275 ",gymid);
+    localStorage.setItem('defaultjoinedGymId',gymid);
+    this.storageService.store('defaultjoinedGymId',gymid);
       this.getMemberbyGymIdandEmail(gymid,this.loggedUserEmail);
       this.popover.dismiss(); // to close popover
+      // loading.dismiss();
     }
 
   async getMemberbyGymIdandEmail(gymid,email){
@@ -317,6 +348,7 @@ export class MemberActionPage implements OnInit {
       await BarcodeScanner.hideBackground();// make background of WebView transparent
       this.ishidden = false;
       this.scanActive = true;
+      this.storageService.store("scanActive","true");
 
       document.querySelector('body').classList.add('scanner-active');
       this.content_visibility = 'hidden';
@@ -356,6 +388,8 @@ export class MemberActionPage implements OnInit {
     this.content_visibility = '';
     this.scanActive = false;
     this.ishidden = true;
+    this.storageService.store("scanActive","false");
+    this.storageService.removeItem("scanActive");
   }
 
   ngOnDestroy(): void {
@@ -747,7 +781,8 @@ memberActionSelected(){
 handleRefresh(event) {
   setTimeout(() => {
     // here write API 
-    this.isUserMember(this.loggedUserEmail);
+    // this.isUserMember(this.loggedUserEmail);
+    this.getMembers();
     event.target.complete();
   }, 2000);
 };
@@ -770,8 +805,8 @@ async successAlert(header:string,subheader:string, message:string) {
 
 selecthandleChange(ev){
   this.currentGym = ev.target.value;
-  this.MyDefaultGymValue = ev.target.value;
-  console.log(ev);
+  this.MyDefaultJoinedGymValue = ev.target.value;
+  console.log("Select Handle Change event",ev);
   this._gym_id = this.currentGym;
   console.log(this._gym_id);
   this.getMembers();
@@ -783,8 +818,18 @@ selecthandleChange(ev){
     return o1 === o2;
   };
 
-  getMembers() {
-    throw new Error('Method not implemented.');
+  async getMembers() {
+    console.log('get data from member list');
+    // const loading = await this.loadingController.create({
+    //   message: 'Loading....'
+    // });
+    // await loading.present();
+    // to store gym id as same will be used on other page to know what gym is selected by viewer
+    this.storageService.store('defaultjoinedGymId',this._gym_id);
+    localStorage.setItem('defaultjoinedGymId',this._gym_id);
+    console.log(this._gym_id);
+    this.getMemberofGymId(this._gym_id);
+   
   }
 
   // route to person information page 
@@ -803,21 +848,56 @@ selecthandleChange(ev){
         // make array of image objects
         // this.joinedGyms.push(
           this.gymApi.getGym(res[i].gym_id).subscribe((data)=>{
-            console.log("DATA FROM SAVED JOINED GYM ******",data);
-            this.joinedGyms.push(data);
-        
+            if(!this.joinedGyms.includes(data)){
+              console.log("DATA FROM SAVED JOINED GYM ******",data);
+              this.joinedGyms.push(data); 
+            } return;
+               
             });
         // );
       };
     });
     console.log("UUUUUUUU****",this.joinedGyms);
+    this.defaultGymId_store = this.joinedGyms[0];
   }
 
   async joinMore(){
     console.log("join more ");
+    this.fetchLocation(); // to fetch approx current location
     //present alert telling to join scan the QR code of Owner Property.
-    this.ScanToJoin();    
+    this.presentJoinAlert("Joining New Property ","Select Method of Joining","");
+     
      this.popover.dismiss();
+  }
+
+  async presentJoinAlert(header,subheader,message){
+    const alert = await this.alertCtrl.create({
+      header:header,
+      subHeader: subheader,
+      message:message,
+      mode:'ios',
+      // cssClass : 'customGreenAlert',
+      buttons: [
+        {
+          text: 'QR Scan',
+          role: 'cancel',
+          handler: () => {
+            this.ScanToJoin();  
+            // this.handlerMessage = 'Alert canceled';
+          },
+        },
+        {
+          text: 'Invitation Code',
+          role: 'confirm',
+          handler: () => {
+            this.checkIfInvited(this.loggeduser.email);
+            // this.handlerMessage = 'Alert confirmed';
+          },
+        },
+      ],
+    });
+    await alert.present();
+
   }
 
   //to join more property 
@@ -834,6 +914,7 @@ selecthandleChange(ev){
         await BarcodeScanner.hideBackground();// make background of WebView transparent
         this.ishidden = false;
         this.scanActive = true;
+        this.storageService.store("scanActive","true");
   
         document.querySelector('body').classList.add('scanner-active');
         this.content_visibility = 'hidden';
@@ -867,17 +948,8 @@ selecthandleChange(ev){
         this.presentAlert("Warning !","Not a Valid QR Code" , "Try with valid QR code");
         return;
       }else{
-        //check if logged user is already member of this gym id 
-        this.memberApi.getMemberByEmailOfGymId(this.loggedUserEmail,scannedRes).subscribe((data)=>{
-          if(!data){
-            this.addMebyGymId(res._id);
-
-          }else {
-            this.presentAlert(" Wrong Selection!","You Are Already Member of this Gym","Contact Admin!");
-          }
-        });
-
-        
+        //check if logged user is already member of this gym id
+        this.addMebyGymId(res._id);        
       }
 
     });
@@ -888,11 +960,16 @@ selecthandleChange(ev){
     this._user.getUserbyEmail(this.loggedUserEmail).subscribe((res)=>{
       this.userMobile = res.mobile;
     });
+    //get gym name
+    this.gymApi.getGym(gymid).subscribe((gym)=>{
+      this.joiningGymName = gym.gym_name;
+    });
     //to get mobile number either ask user to enter or get from previous joined information 
     //here using from previus joined gym and member id 
 
     this.memberForm = this.formBuilder.group({
       'gym_id' : [gymid, Validators.required],
+      'gym_name':[this.joiningGymName],
       'm_name' : [this.loggedUserName, Validators.required],
       'Emergency_mobile': [this.userMobile, Validators.required],
       'mobile': [this.userMobile, Validators.required],
@@ -901,8 +978,8 @@ selecthandleChange(ev){
       'memberType': ['member',Validators.required],
       'm_joindate': [Date.now(), Validators.required],
       'm_accesstype': ['paid',Validators.required],
-      'm_address_lat': ['0'],
-      'm_address_long': ['0'],
+      'm_address_lat': [this.attendance_lat],
+      'm_address_long': [this.attendance_lon],
         'm_startdate':[Date.now()],
         'm_enddate':[Date.now()],
         'm_validdays':['0'],
@@ -913,19 +990,134 @@ selecthandleChange(ev){
          // as per need reverse calculation done 
     });
 
-    this.memberApi.addMember(this.memberForm).subscribe((res)=>{
-      if(!res){
-        this.presentAlert("ALERT !","Something Went Wrong","Try again");
-      }else{
-        this.presentAlert("Successfully Added","Wait For Gym Admin Approval","");
-        //get gym details
-        this.gymApi.getGym(gymid).subscribe((res)=>{
-          this.storageService.store('joinedGymList', res);
-        });
+    this.memberApi.addMember(this.memberForm).subscribe(
+      { next: res=>{
+        if(res._id){
+          this.successAlert("Successfully Added","Wait For Gym Admin Approval","");
+        }
+      },
+        error:err=>{
+          if(err.error.message.includes("user exist")){
+           this.presentAlert(" Wrong Selection!","You Are Already Member of this Property","Contact Admin!");
+          }else{
+            this.presentAlert("Some Thing Went Wrong !",err.error.message,"Contact Admin!");
+          }
+        }
         
       // console.log(data[0].gym_name); // use this info to make default select GYM value and refer this further https://forum.ionicframework.com/t/ion-select-and-default-values-ionic-4-solved/177550/5
      
       }
+    );
+  }
+
+ 
+  checkIfInvited(email:any){
+    console.log(email);
+    // member control api get detail by email id
+    this.memberControlApi.getMcontrolEmail(email).subscribe(
+      {
+        next:(res:any)=>{
+            console.log(res);
+            if(!res){
+              console.log("Please ask respective property owner to invite you to join property"); 
+              this.presentAlert("No Invitation Found!","Please ask property owner to Invite to Join property","")
+              return;
+            }else{
+              console.log("Please Enter Invitaion Code"); 
+                this.joinGymAlert();
+            } },
+       error:(err: any) => {
+              console.log(err.error.message);
+              if(err.error.message.includes("no data found with this ID")){
+                this.presentAlert("No Invitation Yet !","Please ask property owner to Invite to Join property","")
+              return;
+              }
+            }
+    }
+    );   
+
+  }
+
+   // for member join gym alert to get verification code 
+   async joinGymAlert() {
+    const alert = await this.alertCtrl.create({
+      mode:'ios',
+      header: 'Please enter Verification Code',
+      buttons: [
+                {
+                  text: 'Ok',
+                  handler: (alertData) => { //takes the data 
+                      const var_code= alertData.code_entered;
+                      console.log(var_code);
+                      // call mcontrol service 
+                      console.log(this.loggeduser.email);
+                       this.memberControlApi.getMcontrolEmail(this.loggeduser.email).subscribe((data)=>{
+                        const invitationCode = data.inviteCode;
+                        if(var_code === invitationCode){
+                          this.memberApi.getMember(data.member_id).subscribe((res)=>{
+                            localStorage.setItem('defaultjoinedGymId',res.gym_id);
+                            this.gymApi.getGym(res.gym_id).subscribe((gym)=>{
+                              localStorage.setItem('defaultjoinedGymId',gym._id);
+                              this.storageService.store('defaultjoinedGymId',gym._id);
+                              this.storageService.store('joinedGymList',gym);
+                            });
+                            
+                          });
+                          console.log("code matched");
+                          // this.router.navigateByUrl('/tabs/member-action',{replaceUrl:true}); 
+                          // this.updateUserToMember(); // here make back end table there insert joined GYm array 
+                          this.updateMemberInvitedAccepted(data.member_id,"Yes",data._id);
+                          //delete memberControlApi code as its purpose is solved
+                        }
+                       });            
+
+                  }
+              },
+           
+            ],
+      inputs: [
+        {
+          name:'code_entered',
+          placeholder: 'Verificaion Code',
+          attributes: {
+                        maxlength: 6,
+                      },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async updateMemberInvitedAccepted(MemberId:any,Yes:any, MControlId:any)
+  {
+    console.log("in invitaion code setup");
+    this.memberApi.update(MemberId,{
+      "isInviteAccepted":Yes // Status Change to Yes
+    }).subscribe({
+      next: (res: any) => {
+      const id = res._id;
+      console.log('invitaion type change to Yes');
+      if(res.isInviteAccepted == "Yes"){
+      this.deletInvitationCodeData(MemberId,MControlId); //delet code once updated invitation accepted is updated
+      }else{
+        console.log("Member Data not Updated to Invitation Accepted");
+        this.presentAlert("Invitation Not Accepted","Contact Admin","");
+      }
+    }, 
+    error:(err: any) => { 
+      this.presentAlert("Invitation Status Not Updated",err.error.message,"contact admin");
+      console.log(err)  }
+    });    
+  }
+
+  //delet invitiation code detail once member status is updated to accepted .
+  async deletInvitationCodeData(MemberId,Mcontrolid){
+    this.memberControlApi.delete(Mcontrolid).subscribe((res)=>{
+        console.log(res);
+    });
+    this.memberControlApi.getMcontrolMemberId(MemberId).subscribe((res)=>{
+      this.memberControlApi.delete(res._id)
     });
   }
 
@@ -947,3 +1139,5 @@ selecthandleChange(ev){
 
 // add slide show on member action page under DiV 
 // https://www.30secondsofcode.org/js/s/to-iso-string-with-timezone/ take from here for ISO time zone
+// f existing user try to join y invitaion code then first check if he mcontrol code of which gym id , if that
+//gym id already member then delet that code and show alert no  cound found . 
