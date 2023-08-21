@@ -4,6 +4,10 @@ import { Component, OnInit } from '@angular/core';
 import { NetworkInterface } from '@awesome-cordova-plugins/network-interface/ngx';
 import { Network } from '@capacitor/network';
 
+// for range 
+import { RangeCustomEvent } from '@ionic/angular';
+import { RangeValue } from '@ionic/core';
+
 @Component({
   selector: 'app-addlock',
   templateUrl: './addlock.page.html',
@@ -40,6 +44,31 @@ export class AddlockPage implements OnInit {
     };
   }
 
+
+  logs: string[] = [];
+
+  pushLog(msg) {
+    this.logs.unshift(msg);
+  }
+
+  handleChange(e) {
+    this.pushLog('ionChange fired with value: ' + e.detail.value);
+  }
+
+  moveStart: RangeValue;
+  moveEnd: RangeValue;
+
+  onIonKnobMoveStart(ev: Event) {
+    this.moveStart = (ev as RangeCustomEvent).detail.value;
+  }
+
+  onIonKnobMoveEnd(ev: Event) {
+    this.moveEnd = (ev as RangeCustomEvent).detail.value;
+  }
+
+  toggleButton(ev){
+    console.log("Toggle Button : -- ", ev);
+  }
  
 
 

@@ -112,26 +112,34 @@ async presentAlertDelete(msg:string, id:any){
         handler:async ()=>{
                   // console.log("delet",id);
             this.isLoadingResults= true;
-            await this.memberApi.delete(id).subscribe({
-            next:(res)=>{
-            this.isLoadingResults= false;
-            //delet invite code data aso
-            this.deletInviteData(this.member.email);
-            //delete member attendance also 
-            this.attendApi.delete_memberId(this.member._id).subscribe({});
-            // delete and set user is member false use update 
-            this.userApi.getUserbyEmail(this.member.email).subscribe({
-              next:res=>{
-                this.userApi.update(res._id,{"isMember":false}).subscribe({
-                  next:res=>{}
-                });
-              }
-            });
-            this.router.navigate(['/gymtabs/member-list']);
+            this.memberApi.delete(id).subscribe({
+            next: (res) => {
+              this.isLoadingResults = false;
+              //delet invite code data aso
+              this.deletInviteData(id);
+              //delete member attendance also 
+              this.attendApi.delete_memberId(this.member._id).subscribe({});
+              // delete and set user is member false use update 
+              this.memberApi.getMemberByEmail(this.member.email).subscribe((res) => {
+                if(res = []){
+                  this.userApi.getUserbyEmail(this.member.email).subscribe({
+                    next: res => {
+                      this.userApi.update(res._id, { "isMember": false }).subscribe({
+                        next: res => { }
+                      });
+                    }
+                  });
+                }else{
+                  // means still there is member with this email id so cant change member status
+                  
+                };
+              });
+              
+              this.router.navigate(['/gymtabs/member-list']);
             },
-            error:(err)=>{
+            error: (err) => {
               // console.log(err);
-            this.isLoadingResults= false;
+              this.isLoadingResults = false;
             }
           });
         }
@@ -154,15 +162,12 @@ async presentAlertDelete(msg:string, id:any){
   }
 
   //delet invitation data from db as soon as mmeber is deleted
-  async deletInviteData(email:any){
-     this.inviteControlApi.getMcontrolEmail(email).subscribe(
-      (res:any)=>{
-        if(!res){ return; }
-        else{
-              console.log(res);
-              this.inviteControlApi.delete(res._id);
-            }
-          });    
+  async deletInviteData(memberID:any){
+    this.inviteControlApi.getMcontrolMemberId(memberID)
+     .subscribe((res)=>{
+      console.log(res);
+      this.inviteControlApi.delete(res._id);
+     });    
   }
   
 

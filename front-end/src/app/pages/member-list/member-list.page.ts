@@ -331,6 +331,8 @@ export class MemberListPage  {
 async inviteControl(){
   this.inviteControlForm = this.formBuilder.group({
     'member_id' : ['', Validators.required],
+    'gym_id': ['', Validators.required],
+    'gym_name':['', Validators.required],
     'email' : ['', Validators.required],
     'mobile': ['', [
       Validators.required,
@@ -359,7 +361,12 @@ async getMembers(){
     message: 'Loading....'
   });
   await loading.present();
-  // to store gym id as same will be used to add member page to add member in perticular gym
+  // to store gym id as same will be used to add member page to add member in perticular 
+  this.gymApi.getGym(this._gym_id).subscribe((res)=>{
+    this.storageService.store('default_gym_name',res.gym_name);
+  localStorage.setItem('default_gym_name',res.gym_name);
+
+  })
   this.storageService.store('defaultGymId',this._gym_id);
   localStorage.setItem('gymID',this._gym_id);
   console.log(this._gym_id);
@@ -534,15 +541,11 @@ await modal.present();
   async inviteMember(uid:string){
    console.log(uid);
    this.memberApi.getMember(uid).subscribe((data)=>{
-      console.log(data);
-      // console.log(data.isInviteAccepted);
-      // console.log(data.email); // this email will search in member control DB if already this exist 
+      // console.log(data);
       // once invite accepted or time passed lets delet this from DB so one time only one code is there
       this.invitaionAccepted = data.isInviteAccepted;
-
     if(this.invitaionAccepted==="Yes"){
-        this.presentAlert('Invitation Accepted','Already Member','');
-        
+        this.presentAlert('Invitation Accepted','Already Member','');        
         console.log("disable invitation button");
         this.invitaionButtonDisabled=true;
         return;
@@ -552,7 +555,7 @@ await modal.present();
         this.CheckIfInvited(uid);
         return;
      }
-     else{  
+     else if(this.invitaionAccepted==="Not"){  
           this.CodeAlert(uid,'Invitation Code','Please Ask Member to Enter this code in JOIN GYM input *** Code Valid for 3 Days *** ');
       };
          
@@ -577,7 +580,13 @@ await modal.present();
   }
 
   async CodeAlert(uid:any,header:string,message:string){
-    //first check is isInviteAccepted == Not , for that call member API with uid   
+    console.log("In Code Alert Function .....")
+    //first check is isInviteAccepted == Not , for that call member API with uid 
+    this.memberInviteControlApi.getMcontrolMemberId(uid).subscribe((res)=>{
+      console.log(res);
+      this.setInvitaion(this.member._id, 'pending');
+    })  
+    
     this.memberApi.getMember(uid).subscribe({
       next:(res)=>{
         if(res.isInviteAccepted==='Not'){
@@ -592,6 +601,8 @@ await modal.present();
                 this._duration = Date.now() + 3 * 60 * 60 * 1000;
                 this.inviteControlForm.patchValue({
                   member_id: this.member._id,
+                  gym_id:this.member.gym_id,
+                  gym_name:this.member.gym_name,
                   email: this.member.email,
                   mobile: this.member.mobile,
                   inviteCode: this._invitationcode,
@@ -602,17 +613,14 @@ await modal.present();
                   .addMcontrol(this.inviteControlForm.value)
                   .subscribe({
                     next: (res: any) => {
-                      // to get gym name 
-                      this.gymApi.getGym(this._gym_id).subscribe({ 
-                        next:(res)=>{
-                          this.currentGymName = res.gym_name;
-                        },
-                        error:(err)=>{ 
-                          // this.showErrorToast(JSON.stringify(err));
-                        }
+                      this.currentGymName = res.gym_name;
+                      this.setInvitaion(this.member._id, 'pending');
+                       },
+                    error:(err)=>{
+                      //invitation code not posted so alert some issue with invitaion 
+                      this.presentAlert("Alert !!!","Some Issue in Invitation of member",err.error.message);
+                    }
                       });
-                       }
-                      })
       }
         else{
         console.log("in invite accepted Yes of Pending");

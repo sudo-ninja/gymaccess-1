@@ -113,13 +113,14 @@ export class MemberAddPage {
       this.gymApi.getGym(localStorage.getItem('gymID')).subscribe(res=>{
         console.log(res.gym_name);
         this.default_gym_name = res.gym_name;
+        localStorage.setItem('default_gym_name',res.gym_name)
       })
       console.log("GYM Name FROM GYM PAGE..= ",this.default_gym_name);
 
 
       this.memberForm = this.formBuilder.group({
         'gym_id' : [localStorage.getItem('gymID'), Validators.required],
-        'gym_name':[this.default_gym_name],
+        'gym_name':[localStorage.getItem('default_gym_name'),Validators.required],
         'm_name' : [null, [
           Validators.required,
           Validators.minLength(3),
@@ -219,7 +220,7 @@ export class MemberAddPage {
               }, 
               error:(err) => {
                 console.log(err);
-                this.presentAlert("Alert !!!","User Exist ","Or Wrong Data Entered!");
+                this.presentAlert("Alert !!!",err.errors.message,"Or Wrong Data Entered!");
                 this.isLoadingResults = false;
               }
             });

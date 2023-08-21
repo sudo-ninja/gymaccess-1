@@ -70,6 +70,7 @@ export class MemberinforPage implements OnInit {
   MyDefaultGymValue:any;
   _gym_id: any;
   MyDefaultGymValueId: any;
+  MyDefaultJoinedGymValue: any;
 
   constructor(
     private AttendanceApi:AttendanceService,
@@ -128,6 +129,12 @@ this.fetchLocation();
     // and incresed validy end date by sent days and update member by id recharge status Yes.
     //
 
+    this.MyDefaultJoinedGymValue = localStorage.getItem('defaultjoinedGymId'); // got default GYM value from Add Gym as soon as Gym Added first gym become Gym list page
+    //  this.MyDefaultJoinedGymValue = JSON.parse(defaultGym)._id; // key value saved as string so parse this to get object data
+     this._gym_id = this.MyDefaultJoinedGymValue; // intial value of gym is taken as default value 
+     console.log("this gym id ***** constructor 137",this._gym_id);
+   
+
   }
 
   ngOnInit() {
@@ -138,7 +145,8 @@ console.log(this.memberID);
   }
 
   ionViewWillEnter(){
-    this.savedJoinedGyms(this.loggeduser.email);
+    // this.savedJoinedGyms(this.loggeduser.email);
+    this.getGyms();
     this.isUserMember(this.loggeduser.email,this.MyDefaultGymValue);
     console.log("Ion View WIll Enter in Member infor page");
   }
@@ -158,11 +166,7 @@ Start_Date_ISO:any;
 // if he is not member or deleted by gym then page must route back to home page 
 isUserMember(email,gymid){
   this.memberApi.getMemberByEmailOfGymId(email,gymid).subscribe((data:any)=>{
-    // console.log(new Date(data.m_startdate*1));
-    // console.log(this.Start_Date);
-    //   console.log(this.Start_Date_ISO);
-    //   console.log(this.memberStartDate);    
-    if(!data){      
+      if(!data){      
       this.router.navigateByUrl('/home',{replaceUrl: true,});
     }else{
       this.memberID = data._id;
@@ -428,6 +432,14 @@ async rechargeRequestAlertFirst(){
      ':' + pad(tzOffset % 60);
  };
 
+ async getGyms(){
+  this.memberApi.getMemberByEmail(this.loggeduser.email).subscribe( // search member by email ID
+    (data:any)=>{
+      console.log(data.slice());
+      this.joinedGyms = data.slice(); // from here passing data to gym selector  for list of gyms   
+  }
+  );    
+}  
  //joined gymlist save in array 
 //joined gymlist save in array 
 async savedJoinedGyms(email){
@@ -447,14 +459,15 @@ async savedJoinedGyms(email){
 }
 
 selecthandleChange(ev){
-  console.log(ev.target.value);
+  console.log("ev.target.value====",ev.target.value);
   this.currentGym = ev.target.value;
-  this.MyDefaultGymValue = ev.target.value;
-  console.log(this.MyDefaultGymValue);
-  console.log(ev);
+  console.log("this.currentGym:--",this.currentGym);
+  this.MyDefaultJoinedGymValue = ev.target.value;
+  console.log("Select Handle Change event",this.MyDefaultJoinedGymValue);
   this._gym_id = this.currentGym;
-  // console.log(this._gym_id);
-  this.isUserMember(this.loggeduser.email,this.MyDefaultGymValue);  
+  console.log(this._gym_id);
+  this.getMembers();
+  this.compareWithFn(this._gym_id,ev.target.value);
   }
 
 compareWithFn(o1, o2) {
@@ -462,7 +475,24 @@ compareWithFn(o1, o2) {
     // return o1 === o2;
   }
 
+  async getMembers() {
+    console.log('get data from member list');
+    this.storageService.store('defaultjoinedGymId',this._gym_id);
+    localStorage.setItem('defaultjoinedGymId',this._gym_id);
+    console.log("default gym id send by getmembers() method",this._gym_id);
+    this.getMemberofGymId(this._gym_id);
+   
+  }
+
   
+  async getMemberofGymId(gymid){
+    console.log("GYM ID from getMemberbyGymID : 275 ",gymid);
+    localStorage.setItem('defaultjoinedGymId',gymid);
+    this.storageService.store('defaultjoinedGymId',gymid);
+      this.isUserMember(this.loggeduser.email,gymid);
+      // this.popover.dismiss(); // to close popover
+      // loading.dismiss();
+    }
 
 
 }

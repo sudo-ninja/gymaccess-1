@@ -282,8 +282,6 @@ export class MemberActionPage implements OnInit {
   }
 
   ionViewWillEnter(){
-    //  this.isUserMember(this.loggedUserEmail); // to chekc user available in member DB or not?
-    //  this.getMemberofGymId(this.defaultGymId_store);
      console.log("Ion View Will Enter");
      this.getMembers();
      this.getGyms();
@@ -820,11 +818,6 @@ selecthandleChange(ev){
 
   async getMembers() {
     console.log('get data from member list');
-    // const loading = await this.loadingController.create({
-    //   message: 'Loading....'
-    // });
-    // await loading.present();
-    // to store gym id as same will be used on other page to know what gym is selected by viewer
     this.storageService.store('defaultjoinedGymId',this._gym_id);
     localStorage.setItem('defaultjoinedGymId',this._gym_id);
     console.log(this._gym_id);
@@ -1140,4 +1133,6 @@ selecthandleChange(ev){
 // add slide show on member action page under DiV 
 // https://www.30secondsofcode.org/js/s/to-iso-string-with-timezone/ take from here for ISO time zone
 // f existing user try to join y invitaion code then first check if he mcontrol code of which gym id , if that
-//gym id already member then delet that code and show alert no  cound found . 
+//gym id already member then delet that code and show alert no  cound found .
+
+// also start scan only if member has accepted invitation to yes. otherwise show alert invitaion acceptance pending.

@@ -5,9 +5,49 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">addlock</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div>
+  <ion-list>
+    <ion-item>
+      <ion-select
+        aria-label="Lock"
+        placeholder="Select Lock Type"
+        (ionChange)="handleChange($event)"
+        (ionCancel)="pushLog('ionCancel fired')"
+        (ionDismiss)="pushLog('ionDismiss fired')"
+      >
+        <ion-select-option value="rim">Rim Lock</ion-select-option>
+        <ion-select-option value="solenoid">Solenoid Lock</ion-select-option>
+        <ion-select-option value="motorised">Motorised Lock</ion-select-option>
+        <ion-select-option value="em">EM Lock</ion-select-option>
+        <ion-select-option value="bolt">Bolt Lock</ion-select-option>
+
+      </ion-select>
+    </ion-item>
+  </ion-list>
+  </div>
+  <div>
+  <ion-range
+  aria-label="Range with knob events"
+  (ionKnobMoveStart)="onIonKnobMoveStart($event)"
+  (ionKnobMoveEnd)="onIonKnobMoveEnd($event)"
+></ion-range>
+  <div>
+  <ion-label>ionKnobMoveStart: {{ moveStart }}</ion-label>
+</div>
+<div>
+  <ion-label>ionKnobMoveEnd: {{ moveEnd }}</ion-label>
+</div>
+
+</div>
+<div>
+  <ion-toggle 
+  mode="ios"
+  [enableOnOffLabels]="true"
+  justify="space-between"
+  color="danger"
+  (ionChange)="toggleButton($event)">Passage Mode
+  </ion-toggle>
+</div>
+
+
 </ion-content>
