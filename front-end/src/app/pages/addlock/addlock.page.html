@@ -5,49 +5,52 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div>
   <ion-list>
     <ion-item>
-      <ion-select
-        aria-label="Lock"
-        placeholder="Select Lock Type"
-        (ionChange)="handleChange($event)"
-        (ionCancel)="pushLog('ionCancel fired')"
-        (ionDismiss)="pushLog('ionDismiss fired')"
-      >
-        <ion-select-option value="rim">Rim Lock</ion-select-option>
-        <ion-select-option value="solenoid">Solenoid Lock</ion-select-option>
-        <ion-select-option value="motorised">Motorised Lock</ion-select-option>
-        <ion-select-option value="em">EM Lock</ion-select-option>
-        <ion-select-option value="bolt">Bolt Lock</ion-select-option>
-
-      </ion-select>
+      <ion-list>
+        <ion-item>
+          <ion-select
+            label="Select Lock Type" label-placement="fixed"
+            placeholder="Select Lock Type"
+            (ionChange)="selecthandleChange($event)"
+            [compareWith]="compareWith"
+            value = "{{DefaultLockValue}}"
+          >
+            <ion-select-option *ngFor="let lock of locks" [value]="lock.id">{{ lock.name }}</ion-select-option>    
+          </ion-select>
+        </ion-item>
+      </ion-list>
     </ion-item>
+    <ion-item *ngIf="showOpeningRange">
+      
+      <ion-range
+      labelPlacement="start" 
+      label="Select Opening Time"
+      [pin]="true" 
+      [pinFormatter]="pinFormatter"
+      [min]="0"
+      [max]="10"
+      [ticks]="true"
+      aria-label="Select Opening Time"
+      (ionKnobMoveStart)="onIonKnobMoveStart($event)"
+      (ionKnobMoveEnd)="onIonKnobMoveEnd($event)"
+    ></ion-range>
+    </ion-item>
+
+    <ion-item *ngIf="showPassage"> 
+    
+      <ion-toggle 
+      mode="ios"
+      [enableOnOffLabels]="true"
+      justify="space-between"
+      color="danger"
+      [ngModel]="isToggled" 
+      (ngModelChange)="notifyAndUpdateIsToggled($event)"> Passage Mode
+      </ion-toggle>
+
+    </ion-item>
+
   </ion-list>
-  </div>
-  <div>
-  <ion-range
-  aria-label="Range with knob events"
-  (ionKnobMoveStart)="onIonKnobMoveStart($event)"
-  (ionKnobMoveEnd)="onIonKnobMoveEnd($event)"
-></ion-range>
-  <div>
-  <ion-label>ionKnobMoveStart: {{ moveStart }}</ion-label>
-</div>
-<div>
-  <ion-label>ionKnobMoveEnd: {{ moveEnd }}</ion-label>
-</div>
-
-</div>
-<div>
-  <ion-toggle 
-  mode="ios"
-  [enableOnOffLabels]="true"
-  justify="space-between"
-  color="danger"
-  (ionChange)="toggleButton($event)">Passage Mode
-  </ion-toggle>
-</div>
-
+ 
 
 </ion-content>
