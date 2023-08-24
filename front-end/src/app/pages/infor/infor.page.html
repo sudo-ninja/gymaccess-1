@@ -70,6 +70,77 @@ class="ion-no-border"
   </div>
 
   <div class="div-0">
+    <ion-label color="dark"><h2><strong>Lock Setup</strong></h2></ion-label>    
+      <ion-list>
+                       
+        <ion-item detail="true" (click)="assignLock()" id="open-modal">
+          <ion-label color="dark"><h2>Assign Lock</h2> </ion-label>
+          <ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
+            <ng-template>
+              <ion-header>
+                <ion-toolbar>
+                  <ion-buttons slot="start">
+                    <ion-button (click)="cancel()">Cancel</ion-button>
+                  </ion-buttons>
+                  <ion-title>Lock Detail</ion-title>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-header>
+              <ion-content class="ion-padding">
+                <ion-item>                   
+                  <ion-input label="Relay ID " type="text" placeholder="Enter Relay ID" [(ngModel)]="lockRelayId"></ion-input>
+                </ion-item>
+
+              </ion-content>
+            </ng-template>
+          </ion-modal>      
+           
+        </ion-item>
+       
+        <ion-item *ngIf="showLockSelection">
+          <ion-select
+            label="Select Lock" label-placement="fixed"
+            placeholder="Type"
+            (ionChange)="selecthandleChangelock($event)"
+            [compareWith]="compareWithlock"
+            value = "{{DefaultLockValue}}"
+          >
+            <ion-select-option *ngFor="let lock of locks" [value]="lock">{{ lock.name }}</ion-select-option>    
+          </ion-select>
+      </ion-item>
+
+         <ion-item *ngIf="showOpeningRange">
+              <ion-range
+              labelPlacement="start" 
+              label="Select Closing Delay"
+              [pin]="true" 
+              [pinFormatter]="pinFormatter"
+              [min]="0"
+              [max]="10"
+              [ticks]="true"
+              aria-label="Select Opening Time"
+              (ionKnobMoveStart)="onIonKnobMoveStart($event)"
+              (ionKnobMoveEnd)="onIonKnobMoveEnd($event)"
+            ></ion-range>
+        </ion-item> 
+
+        <ion-item *ngIf="showPassage">     
+              <ion-toggle 
+              mode="ios"
+              [enableOnOffLabels]="true"
+              justify="space-between"
+              color="danger"
+              [ngModel]="isToggled" 
+              (ngModelChange)="notifyAndUpdateIsToggled($event)"> Passage Mode
+              </ion-toggle>    
+        </ion-item>
+
+      </ion-list>  
+  </div>
+
+  <div class="div-0">
     <ion-label color="dark"><h2><strong>Update</strong></h2></ion-label>    
       <ion-list>
                        
@@ -121,6 +192,8 @@ class="ion-no-border"
           </ion-item> -->
     </ion-list>
   </div>
+
+
   
 </ion-content>
  

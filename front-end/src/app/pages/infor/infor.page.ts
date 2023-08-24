@@ -11,12 +11,25 @@ import { SafeUrl } from '@angular/platform-browser';
 
 import { Router } from '@angular/router';
 
+// import { Component, ViewChild } from '@angular/core';
+import { IonModal } from '@ionic/angular';
+import { OverlayEventDetail } from '@ionic/core/components';
+
+// for range 
+import { RangeCustomEvent } from '@ionic/angular';
+import { RangeValue } from '@ionic/core';
+
+
 import { LoadingController, ToastController } from '@ionic/angular';
 import { AlertController, ModalController } from '@ionic/angular';
 import { GymDetailsPage } from '../gym-details/gym-details.page';
 
 //call gymAdmin Services
 import { GymadminService } from 'src/app/services/gymadmin.service';
+//call lock service
+import { LockService } from 'src/app/services/lock.service';
+//for for builder
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-infor',
@@ -24,6 +37,23 @@ import { GymadminService } from 'src/app/services/gymadmin.service';
   styleUrls: ['./infor.page.scss'],
 })
 export class InforPage implements OnInit {
+// for ion modal 
+@ViewChild(IonModal) modal: IonModal;
+lockForm!: FormGroup;
+  gym_name_forLock: string;
+  lock_type: any;
+
+  
+
+  onWillDismiss(event: Event) {
+    const ev = event as CustomEvent<OverlayEventDetail<string>>;
+    if (ev.detail.role === 'confirm') {
+      this.message = `Hello, ${ev.detail.data}!`;
+    }
+  }
+//lock modal page
+lock_id: any;
+
   // for gym selection
   gyms: Gym[] = [];
   currentGym: any;
@@ -49,6 +79,8 @@ export class InforPage implements OnInit {
 
   constructor(
     public gymApi: GymService, // for Gym selection
+    //form builder
+    public fb: FormBuilder,
     public memberApi: MemberserviceService, // to get total numer of members
     // to store daa once fetch
     private storageService: StorageService, // storage service is used insted of get set method
@@ -62,7 +94,9 @@ export class InforPage implements OnInit {
     private modalCtrl: ModalController,
     public loadingController: LoadingController,
     //gym admin service API
-    private gymAdminApi:GymadminService
+    private gymAdminApi:GymadminService,
+    //lock service api
+    private lockApi:LockService,
   ) {
     this.storageService.get('loggeduser_id').then((val) => {
       console.log(val);
@@ -103,6 +137,7 @@ export class InforPage implements OnInit {
 
   ngOnInit() {
     this.getMembersData();
+    this.mainLockForm();
 
     this.compareWith = this.compareWithFn;
   }
@@ -110,6 +145,10 @@ export class InforPage implements OnInit {
   ionViewWillEnter() {
     console.log("infor page ion view will enter");
     this.getMembersData();
+    // this.mainLockForm();
+    this.lockApi.getLocksByGymId(this._gym_id).subscribe((res)=>{
+      console.log(res);
+    })
   }
 
   logs: string[] = [];
@@ -344,6 +383,191 @@ export class InforPage implements OnInit {
       console.log(gymid, "successfully Admin dieleted from gym Admin")
     });
 
+  }
+
+//open add lock model here and ask input from user and when model close pass lock type data back to page to decide 
+//to show further range block and passage mode block 
+  assignLock(){
+
+
+  }
+
+  currentLock :undefined;
+  DefaultLockValue:any = 1; //passed here ID 
+
+locks = [
+    {
+      id: 1,
+      name: 'Rim Lock',
+      type: 'rimlock',
+    },
+    {
+      id: 2,
+      name: 'Solenoid Lock',
+      type: 'rimlock',
+    },
+    {
+      id: 3,
+      name: 'Motorised Lock',
+      type: 'motor',
+    },
+    {
+      id: 4,
+      name: 'EM Lock',
+      type: 'em',
+    },
+    {
+      id: 5,
+      name:'Drop Bolt Lock',
+      type: 'em',
+    },
+    {
+      id: 6,
+      name: 'Glass Door Bolt Lock',
+      type: 'em',
+    },
+    
+  ];
+
+  compareWithlock(o1, o2) {
+    return  o1 === o2;
+  }
+
+  selecthandleChangelock(ev) {
+    this.currentLock = ev.target.value;
+    console.log("this current lock ****",this.currentLock);
+    // this.DefaultLockValue = ev.target.value;
+    console.log(ev.target.value);
+    this.lock_type = this.currentLock; // this is changing defalt GYM ID for admin app as _gym_id is useed as gymID in local storage 
+    console.log("this lock_id *****",this.lock_type.type);
+    this.updateLockDetails(this.lock_type);
+    this.showPassageMode(this.lock_type.id);
+
+     
+// this.getMembers();
+  }
+
+  updateLockDetails(lockType){
+    this.lockApi.getLockByRelayId(this.lockRelayId).subscribe(res=>{
+      this.lockApi.update(res._id,{"lock_type":{
+        "id":lockType.id,
+        "type":lockType.type,
+        "name":lockType.name
+      }})
+    });
+  }
+
+  
+  showPassage:boolean = false;
+  showOpeningRange:boolean=false;
+  showLockSelection:boolean = false;
+
+  // if this lock ID is = 1 or 2 then hide closing delay , hide passage mode .
+  // tif this lock id is = 4 5 6  then show closing delay and show paasage mode
+
+  moveStart: RangeValue;
+  moveEnd: RangeValue;
+
+  onIonKnobMoveStart(ev: Event) {
+    this.moveStart = (ev as RangeCustomEvent).detail.value;
+    console.log("start knob ",ev);
+  }
+
+   pinFormatter(value: number) {
+    return `${value} Second`;
+  }
+
+  onIonKnobMoveEnd(ev: Event) {
+    this.moveEnd = (ev as RangeCustomEvent).detail.value;
+    console.log("end knob ",ev);
+  }
+
+  showPassageMode(locktype){
+    console.log("lock type in show passage mode function",locktype);
+    if((locktype == 1) || (locktype == 2)){
+      this.showPassage = false;
+      this.showOpeningRange =false;
+      console.log("this.showPassage",this.showPassage);
+    }else if((locktype == 4 )|| (locktype == 5) || (locktype ==6)){
+      this.showPassage = true;
+      this.showOpeningRange = true;
+      console.log("this .show passage in 4 5 6",this.showPassage);
+    } else if(locktype == 3 ){
+      this.showPassage = true;
+      this.showOpeningRange = false;
+    }
+  }
+
+  public isToggled: boolean;
+  notifyAndUpdateIsToggled(event){
+    console.log("Toggled: "+ this.isToggled,"Passage Mode is ..", event); 
+    if(event == true){
+      if(this.showOpeningRange){
+      this.showOpeningRange = false;}
+
+      // this.showOpeningRange = !event;
+      // console.log((this.showPassage));
+    }else {
+      if(this.lock_id == 3){
+        this.showOpeningRange = false;
+      }else{
+      this.showOpeningRange = !event;}
+      // console.log("🚀 ~ file: addlock.page.ts:153 ~ AddlockPage ~ toggleButton ~ el̥se:",(this.showOpeningRange && this.showPassage));
+
+    }
+
+  }
+
+  message = 'This modal example uses triggers to automatically open a modal when the button is clicked.';
+  lockRelayId: string;
+
+  cancel() {
+    this.modal.dismiss(null, 'cancel');
+  }
+
+  confirm() {
+    this.modal.dismiss(this.lockRelayId, 'confirm');
+    // console.log("value after lock data to db confirm add",this.lockForm.valid);
+    console.log("gym name",this.gym_name_forLock);
+    console.log("gym id",this._gym_id);
+    // console.log("this lock type",this.lock_type.type);
+    console.log("lock relay id",this.lockRelayId);
+    // console.log(this.lockForm.getRawValue());
+
+    this.lockApi.addLock({
+        "gym_id":this._gym_id,
+        "gym_name":this.gym_name_forLock,
+        "lock_type":{"id":"1","type":"rimlock","name":"Rim Lock"},
+        "lock_closing_delay":"1",
+        "lock_passage_mode":false,
+        "lock_relayId":this.lockRelayId    
+    }).subscribe(
+      {
+      next:(res)=>{
+              console.log(res);
+            this.DefaultLockValue = res.lock_type;
+            this.showLockSelection = true;
+          },
+    error:(error)=>{
+      console.log(error);
+    },
+    }
+    );
+  }
+
+  mainLockForm(){
+    this.gymApi.getGym(this._gym_id).subscribe(res=>{
+      this.gym_name_forLock = res.gym_name;
+    })
+      this.lockForm = this.fb.group({
+      gym_id: [this._gym_id, Validators.required],
+      gym_name: [this.gym_name_forLock,Validators.required],
+      lock_type: [this.lock_type.type,[ Validators.required]],
+      lock_closing_delay: ['1',[Validators.required, ]],
+      lock_passage_mode: [false], 
+      lock_relayId:[this.lockRelayId,Validators.required],  
+    })
+    
   }
 
 
