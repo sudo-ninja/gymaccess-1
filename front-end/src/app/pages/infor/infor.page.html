@@ -17,7 +17,8 @@ class="ion-no-border"
           aria-label="Gym_Choice"
           placeholder="Select Gym"          
           (ionChange)="selecthandleChange($event)"
-          [compareWith]="compareWith" value="{{MyDefaultGymValue}}"              
+          [compareWith]="compareWith" 
+          value="{{MyDefaultGymValue}}"              
           slot="end"
          
         >
@@ -73,8 +74,9 @@ class="ion-no-border"
     <ion-label color="dark"><h2><strong>Lock Setup</strong></h2></ion-label>    
       <ion-list>
                        
-        <ion-item detail="true" (click)="assignLock()" id="open-modal">
-          <ion-label color="dark"><h2>Assign Lock</h2> </ion-label>
+        <ion-item  *ngIf="showAssignLock" detail="true" (click)="assignLock()" id="open-modal">
+          <ion-label color="dark"><h2><strong>Assign Lock</strong></h2> </ion-label>
+
           <ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
             <ng-template>
               <ion-header>
@@ -89,6 +91,31 @@ class="ion-no-border"
                 </ion-toolbar>
               </ion-header>
               <ion-content class="ion-padding">
+
+                <form [formGroup]="lockForm" (ngSubmit)="confirm()">
+                    
+                    <ion-item>
+                      <ion-input
+                      label="Lock Relay Id:" label-placement="floating"
+                      formControlName="lock_relayId"         
+                      type="text" required></ion-input>
+                    </ion-item>
+                            
+              
+                   <div>
+                      <ion-button 
+                        type="submit" 
+                        [disabled]="!lockForm.valid" 
+                        color="primary" 
+                        shape="round"
+                        expand="block"
+                        [strong]="true"
+                        >
+                      Update
+                      </ion-button>
+                  </div>
+              
+                  </form> 
                 <ion-item>                   
                   <ion-input label="Relay ID " type="text" placeholder="Enter Relay ID" [(ngModel)]="lockRelayId"></ion-input>
                 </ion-item>
@@ -104,11 +131,11 @@ class="ion-no-border"
             label="Select Lock" label-placement="fixed"
             placeholder="Type"
             (ionChange)="selecthandleChangelock($event)"
-            [compareWith]="compareWithlock"
-            value = "{{DefaultLockValue}}"
-          >
-            <ion-select-option *ngFor="let lock of locks" [value]="lock">{{ lock.name }}</ion-select-option>    
-          </ion-select>
+            [compareWith]="compareWithl"
+            value="{{DefaultLockValue}}"
+                      >
+            <ion-select-option *ngFor="let lock of locks"  value="{{lock.id}}">{{ lock.name }}</ion-select-option>    
+        </ion-select>
       </ion-item>
 
          <ion-item *ngIf="showOpeningRange">
@@ -118,7 +145,7 @@ class="ion-no-border"
               [pin]="true" 
               [pinFormatter]="pinFormatter"
               [min]="0"
-              [max]="10"
+              [max]="9"
               [ticks]="true"
               aria-label="Select Opening Time"
               (ionKnobMoveStart)="onIonKnobMoveStart($event)"

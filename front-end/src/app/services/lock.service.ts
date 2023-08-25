@@ -43,11 +43,11 @@ export class LockService {
 
 
  
-  getLocksByGymId(gymid: any): Observable<Lock[]> {
+  getLockByGymId(gymid: any): Observable<Lock> {
     console.log("i m in get member by email search ");
     console.log(gymid);
     console.log(`${baseUrl}/gymids?gym_id=${gymid}`);
-    return this.http.get<Lock[]>(`${baseUrl}/gymids?gym_id=${gymid}`);
+    return this.http.get<Lock>(`${baseUrl}/gymids?gym_id=${gymid}`);
   }
 
   getLockByRelayId(relayid: any): Observable<Lock> {

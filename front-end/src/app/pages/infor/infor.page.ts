@@ -41,7 +41,18 @@ export class InforPage implements OnInit {
 @ViewChild(IonModal) modal: IonModal;
 lockForm!: FormGroup;
   gym_name_forLock: string;
-  lock_type: any;
+  lock_type: any ={
+    "id":"1",
+    "type":"rimlock",
+    "name":"Rim Lock"
+  };
+  res_lock_type:any ={
+    "id":"",
+    "type":"",
+    "name":""
+  };
+  lockId: any;
+  closingDelay: string;
 
   
 
@@ -59,6 +70,7 @@ lock_id: any;
   currentGym: any;
   MyDefaultGymValue: any;
   compareWith: any;
+  compareWithl:any;
   _gym_id: any;
   gymsResult: any;
 
@@ -137,18 +149,46 @@ lock_id: any;
 
   ngOnInit() {
     this.getMembersData();
-    this.mainLockForm();
+    
 
     this.compareWith = this.compareWithFn;
+    this.compareWithl = this.compareWithlock;
+    // this.DefaultLockValue = "1";
   }
 
   ionViewWillEnter() {
     console.log("infor page ion view will enter");
+    this.mainLockForm();
+    this.gymApi.getGym(this._gym_id).subscribe(res=>{
+      this.gym_name_forLock = res.gym_name;
+      console.log("Gym Name XXXXX", this.gym_name_forLock);
+    })
     this.getMembersData();
     // this.mainLockForm();
-    this.lockApi.getLocksByGymId(this._gym_id).subscribe((res)=>{
-      console.log(res);
-    })
+    this.lockApi.getLockByGymId(this._gym_id).subscribe(
+      {
+        next:(res)=>{
+            console.log(res.lock_type);
+            this.showLockSelection = true;
+            this.res_lock_type = res.lock_type;
+            console.log(this.res_lock_type.id);
+            this.DefaultLockValue = this.res_lock_type.id;
+            this.lockRelayId = res.lock_relayId; // from here this id will come only after relay id is added.
+            this.lockId = res._id;
+            this.closingDelay = res.lock_closing_delay;
+            // this.currentLock = res.lock_type;
+            this.showPassageMode(this.DefaultLockValue);
+          },
+        error:err=>{
+          console.log(err.error.message.includes("no data retrieved with this gym id"));
+          if(err.error.message.includes("no data retrieved with this gym id")){
+            this.showAssignLock = true;
+          }
+
+              }
+  }
+  )
+
   }
 
   logs: string[] = [];
@@ -392,8 +432,8 @@ lock_id: any;
 
   }
 
-  currentLock :undefined;
-  DefaultLockValue:any = 1; //passed here ID 
+  currentLock :{};
+  DefaultLockValue:any; //passed here ID 
 
 locks = [
     {
@@ -433,34 +473,100 @@ locks = [
     return  o1 === o2;
   }
 
+  
+
   selecthandleChangelock(ev) {
+    console.log("this.currentLock",this.currentLock);
     this.currentLock = ev.target.value;
-    console.log("this current lock ****",this.currentLock);
+    console.log("this ev.target.value ****",ev.target.value);
     // this.DefaultLockValue = ev.target.value;
     console.log(ev.target.value);
     this.lock_type = this.currentLock; // this is changing defalt GYM ID for admin app as _gym_id is useed as gymID in local storage 
-    console.log("this lock_id *****",this.lock_type.type);
-    this.updateLockDetails(this.lock_type);
-    this.showPassageMode(this.lock_type.id);
+    console.log("this Default Lock Value  *****",this.DefaultLockValue);
+    this.updateLockDetails(ev.target.value);
+    // this.showPassageMode(this.lock_type);
+    this.compareWithlock(this.lock_type,ev.target.value);
 
      
 // this.getMembers();
   }
 
   updateLockDetails(lockType){
-    this.lockApi.getLockByRelayId(this.lockRelayId).subscribe(res=>{
-      this.lockApi.update(res._id,{"lock_type":{
-        "id":lockType.id,
-        "type":lockType.type,
-        "name":lockType.name
-      }})
-    });
+    console.log("******in Update Lock Details function by lock id******",lockType);  
+    switch(+lockType){ // convert strig to number as case is number type
+      case 1:        
+          this.lockApi.update(this.lockId,{
+            "lock_type":{
+            "id":"1",
+            "type":"rimlock",
+            "name":"Rim Lock"
+          }}).subscribe(res=>{console.log(res)});  
+          this.showPassage = false;
+          this.showOpeningRange =false;     
+        
+        break;
+      case 2:
+        
+          this.lockApi.update(this.lockId,{"lock_type":{
+            "id":"2",
+            "type":"rimlock",
+            "name":"Motorised Lock"
+          }}).subscribe(res=>{console.log(res)});
+          this.showPassage = false;
+      this.showOpeningRange =false;
+        
+        break;
+      case 3:
+        
+          this.lockApi.update(this.lockId,{"lock_type":{
+            "id":"3",
+            "type":"motorisedlock",
+            "name":"Motorised Lock"
+          }}).subscribe(res=>{console.log(res)});
+          this.showPassage = true;
+          this.showOpeningRange = false;
+      
+        break;
+      case 4:
+        
+          this.lockApi.update(this.lockId,{"lock_type":{
+            "id":"4",
+            "type":"em",
+            "name":"EM Lock"
+          }}).subscribe(res=>{console.log(res)});
+          this.showPassage = true;
+      this.showOpeningRange = true;
+        
+        break;
+      case 5:
+      
+          this.lockApi.update(this.lockId,{"lock_type":{
+            "id":"5",
+            "type":"em",
+            "name":"Drop Bolt Lock"
+          }}).subscribe(res=>{console.log(res)});
+          this.showPassage = true;
+          this.showOpeningRange = true;
+        break;
+      case 6:
+        
+          this.lockApi.update(this.lockId,{"lock_type":{
+            "id":"6",
+            "type":"em",
+            "name":"Glass Door Lock"
+          }}).subscribe(res=>{console.log(res)});
+          this.showPassage = true;
+          this.showOpeningRange = true;
+        }
+      
+   
   }
 
   
   showPassage:boolean = false;
   showOpeningRange:boolean=false;
   showLockSelection:boolean = false;
+  showAssignLock:boolean = false;
 
   // if this lock ID is = 1 or 2 then hide closing delay , hide passage mode .
   // tif this lock id is = 4 5 6  then show closing delay and show paasage mode
@@ -470,7 +576,9 @@ locks = [
 
   onIonKnobMoveStart(ev: Event) {
     this.moveStart = (ev as RangeCustomEvent).detail.value;
+    // this.moveStart = this.closingDelay;
     console.log("start knob ",ev);
+    //how to start pointer from desired result ?
   }
 
    pinFormatter(value: number) {
@@ -479,7 +587,8 @@ locks = [
 
   onIonKnobMoveEnd(ev: Event) {
     this.moveEnd = (ev as RangeCustomEvent).detail.value;
-    console.log("end knob ",ev);
+    console.log("end knob ",this.moveEnd);
+    this.lockApi.update(this.lockId,{"lock_closing_delay":this.moveEnd}).subscribe(res=>{console.log(res)});
   }
 
   showPassageMode(locktype){
@@ -533,36 +642,14 @@ locks = [
     // console.log("this lock type",this.lock_type.type);
     console.log("lock relay id",this.lockRelayId);
     // console.log(this.lockForm.getRawValue());
-
-    this.lockApi.addLock({
-        "gym_id":this._gym_id,
-        "gym_name":this.gym_name_forLock,
-        "lock_type":{"id":"1","type":"rimlock","name":"Rim Lock"},
-        "lock_closing_delay":"1",
-        "lock_passage_mode":false,
-        "lock_relayId":this.lockRelayId    
-    }).subscribe(
-      {
-      next:(res)=>{
-              console.log(res);
-            this.DefaultLockValue = res.lock_type;
-            this.showLockSelection = true;
-          },
-    error:(error)=>{
-      console.log(error);
-    },
-    }
-    );
+    this.ifLockIsThere(this._gym_id);
   }
 
   mainLockForm(){
-    this.gymApi.getGym(this._gym_id).subscribe(res=>{
-      this.gym_name_forLock = res.gym_name;
-    })
       this.lockForm = this.fb.group({
       gym_id: [this._gym_id, Validators.required],
       gym_name: [this.gym_name_forLock,Validators.required],
-      lock_type: [this.lock_type.type,[ Validators.required]],
+      lock_type: [this.lock_type,[ Validators.required]],
       lock_closing_delay: ['1',[Validators.required, ]],
       lock_passage_mode: [false], 
       lock_relayId:[this.lockRelayId,Validators.required],  
@@ -570,5 +657,76 @@ locks = [
     
   }
 
+
+  //if lock already added then show default lock name , and accordingly range and passage mode
+  ifLockIsThere(gymid){
+    this.lockApi.getLockByGymId(gymid).subscribe({
+      next:res=>{
+        console.log(res.lock_type);
+        this.lockRelayId = res.lock_relayId;
+        this.res_lock_type = res.lock_type;
+            console.log(this.res_lock_type.id);
+            this.DefaultLockValue = this.res_lock_type.id;
+      },
+      error:err=>{
+        console.log(err); 
+        if(err.error.message.includes("no data retrieved with this gym id")){
+                  
+        this.lockApi.addLock(this.lockForm.value).subscribe(
+          {
+              next:(res)=>{
+                  console.log(res.lock_type);
+                  this.res_lock_type = res.lock_type;
+                  console.log(this.res_lock_type.id);
+                  this.DefaultLockValue = this.res_lock_type.id;
+                    // this.currentLock = res.lock_type;
+                    this.showLockSelection = true;
+              },
+              error:(error)=>{
+                  console.log(error);
+                          },
+        }
+        );
+        }
+      
+      }
+      
+    });
+
+  }
+
+  onFormSubmit() {
+    // const Id = localStorage.getItem('ID')    
+    console.log("in form submit");
+    // let idux = this.id||this.route.snapshot.paramMap.get('id')||this.idun;
+    // console.log(idux , this.id, this.idun);
+    // this.lockApi.update(id, this.lockForm.value).subscribe((res: any) => {
+    //       this.idu = res._id;
+    //     this.modalCtrl.dismiss();
+    //   }, (err: any) => {
+    //     console.log(err);
+        
+    //   }
+    //   );
+     
+  }
+
+  getLock(gymId){
+    this.lockApi.getLockByGymId(gymId).subscribe({
+      next:res=>{
+        this.lockForm.patchValue({
+          lock_type: res.lock_type,
+          lock_closing_delay:res.lock_closing_delay,
+          lock_passage_mode: res.lock_passage_mode, 
+          lock_relayId:res.lock_relayId,          
+        })
+
+      },
+      error:err=>{
+        console.log("Get Lock in patch block when no data found",err);
+       
+      }
+    })
+  }
 
 }
