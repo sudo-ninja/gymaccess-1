@@ -51,8 +51,10 @@ lockForm!: FormGroup;
     "type":"",
     "name":""
   };
-  lockId: any;
+
+  lock_id_db: any;
   closingDelay: string;
+
 
   
 
@@ -87,6 +89,7 @@ lock_id: any;
 
   //lock ID toggle set as momentry trigger only
   lockIDtoggleTrigger: boolean = false;
+  passageIDtoggleTrigger:boolean =false;
   loggeduser_id: unknown;
 
   constructor(
@@ -154,6 +157,11 @@ lock_id: any;
     this.compareWith = this.compareWithFn;
     this.compareWithl = this.compareWithlock;
     // this.DefaultLockValue = "1";
+
+    this.gymApi.getGym(this._gym_id).subscribe(res=>{
+      this.gym_name_forLock = res.gym_name;
+      console.log("Gym Name XXXXX", this.gym_name_forLock);
+    })
   }
 
   ionViewWillEnter() {
@@ -174,10 +182,14 @@ lock_id: any;
             console.log(this.res_lock_type.id);
             this.DefaultLockValue = this.res_lock_type.id;
             this.lockRelayId = res.lock_relayId; // from here this id will come only after relay id is added.
-            this.lockId = res._id;
+            this.lock_id_db = res._id;
             this.closingDelay = res.lock_closing_delay;
+            this.isToggled = res.lock_passage_mode;
             // this.currentLock = res.lock_type;
             this.showPassageMode(this.DefaultLockValue);
+            this.showLockRelayId = true; // means relay already added
+
+            
           },
         error:err=>{
           console.log(err.error.message.includes("no data retrieved with this gym id"));
@@ -185,10 +197,11 @@ lock_id: any;
             this.showAssignLock = true;
           }
 
-              }
+        }
   }
   )
-
+  
+  this.showRangeValue(this.isToggled);
   }
 
   logs: string[] = [];
@@ -205,6 +218,7 @@ lock_id: any;
     // console.log(this._gym_id);
     this.getMembersData();
     this.compareWithFn(this._gym_id, ev.target.value);
+    // if GYM id change then change Lock Division also for that entire lock setup must be driven by GYM iD.
   }
   compareWithFn(o1, o2) {
     return o1 === o2;
@@ -264,14 +278,25 @@ lock_id: any;
   // lock ID toggle
   lockIdToggle($event: any) {
     // console.log("i m in lock id toggle method")
-    this.lockIDinputAlert(this._gym_id);
+    // this.lockIDinputAlert(this._gym_id);
     this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
   }
 
+  //Passage Mode toggle
+  passageIdToggle($event: any) {
+    // console.log("i m in lock id toggle method")
+    // this.lockIDinputAlert(this._gym_id);
+    this.passageIDtoggleTrigger = !this.passageIDtoggleTrigger;
+  }
+
+  LockRelayIdUpdate(){
+    this.lockIDinputAlert(this.lockRelayId);
+  }
   // alert controller for Lock ID input
-  async lockIDinputAlert(gymid: any) {
+  async lockIDinputAlert(subheader:any) {
     const alert = await this.alertCtrl.create({
-      header: 'Enter New Lock ID',
+      header: 'Enter New Lock Relay Id',
+      subHeader:"Current ID:-"+subheader,
       inputs: [
         {
           name: 'lock_id',
@@ -285,7 +310,7 @@ lock_id: any;
           cssClass: 'secondary',
           handler: () => {
             console.log('Confirm Cancel');
-            this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
+            // this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
           },
         },
         {
@@ -294,17 +319,17 @@ lock_id: any;
             //takes the data
             // let validateObj = this.validateEmail(data);
             if (!alertData.lock_id) {
-              this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
+              // this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
               return;
             } else {
-              // console.log(alertData.lock_id);
-              this.gymApi
-                .update(gymid, { gym_lockId: alertData.lock_id })
+              console.log("In Alert Input Lock ID  from DB is ",this.lock_id_db);
+              this.lockApi
+                .update(this.lock_id_db, { "lock_relayId": alertData.lock_id })
                 .subscribe((data) => {
-                  console.log('Lock Id Updated as', data.gym_lockId);
+                  console.log('Lock Id Updated as', data.lock_relayId);
                 });
             }
-            this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
+            // this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
           },
         },
       ],
@@ -484,7 +509,7 @@ locks = [
     this.lock_type = this.currentLock; // this is changing defalt GYM ID for admin app as _gym_id is useed as gymID in local storage 
     console.log("this Default Lock Value  *****",this.DefaultLockValue);
     this.updateLockDetails(ev.target.value);
-    // this.showPassageMode(this.lock_type);
+    this.showPassageMode(this.lock_type);
     this.compareWithlock(this.lock_type,ev.target.value);
 
      
@@ -495,19 +520,23 @@ locks = [
     console.log("******in Update Lock Details function by lock id******",lockType);  
     switch(+lockType){ // convert strig to number as case is number type
       case 1:        
-          this.lockApi.update(this.lockId,{
+          this.lockApi.update(this.lock_id_db,{
             "lock_type":{
-            "id":"1",
-            "type":"rimlock",
-            "name":"Rim Lock"
-          }}).subscribe(res=>{console.log(res)});  
+                          "id":"1",
+                          "type":"rimlock",
+                          "name":"Rim Lock"
+                        },
+            "lock_closing_delay":"1",
+            "lock_passage_mode":false,
+           }
+          ).subscribe(res=>{console.log(res)});  
           this.showPassage = false;
           this.showOpeningRange =false;     
         
         break;
       case 2:
         
-          this.lockApi.update(this.lockId,{"lock_type":{
+          this.lockApi.update(this.lock_id_db,{"lock_type":{
             "id":"2",
             "type":"rimlock",
             "name":"Motorised Lock"
@@ -518,7 +547,7 @@ locks = [
         break;
       case 3:
         
-          this.lockApi.update(this.lockId,{"lock_type":{
+          this.lockApi.update(this.lock_id_db,{"lock_type":{
             "id":"3",
             "type":"motorisedlock",
             "name":"Motorised Lock"
@@ -529,7 +558,7 @@ locks = [
         break;
       case 4:
         
-          this.lockApi.update(this.lockId,{"lock_type":{
+          this.lockApi.update(this.lock_id_db,{"lock_type":{
             "id":"4",
             "type":"em",
             "name":"EM Lock"
@@ -540,7 +569,7 @@ locks = [
         break;
       case 5:
       
-          this.lockApi.update(this.lockId,{"lock_type":{
+          this.lockApi.update(this.lock_id_db,{"lock_type":{
             "id":"5",
             "type":"em",
             "name":"Drop Bolt Lock"
@@ -550,7 +579,7 @@ locks = [
         break;
       case 6:
         
-          this.lockApi.update(this.lockId,{"lock_type":{
+          this.lockApi.update(this.lock_id_db,{"lock_type":{
             "id":"6",
             "type":"em",
             "name":"Glass Door Lock"
@@ -567,6 +596,7 @@ locks = [
   showOpeningRange:boolean=false;
   showLockSelection:boolean = false;
   showAssignLock:boolean = false;
+  showLockRelayId:boolean = false;
 
   // if this lock ID is = 1 or 2 then hide closing delay , hide passage mode .
   // tif this lock id is = 4 5 6  then show closing delay and show paasage mode
@@ -588,7 +618,8 @@ locks = [
   onIonKnobMoveEnd(ev: Event) {
     this.moveEnd = (ev as RangeCustomEvent).detail.value;
     console.log("end knob ",this.moveEnd);
-    this.lockApi.update(this.lockId,{"lock_closing_delay":this.moveEnd}).subscribe(res=>{console.log(res)});
+    console.log("this Lock Id ===",this.lock_id_db);
+    this.lockApi.update(this.lock_id_db,{"lock_closing_delay":this.moveEnd}).subscribe(res=>{console.log(res)});
   }
 
   showPassageMode(locktype){
@@ -597,33 +628,56 @@ locks = [
       this.showPassage = false;
       this.showOpeningRange =false;
       console.log("this.showPassage",this.showPassage);
+      return;
     }else if((locktype == 4 )|| (locktype == 5) || (locktype ==6)){
+      if(this.isToggled){
+        this.showOpeningRange = false;
+        this.showPassage = true;
+        return;
+      }else{
       this.showPassage = true;
       this.showOpeningRange = true;
+      this.isToggled=false;
       console.log("this .show passage in 4 5 6",this.showPassage);
+      return;}
     } else if(locktype == 3 ){
       this.showPassage = true;
       this.showOpeningRange = false;
     }
   }
 
-  public isToggled: boolean;
-  notifyAndUpdateIsToggled(event){
-    console.log("Toggled: "+ this.isToggled,"Passage Mode is ..", event); 
-    if(event == true){
-      if(this.showOpeningRange){
-      this.showOpeningRange = false;}
-
-      // this.showOpeningRange = !event;
-      // console.log((this.showPassage));
-    }else {
-      if(this.lock_id == 3){
-        this.showOpeningRange = false;
-      }else{
-      this.showOpeningRange = !event;}
-      // console.log("🚀 ~ file: addlock.page.ts:153 ~ AddlockPage ~ toggleButton ~ el̥se:",(this.showOpeningRange && this.showPassage));
-
+  showRangeValue(pass_mode){
+    if(pass_mode = true){
+      this.showOpeningRange = false;
+    }else{
+      this.showOpeningRange = true;
+      this.lockApi.getLockByGymId(this._gym_id).subscribe(res=>{
+        this.closingDelay = res.lock_closing_delay;
+      });
     }
+
+  }
+
+  public isToggled: boolean ;
+  notifyAndUpdateIsToggled(event){
+    console.log("Toggled: "+ this.isToggled,"Passage Mode is ..", event);
+    this.lockApi.update(this.lock_id_db,{"lock_passage_mode":event}).subscribe(res=>{
+      console.log(res);
+      if(res.lock_passage_mode == true){
+        if(this.showOpeningRange){
+        this.showOpeningRange = false;}
+      }else {
+        if(this.lock_id == 3){
+          this.showOpeningRange = false;
+        }else{
+        this.showOpeningRange = !event;}
+        // console.log("🚀 ~ file: addlock.page.ts:153 ~ AddlockPage ~ toggleButton ~ el̥se:",(this.showOpeningRange && this.showPassage));
+        }
+       
+      });  
+  
+    
+    
 
   }
 
@@ -643,6 +697,7 @@ locks = [
     console.log("lock relay id",this.lockRelayId);
     // console.log(this.lockForm.getRawValue());
     this.ifLockIsThere(this._gym_id);
+    this.showAssignLock = false;
   }
 
   mainLockForm(){
@@ -652,7 +707,7 @@ locks = [
       lock_type: [this.lock_type,[ Validators.required]],
       lock_closing_delay: ['1',[Validators.required, ]],
       lock_passage_mode: [false], 
-      lock_relayId:[this.lockRelayId,Validators.required],  
+      lock_relayId: ['',Validators.required],  
     })
     
   }
@@ -670,17 +725,25 @@ locks = [
       },
       error:err=>{
         console.log(err); 
-        if(err.error.message.includes("no data retrieved with this gym id")){
-                  
+        if(err.error.message.includes("no data retrieved with this gym id")){                  
         this.lockApi.addLock(this.lockForm.value).subscribe(
           {
               next:(res)=>{
                   console.log(res.lock_type);
+                  this.lock_id_db = res._id; // use this lock id db to update relay value update bloack 
                   this.res_lock_type = res.lock_type;
+                  this.lockRelayId = res.lock_relayId;
                   console.log(this.res_lock_type.id);
                   this.DefaultLockValue = this.res_lock_type.id;
                     // this.currentLock = res.lock_type;
-                    this.showLockSelection = true;
+                    this.showAssignLock = false;
+                    this.showLockSelection = true;                    
+                    // add this ID to gym DB lock ID
+                    this.gymApi.update(this._gym_id,{"gym_lockId":res._id}).subscribe((res)=>{
+                      // show toast sussefully lock ID updated
+                      console.log("gyms gym lock id update by lock _id",res);
+                      this.showLockRelayId = true; // means relay ID update to Gym ID
+                    })
               },
               error:(error)=>{
                   console.log(error);

@@ -75,7 +75,7 @@ class="ion-no-border"
       <ion-list>
                        
         <ion-item  *ngIf="showAssignLock" detail="true" (click)="assignLock()" id="open-modal">
-          <ion-label color="dark"><h2><strong>Assign Lock</strong></h2> </ion-label>
+          <ion-label color="danger"><h2><strong>Assign Lock</strong></h2> </ion-label>
 
           <ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
             <ng-template>
@@ -84,9 +84,9 @@ class="ion-no-border"
                   <ion-buttons slot="start">
                     <ion-button (click)="cancel()">Cancel</ion-button>
                   </ion-buttons>
-                  <ion-title>Lock Detail</ion-title>
+                  <ion-title>Lock Relay ID</ion-title>
                   <ion-buttons slot="end">
-                    <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
+                    <ion-button [disabled]="!lockForm.valid" (click)="confirm()" [strong]="true">Confirm</ion-button>
                   </ion-buttons>
                 </ion-toolbar>
               </ion-header>
@@ -99,27 +99,9 @@ class="ion-no-border"
                       label="Lock Relay Id:" label-placement="floating"
                       formControlName="lock_relayId"         
                       type="text" required></ion-input>
-                    </ion-item>
-                            
-              
-                   <div>
-                      <ion-button 
-                        type="submit" 
-                        [disabled]="!lockForm.valid" 
-                        color="primary" 
-                        shape="round"
-                        expand="block"
-                        [strong]="true"
-                        >
-                      Update
-                      </ion-button>
-                  </div>
-              
+                    </ion-item>              
                   </form> 
-                <ion-item>                   
-                  <ion-input label="Relay ID " type="text" placeholder="Enter Relay ID" [(ngModel)]="lockRelayId"></ion-input>
-                </ion-item>
-
+                
               </ion-content>
             </ng-template>
           </ion-modal>      
@@ -144,6 +126,7 @@ class="ion-no-border"
               label="Select Closing Delay"
               [pin]="true" 
               [pinFormatter]="pinFormatter"
+              [value]="closingDelay"
               [min]="0"
               [max]="9"
               [ticks]="true"
@@ -158,10 +141,14 @@ class="ion-no-border"
               mode="ios"
               [enableOnOffLabels]="true"
               justify="space-between"
-              color="danger"
+              color="danger"              
               [ngModel]="isToggled" 
               (ngModelChange)="notifyAndUpdateIsToggled($event)"> Passage Mode
               </ion-toggle>    
+        </ion-item>
+
+        <ion-item *ngIf="showLockRelayId" detail="true" (click)="LockRelayIdUpdate()">
+          <ion-label>Lock Relay Id : {{lockRelayId}}</ion-label>
         </ion-item>
 
       </ion-list>  
@@ -170,16 +157,17 @@ class="ion-no-border"
   <div class="div-0">
     <ion-label color="dark"><h2><strong>Update</strong></h2></ion-label>    
       <ion-list>
-                       
+<!--                        
         <ion-item>
-          <!-- <ion-label color="dark"><h2></h2> </ion-label> -->
+          <!-- <ion-label color="dark"><h2></h2> </ion-label> --
               <ion-toggle 
               justify="space-between"
               aria-label="Primary toggle" 
-              color="primary" [disabled]="lockIDtoggleTrigger" 
+              color="primary" 
+              [disabled]="lockIDtoggleTrigger" 
               [checked]="lockIDtoggleTrigger" 
               (ionChange)="lockIdToggle($event)">Update Lock ID?</ion-toggle>
-        </ion-item>
+        </ion-item> -->
 
         <ion-item detail="true" (click)="gymUpdate()">
           <ion-label color="dark"><h2>Update Gym Details</h2> </ion-label>
@@ -189,7 +177,6 @@ class="ion-no-border"
         <ion-item detail="true" (click)="QrCodeDownLoad()">
             <ion-label color="dark" ><h2>Download QR code </h2></ion-label>
         </ion-item>
-
       </ion-list>  
   </div>
   
