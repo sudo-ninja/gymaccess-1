@@ -55,13 +55,13 @@ export class GymtabsPage implements OnInit {
     
     console.log("ION VIEW WILL ENTER");
     // get member associated with this gym only
-    this.getMembers();
+    // this.getMembers();
     this.getGyms();
    }
 
    async getMembers(){   
     this._gym_id = localStorage.getItem('gymID');
-    console.log("Data coming from gym Tab page");    
+    console.log("Data coming from gym Tab page",this._gym_id);    
     this.memberApi.wildSearch(this._gym_id)
     .subscribe(res1=>{
       // console.log(res1.slice());    
@@ -75,7 +75,7 @@ export class GymtabsPage implements OnInit {
       (data:any)=>{
         // console.log(data.slice());
         this.storageService.get('gymlist').then(value=>{
-          // console.log(value);
+          console.log("gymlist Value coming from storage service",value);
         });
         // this.gyms = data; // from here passing data to gym selector  for list of gyms   
     }

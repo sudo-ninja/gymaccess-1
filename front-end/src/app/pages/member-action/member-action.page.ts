@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 //to get current location Lattitude and Longitude
 import { Geolocation } from '@capacitor/geolocation';
+import { Gym } from 'src/app/models/gym.model';
 
 //call service for attendance here
 import { Member } from 'src/app/models/member.model';
@@ -111,6 +112,8 @@ export class MemberActionPage implements OnInit {
   userMobile: string;
   defaultGymId_store: any;
   joiningGymName: string;
+  firstMemberId: any;
+  firstJoinedGym:Gym[];
 
   // install https://github.com/capacitor-community/barcode-scanner plugin 
 
@@ -173,13 +176,23 @@ export class MemberActionPage implements OnInit {
       //get default gym list data 
        console.log("DEFAULT GYM ID IN CONSTRUCTOR ",localStorage.getItem('defaultjoinedGymId'));
        this.storageService.get('defaultjoinedGymId').then(value=>{
+        console.log(value);
         this.defaultGymId_store = value;
        });
       //  this.defaultGymId_store = localStorage.getItem('defaultjoinedGymId');
        
 
       this.storageService.get('joinedGymList').then((val)=>{
-      console.log(val);
+        console.log(val);
+      this.firstJoinedGym.push(val);
+         console.log("First Joined Gym ID =====",this.firstJoinedGym);
+         
+      this._gym_id = this.firstJoinedGym[0]._id;
+    });
+
+    this.storageService.get('joinedGymMemberId').then((val)=>{
+      this.firstMemberId = val;
+      console.log("Member ID accepting the Invitaion code", this.firstMemberId);
     });
 
 
@@ -187,7 +200,8 @@ export class MemberActionPage implements OnInit {
     
     this.MyDefaultJoinedGymValue = localStorage.getItem('defaultjoinedGymId'); // got default GYM value from Add Gym as soon as Gym Added first gym become Gym list page
   //  this.MyDefaultJoinedGymValue = JSON.parse(defaultGym)._id; // key value saved as string so parse this to get object data
-   this._gym_id = this.MyDefaultJoinedGymValue; // intial value of gym is taken as default value 
+   
+  this._gym_id = this.MyDefaultJoinedGymValue; // intial value of gym is taken as default value 
    console.log("this gym id ***** constructor 187",this._gym_id);
  
 

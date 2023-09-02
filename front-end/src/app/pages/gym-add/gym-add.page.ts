@@ -75,6 +75,7 @@ export class GymAddPage implements OnInit {
     this.loggeduser=JSON.parse(user!);
     console.log(this.loggeduser._id);
     this.loggedUserId = this.loggeduser._id;
+    this.loggedUserEmail = 
     // this.mainForm();
 
     // fetch location as soon as page is open 
@@ -307,12 +308,19 @@ export class GymAddPage implements OnInit {
 
 
       updateUserToAdmin(){     
-        this.userApi.update(this.loggedUserId,{"isAdmin":true}).subscribe((res:any)=>{
+        this.userApi.update(this.loggedUserId,{"isAdmin":true}).subscribe(
+          {
+          next:(res:any)=>{
           console.log(" in update ",res._id);
-        },
-        (err: any) => {
+          this.userApi.getUserbyEmail(this.loggedUserEmail).subscribe((res)=>{
+            localStorage.setItem('User',JSON.stringify(res));
+          });
+          },
+        error:(err: any) => {
           console.log(err);
-        });
+        }
+      }
+        );
       }
 
 async LoggedUserInfo(){

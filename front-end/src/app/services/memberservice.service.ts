@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 
+
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, Observable, throwError,map,OperatorFunction, tap, BehaviorSubject, filter } from 'rxjs';
 import { Member } from '../models/member.model';
@@ -41,7 +42,7 @@ export class MemberserviceService {
 
   getMember(id: any): Observable<Member> {
     console.log("i m in get member by ID function");
-    return this.http.get(`${baseUrl}/findone?id=${id}`);
+    return this.http.get(`${baseUrl}/findone?id=${id}`).pipe(map(response => response));;
   }
 
   // get total member those are free or paid in same gym id

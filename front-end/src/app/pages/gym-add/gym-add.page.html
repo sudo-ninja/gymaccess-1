@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-button   (click)="gyminformation()" ><strong>Back</strong></ion-button>
     </ion-buttons>
-    <ion-title class="ios title-ios hydrated">Add Gym</ion-title>
+    <ion-title class="ios title-ios hydrated">Add Property Detail</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -16,7 +16,7 @@
         <ion-input 
         position="floating" 
         labelPlacement="floating"
-        label="Gym Name" 
+        label="Property Name*" 
         formControlName="gym_name" 
         type="text" 
         required></ion-input>
@@ -27,7 +27,7 @@
         <ion-input 
         position="floating"
         labelPlacement="floating" 
-        label="Gym Mobile" 
+        label="Property Mobile*" 
         formControlName="gym_mobile" type="text" required>
         </ion-input>
       </ion-item>
@@ -37,7 +37,7 @@
         <ion-input 
         position="floating"
         labelPlacement="floating" 
-        label="Gym Emergency Mobile" 
+        label="Property Emergency Mobile*" 
         formControlName="gym_emergency" type="text" required>
         </ion-input>
       </ion-item>
@@ -45,23 +45,22 @@
       <ion-item>
         <!-- <ion-label position="floating">Gym GSTIN (optional)</ion-label> -->
         <ion-input 
-        label="Gym GSTIN(Optional)" 
+        label="Property GSTIN(Optional)" 
         labelPlacement="floating"
         formControlName="gym_gstin"  type="text">
         </ion-input>
       </ion-item>
 
-      <ion-item>
-        <!-- <ion-label position="floating">Gym Lock ID</ion-label> -->
+      <!-- <ion-item>
         <ion-input 
         position="floating"
         labelPlacement="floating"
-        label="Gym Lock ID" formControlName="gym_lockId"  type="text">
+        label="Lock Relay ID" formControlName="gym_lockId"  type="text">
         </ion-input>
-      </ion-item>
+      </ion-item> -->
 
       <ion-item>
-          <ion-label>Location on Map</ion-label>
+          <ion-label>Location on Map*</ion-label>
           <ion-button shape="round" slot="end"  (click)="getLocation()">Set </ion-button>
       </ion-item>
 

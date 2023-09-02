@@ -114,7 +114,7 @@ lock_id: any;
     private lockApi:LockService,
   ) {
     this.storageService.get('loggeduser_id').then((val) => {
-      console.log(val);
+      console.log("loged user ID from storage service",val);
       this.loggeduser_id = val;
     });
 
@@ -126,8 +126,17 @@ lock_id: any;
     this.storageService.get('gymList').then((val) => {
       console.log(val); // here we store once fetched gym data
       this.gymsResult = val;
-      console.log(this.gymsResult);
+      console.log("gymlist retrieved from storage service",this.gymsResult);
       this.gyms = this.gymsResult;
+      console.log("gym data retrieved from storage service", this.gyms);
+    });
+
+    this.storageService.get('defaultGymId').then((val) => {
+      console.log(val); // here we store once fetched gym data
+      this._gym_id = val;
+      this.MyDefaultGymValue = val;
+      console.log("default gym id retrieved from storage service",typeof val);
+      console.log("gym id retrieved from storage service", this.MyDefaultGymValue);
     });
 
     // Java code for date calculation
@@ -323,11 +332,14 @@ lock_id: any;
               return;
             } else {
               console.log("In Alert Input Lock ID  from DB is ",this.lock_id_db);
-              this.lockApi
-                .update(this.lock_id_db, { "lock_relayId": alertData.lock_id })
+              this.gymApi.getGym(this._gym_id).subscribe((res)=>{
+                this.lockApi
+                .update(res.gym_lockId, { "lock_relayId": alertData.lock_id })
                 .subscribe((data) => {
                   console.log('Lock Id Updated as', data.lock_relayId);
                 });
+              })
+              
             }
             // this.lockIDtoggleTrigger = !this.lockIDtoggleTrigger;
           },

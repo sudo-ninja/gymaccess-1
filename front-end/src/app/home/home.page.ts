@@ -272,10 +272,13 @@ logs: string[] = [];
                        this.memberControlApi.getMcontrolEmail(this.loggeduserEmail).subscribe((data)=>{
                         this.invitationCode = data.inviteCode;
                         if(var_code === this.invitationCode){
+                          this.storageService.store('joinedGymMemberId',JSON.stringify(data.member_id));
+                          localStorage.setItem('joinedGymMemberId',data.member_id);
                           this.memberApi.getMember(data.member_id).subscribe((res)=>{
                             this.gymApi.getGym(res.gym_id).subscribe((gym)=>{
                               localStorage.setItem('defaultjoinedGymId',gym._id);
-                              this.storageService.store('defaultjoinedGymId',gym._id);
+                             
+                              this.storageService.store('defaultjoinedGymId',JSON.stringify(gym._id));
                               this.storageService.store('joinedGymList',gym);
                             });
                             
@@ -339,6 +342,11 @@ logs: string[] = [];
     {
     next:(res:any)=>{
       console.log("in update ",res._id);
+      this.userApi.getUserbyEmail(this.loggeduserEmail).subscribe((res)=>{
+        localStorage.setItem('User',JSON.stringify(res));
+      });
+       // trick use to transfer login user data to home page by get and set method
+       
     },
     error:(err: any) => {
       console.log(err);
