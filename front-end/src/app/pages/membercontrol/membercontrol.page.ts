@@ -222,8 +222,7 @@ export class MembercontrolPage implements OnInit {
         }
 
     if(!this.End_Date_UTC){
-      this.End_Date_UTC_= +this.dbEndDateUTC;
-     
+      this.End_Date_UTC_= +this.dbEndDateUTC;     
     } else{
       this.End_Date_UTC_ = this.End_Date_UTC; 
     }    
@@ -349,11 +348,7 @@ export class MembercontrolPage implements OnInit {
   End_Date_UTC:any;
   async EndDateChange(event) {
         console.log(event.detail.value);
-    // console.log('Return Value True', event.detail.value);
     this.End_Date_UTC = Date.parse(event.detail.value);
-    // console.log(new Date(this.End_Date).toTimeString());
-    // this.validDaysCalc();
-    // this.End_Date= new Date(this.End_Date_UTC).toISOString();
     this.End_Date = this.toISOStringWithTimezone(new Date(this.End_Date_UTC))
   }
 
@@ -367,19 +362,8 @@ export class MembercontrolPage implements OnInit {
       this.Start_Date_UTC = Date.parse(event.detail.value);
     }else{
       console.log("Start Date not touch ");
-    }
-    // this.StartDate = new Date(event.detail.value).getTime();
-    // console.log('238 line for String', this.Start_Date_UTC);
-    // console.log(new Date(this.Start_Date_UTC).toLocaleString());
-    // console.log(this.Start_Date_UTC);
-    // console.log(new Date(this.Start_Date_UTC).toString());
-    // this.Start_Date = new Date(this.Start_Date_UTC).toISOString();
-    this.Start_Date = this.toISOStringWithTimezone(new Date(this.Start_Date_UTC));
-    // console.log(this.Start_Date);
-    // var a = new Date(this.Start_Date_UTC).toLocaleString().split(',');
-    // var date = a[0];
-    // var time = a[1];
-    // console.log('243 life for Date time Seprate', date, time);
+    }  
+    this.Start_Date = this.toISOStringWithTimezone(new Date(this.Start_Date_UTC)); 
     this.isButtonSubmit = false;
   }
 
