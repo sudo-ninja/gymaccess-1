@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>holidays-lists</ion-title>
-    <ion-button slot="end" shape="round" fill="clear">
+    <ion-button slot="end" shape="round" fill="clear" (click)="addHolidaylistAlert()">
       <ion-icon name="add-outline"></ion-icon>
     </ion-button>
   </ion-toolbar>
@@ -10,33 +10,28 @@
 
 <ion-content [fullscreen]="true">
 
-  <ion-list-header>
-      <ion-label >2023 Holiday List</ion-label>
-      <ion-button (click)="showlist($event)">See All</ion-button>
-      <ion-button id="open-modal" (click)="addHoliday($event)"><ion-icon name="add"></ion-icon></ion-button>
-    </ion-list-header>
-  <ion-list *ngIf="isShowList">
-    <ion-item detail="true">
-      <ion-avatar slot="start">
-        <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-      </ion-avatar>
-      <ion-label>
-        <h3>Gandhi Jayanti</h3>
-        <p> 2023/10/02 ~ 2023/10/02</p>
-      </ion-label> 
+  <ion-list *ngFor="let list of fullholiday_list">
+    <ion-item>
+      <ion-label>{{list.holidaylistname}}</ion-label>
+      <ion-button id="open-modal">Open Modal</ion-button>
+      <ion-button (click)="addHoliday($event , list._id)"><ion-icon name="add"></ion-icon></ion-button>   
     </ion-item>
-
-    <ion-item detail="true">
-      <ion-avatar slot="start">
-        <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-      </ion-avatar>
-      <ion-label>
-        <h3>Gandhi Jayanti</h3>
-        <p> 2023/10/02 ~ 2023/10/02</p>
-      </ion-label> 
+    <ion-item>
+      <ion-list *ngFor="let holiday of holidays_db">
+        <ion-item detail="true">
+          <ion-avatar slot="start">
+            <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+          </ion-avatar>
+          <ion-label>
+            <h3>{{holiday.name}}</h3>
+            <p> 2023/10/02 ~ 2023/10/02</p>
+          </ion-label> 
+        </ion-item>    
+      </ion-list>
     </ion-item>
-
-  </ion-list>
+      
+       </ion-list>
+  
 
    
   <ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
@@ -88,10 +83,8 @@
     
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
-              <ion-datetime
-                        
-              [showDefaultButtons]="true"
-              
+              <ion-datetime                        
+              [showDefaultButtons]="true"              
               [value]="endDateValue"
               [min]="startDateValue" 
               presentation="date" 
