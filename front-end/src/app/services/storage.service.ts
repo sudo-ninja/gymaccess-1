@@ -10,7 +10,13 @@ export class StorageService {
   private _storage: Storage | null = null;
 
   constructor(private storage: Storage) { 
-    // this.init();
+    this.init();
+  }
+
+  async init() {
+    // If using a custom driver:
+    // await this.storage.defineDriver(MyCustomDriver)
+    await this.storage.create();
   }
 
   async store(storageKey:string,value:any){
