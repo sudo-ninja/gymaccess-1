@@ -1,100 +1,93 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>attendances shift</ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-title class="ion-text-center">
+      Attendance
+    </ion-title>
+    
+    <ion-buttons slot="end">
+      <ion-button fill="clear" [routerLink]="['/gymtabs/infor']">
+        <ion-icon slot="icon-only" name="home-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-list>
+  <form [formGroup]="memberForm" (ngSubmit)="onFormSubmit()">
+    <div>
+      <ion-list>
 
-    <ion-item detail="true" href=".././attendances/holidays">
-      <ion-label>
-        <p>Festival /</p>
-        <p>Holiday List</p>
-      </ion-label>
-      <ion-label slot="end">
-        <h2> custom </h2>
-      </ion-label>      
-    </ion-item>
+        <ion-item detail="true" href=".././attendances/holidays">
+          <ion-label>
+            <p>Festival /</p>
+            <p>Holiday List</p>
+          </ion-label>
+          <ion-label slot="end">
+            <h2> custom </h2>
+          </ion-label>
+        </ion-item>
 
-    <ion-item detail="true">
-      <ion-label>
-        <p>Attendance Shift Name </p>
-      </ion-label>
-      <ion-label slot="end">
-        <h2>Jenix </h2>
-      </ion-label>      
-    </ion-item>
-    <ion-item detail="true">
-      <ion-label>
-        <p>Attendance Time</p>
-      </ion-label>
-      <ion-label slot="end">
-        <h2>08:00 ~ 18:00 </h2>
-      </ion-label>      
-    </ion-item>
+        <ion-item detail="true">
+          <ion-label>
+            <p>Attendance Shift Name </p>
+          </ion-label>
+          <ion-label slot="end">
+            <h2>Jenix </h2>
+          </ion-label>
+        </ion-item>
+        <ion-item detail="true">
+          <ion-label>
+            <p>Attendance Time</p>
+          </ion-label>
+          <ion-label slot="end">
+            <h2>08:00 ~ 18:00 </h2>
+          </ion-label>
+        </ion-item>
 
-    <!-- ion modal to get start and end time input -->
-    
+        <!-- ion modal to get start and end time input -->
 
 
-    <ion-item detail="true">
-      <ion-label>
-        <p>Weekdays</p>
-      </ion-label>
-      <ion-label slot="end">
-        <h2> All </h2>
-      </ion-label>      
-    </ion-item>
+
+        <ion-item detail="true">
+          <ion-label>
+            <p>Weekdays</p>
+          </ion-label>
+          <ion-label slot="end">
+            <h2> All </h2>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <div>
+      <ion-list>
+        <ion-item>
+          <ion-grid>
+            <ion-row>
+              <ion-col *ngFor="let d of days ">
+                <ion-fab>
+                  <ion-fab-button (click)="presentTimeAlert(d.value)">
+                    <ion-label>{{d.name}}</ion-label>
+                  </ion-fab-button>
+                </ion-fab>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+      </ion-list>
+    </div>
+
+
+  </form>
+
+
+  <div>
     <ion-item>
-      <ion-grid>
-        <ion-row>
-          <ion-col>
-            <ion-fab>
-            <ion-fab-button>
-              <ion-label>SUN</ion-label>
-            </ion-fab-button>
-          </ion-fab></ion-col>
-          <ion-col><ion-fab>
-            <ion-fab-button>
-              <ion-label>MON</ion-label>
-            </ion-fab-button>
-          </ion-fab></ion-col>
-          <ion-col><ion-fab>
-            <ion-fab-button>
-              <ion-label>TUE</ion-label>
-            </ion-fab-button>
-          </ion-fab></ion-col>
-          <ion-col><ion-fab>
-            <ion-fab-button>
-              <ion-label>WED</ion-label>
-            </ion-fab-button>
-          </ion-fab></ion-col>
-          <ion-col><ion-fab>
-            <ion-fab-button>
-              <ion-label>THU</ion-label>
-            </ion-fab-button>
-          </ion-fab></ion-col>
-          <ion-col><ion-fab>
-            <ion-fab-button>
-              <ion-label>FRI</ion-label>
-            </ion-fab-button>
-          </ion-fab></ion-col>
-          <ion-col><ion-fab>
-            <ion-fab-button>
-              <ion-label>SAT</ion-label>
-            </ion-fab-button>
-          </ion-fab></ion-col>
-        </ion-row>
-      </ion-grid>
+      <ion-label color="danger">
+        <h2> Delete Attendance Shift </h2>
+      </ion-label>
     </ion-item>
-
-  </ion-list>
-  
-  <ion-item >
-    <ion-label color="danger">
-      <h2 > Delete Attendance Shift </h2>
-    </ion-label>      
-  </ion-item>
+  </div>
 
 </ion-content>

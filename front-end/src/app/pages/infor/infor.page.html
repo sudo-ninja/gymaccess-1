@@ -206,6 +206,32 @@ class="ion-no-border"
     </ion-list>
   </div>
 
+  <div class="div-0">
+    <ion-label color="dark"><h2><strong>Attendance Setup</strong></h2></ion-label>
+    <ion-list>
+            <ion-item>     
+                  <ion-toggle 
+                  mode="ios"
+                  [enableOnOffLabels]="true"
+                  justify="space-between"
+                  color="success"              
+                  [ngModel]="isAttendanceOn" 
+                  (ngModelChange)="attendanceIsToggled($event)"> Activate Attendance
+                  </ion-toggle>    
+            </ion-item>
+
+          <ion-item *ngIf="isAttendanceOn" detail="true" (click)="OpenAttendance()">      
+            <ion-label color="dark"><h2>Attendance Manager</h2></ion-label>
+          </ion-item>
+
+          <ion-item *ngIf="isAttendanceOn" detail="true" >      
+            <ion-label color="dark"><h2>Holiday Manager</h2></ion-label>
+          </ion-item>
+
+         
+    </ion-list>
+  </div>
+
 
   
 </ion-content>

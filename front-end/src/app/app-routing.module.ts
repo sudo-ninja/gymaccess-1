@@ -153,8 +153,9 @@ const routes: Routes = [
   {
     path: 'addlock',
     loadChildren: () => import('./pages/addlock/addlock.module').then( m => m.AddlockPageModule)
-  },  {
-    path: 'attendances',
+  },
+  {
+    path: 'attendances/:id',
     loadChildren: () => import('./pages/attendances/attendances.module').then( m => m.AttendancesPageModule)
   },
 

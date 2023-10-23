@@ -25,7 +25,7 @@ export class AttenshiftService {
   // Create List Name
   addShift(data: any): Observable<any> {
     console.log("i m in add list name ");
-    let url = `${this.baseUri}`;
+    let url = `${baseUrl}`;
     return this.http.post(url, data).pipe(tap((dat:any)=>console.log(`Added with ID =${dat._id}`)),
     catchError(this.errorMgmt));
   }
@@ -80,8 +80,13 @@ public queryShift(data:any): Observable<Attenshift[]>{
   deleteHolidaylist(data: any): Observable<any> {
       let url = `${baseUrl}/deletelist`;
       let queryParams = data;
-      return this.http.delete<Attenshift[]>(url,{params:queryParams})
+      console.log(data);
+      console.log({params:queryParams});
+      return this.http.delete<Attenshift[]>(url,data);
     }
+
+    
+
 
     // Error handling
   errorMgmt(error: HttpErrorResponse) {

@@ -15,6 +15,7 @@ export class UserService {
   // url:string= 'http://localhost:3000/api/v1'
   url:string = environment.SERVER;
   private token:string;
+  isAuthenicated: boolean;
 
 constructor(private http:HttpClient,
             // private _user:Users,
@@ -55,6 +56,21 @@ constructor(private http:HttpClient,
     //   const token = res.token;
     //   this.token = token;
     // });
+  }
+
+  LoginWithGoogle(credentials): Observable<any> { // credential here is JWT token 
+    // const header = new HttpHeaders().set('Content-type','application/json');
+    const header = new HttpHeaders({'Content-type':'application/json','Authorization':`Bearer ${JSON.stringify(credentials)}`});
+    // return this.httpClient.post(this.path + "user/LoginWithGoogle",{ headers: header});
+    let url = `${this.url}/user`;
+    console.log(url);
+      return this.http.post(url + `/LoginWithGoogle?token=${credentials}`, {headers: header})
+      .pipe(tap((dat:any)=>{
+        this.isAuthenicated = true;
+        console.log(`google login succesfully`)}),
+      catchError(this.errorMgmt));
+    // console.log("from auth service",JSON.stringify(credentials));
+      // return this.httpClient.post(this.path + "user/LoginWithGoogle", JSON.stringify(credentials), { headers: header, withCredentials: true });
   }
 
   update(Id:any, data: any): Observable<any> {

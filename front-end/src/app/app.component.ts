@@ -97,7 +97,7 @@ const getCurrentAppVersion = async () => {
       });      
     })
 
-
+//for google login
     this.platform.ready().then(() => {
       console.log('READY!')
       GoogleAuth.initialize(

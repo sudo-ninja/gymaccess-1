@@ -12,8 +12,9 @@ import { Users } from '../../models/user.model';
 export class AuthGuardService {
 
   constructor() { }
-  public signIn(userData: Users){
-    localStorage.setItem('ACCESS_TOKEN', "access_token");
+  // public signIn(userdata:Users) // in place of ths direct token is passed
+  public signIn(token:any){
+    localStorage.setItem('ACCESS_TOKEN',token);
   }
   public isLoggedIn(){
     return localStorage.getItem('ACCESS_TOKEN') !== null;

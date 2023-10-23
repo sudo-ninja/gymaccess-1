@@ -39,12 +39,12 @@ export class UpdateService {
     ) { }
 
     async checkForUpdate(){
-       this.http.get(this.maintenanceExample).subscribe((info:AppUpdate)=>{
-        console.log("result:", info);
-        if(!info.enabled){
-          this.presentAlert(info.msg.title,info.msg.msg);
-        }
-       });
+      //  this.http.get(this.maintenanceExample).subscribe((info:AppUpdate)=>{
+      //   console.log("result:", info);
+      //   if(!info.enabled){
+      //     this.presentAlert(info.msg.title,info.msg.msg);
+      //   }
+      //  });
 
     }
 

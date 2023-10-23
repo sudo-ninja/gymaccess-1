@@ -8,4 +8,7 @@ export class Gym {
     gym_emergency?:string;
     gym_gstin?:string;
     gym_lockId?:string;
+    gym_attendance?:boolean;
+    gym_attendance_id?:any;
+    gym_holiday_id?:any; //Holiday Id 
 }

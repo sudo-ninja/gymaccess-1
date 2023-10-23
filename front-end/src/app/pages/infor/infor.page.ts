@@ -30,6 +30,7 @@ import { GymadminService } from 'src/app/services/gymadmin.service';
 import { LockService } from 'src/app/services/lock.service';
 //for for builder
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { AttenshiftService } from 'src/app/services/attenshift.service';
 
 @Component({
   selector: 'app-infor',
@@ -54,6 +55,9 @@ lockForm!: FormGroup;
 
   lock_id_db: any;
   closingDelay: string;
+  isAttendanceOn: boolean;
+  showAttenHoli: boolean = false;
+  gym_attendance_id: any;
 
 
   
@@ -112,6 +116,7 @@ lock_id: any;
     private gymAdminApi:GymadminService,
     //lock service api
     private lockApi:LockService,
+    private attendApi:AttenshiftService,
   ) {
     this.storageService.get('loggeduser_id').then((val) => {
       console.log("loged user ID from storage service",val);
@@ -169,7 +174,9 @@ lock_id: any;
 
     this.gymApi.getGym(this._gym_id).subscribe(res=>{
       this.gym_name_forLock = res.gym_name;
-      console.log("Gym Name XXXXX", this.gym_name_forLock);
+      this.isAttendanceOn = res.gym_attendance;
+      this.gym_attendance_id = res.gym_attendance_id;
+      // console.log("Gym Name XXXXX", this.gym_name_forLock);
     })
   }
 
@@ -672,7 +679,7 @@ locks = [
 
   public isToggled: boolean ;
   notifyAndUpdateIsToggled(event){
-    console.log("Toggled: "+ this.isToggled,"Passage Mode is ..", event);
+    // console.log("Toggled: "+ this.isToggled,"Passage Mode is ..", event);
     this.lockApi.update(this.lock_id_db,{"lock_passage_mode":event}).subscribe(res=>{
       console.log(res);
       if(res.lock_passage_mode == true){
@@ -686,10 +693,7 @@ locks = [
         // console.log("🚀 ~ file: addlock.page.ts:153 ~ AddlockPage ~ toggleButton ~ el̥se:",(this.showOpeningRange && this.showPassage));
         }
        
-      });  
-  
-    
-    
+      });    
 
   }
 
@@ -802,6 +806,63 @@ locks = [
        
       }
     })
+  }
+
+
+  async attendanceIsToggled(event){
+    if(event){
+      this.isAttendanceOn = event;
+    }
+
+    this.gymApi.update(this._gym_id,{"gym_attendance":event}).subscribe({
+      next:res=>{
+        this.isAttendanceOn = event;
+      },
+      error:err=>{}
+    });
+
+    let shift={ //dumyshift added firsttime
+      "shiftname":this.gym_name_forLock,
+      "gymid":this._gym_id,
+      "gym_name":this.gym_name_forLock,
+      "shift_start_time":"0800",
+      "shift_end_time":"1800",
+      "repeat":true,
+    }
+    if(event){
+       this.isAttendanceOn = true;
+    this.attendApi.addShift(shift).subscribe({
+      next:res=>{
+        console.log(res._id);
+        this.gymApi.update(this._gym_id,{"gym_attendance_id":res._id}).subscribe({
+          next:data=>{
+            console.log(data);
+          },
+          error:err=>{},
+        });
+      },
+      error:err=>{},
+    })
+  }else{
+    this.attendApi.deleteHolidaylist({_id:this.gym_attendance_id,gymid:this._gym_id}).subscribe({
+      next:res=>{
+        console.log(res);
+        this.gymApi.update(this._gym_id,{"gym_attendance_id":""}).subscribe({
+          next:res=>{
+            console.log(res);
+          }
+        });
+      }
+    });
+
+    
+  }
+
+  }
+
+  async OpenAttendance(){
+    // this.router.navigate(['/qrlabel/', this._gym_id]);
+    this.router.navigate(['/attendances/',this.gym_attendance_id]);
   }
 
 }

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 
 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -15,6 +15,8 @@ import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import {isPlatform} from '@ionic/angular';
 
 import { ToastController } from '@ionic/angular';
+import { JwtService } from 'src/app/services/jwt.service';
+import { StorageService } from 'src/app/services/storage.service';
  
 
 
@@ -56,7 +58,10 @@ export class LoginPage implements OnInit {
     private router: Router,
     private http:HttpClient,
     private userAPI: UserService,
-    private emailVerifyAPI: EmailverificationService
+    private emailVerifyAPI: EmailverificationService,
+    private jwtService:JwtService,
+    private storageService :StorageService, // for local storage
+    private _ngZone: NgZone,
   ) {
     if(this.userAPI.isLoggedIn())
     {this.router.navigateByUrl('/home',{replaceUrl:true})};
@@ -337,7 +342,9 @@ sendUsertoHome(email_){
   this.userAPI.getUserbyEmail(email_).subscribe({
     next:res=>{
       localStorage.setItem('User',JSON.stringify(res)) // trick use to transfer login user data to home page by get and set method
-      this.authService.signIn(this.authForm.value);
+      let retrievdToken = localStorage.getItem("token");
+      // this.authService.signIn(this.authForm.value);
+      this.authService.signIn(retrievdToken);
       this.router.navigateByUrl('/home',{replaceUrl:true}) // url is replaces so that use cant go back to login page without logout
      
     },
@@ -434,35 +441,43 @@ async verifiedUser(email_:any) {
 
 // for google login
 async googleSignin(){
-  console.log("google sign in ");
+  // console.log("google sign in ");
+  // let googleUser = await GoogleAuth.signIn();
+  // console.log(googleUser);
+  // const credential = auth.GoogleAuthProvider.credential(googleUser.authentication.idToken);
+  // // return this.afAuth.auth.signInAndRetrieveDataWithCredential(credential);
   this.user = await GoogleAuth.signIn();
-  console.log(this.user);
+  // console.log(this.user);
+  //retur ID token from here to back end 
+  // console.log(this.user.authentication.idToken);
+  this.handleCredentialResponse(this.user.authentication.idToken);
   if(!this.user){
     // present alert that user not fetch by gmail 
-    this.presentToast("User Data Not Fetched",1500,"top");    
-  }else{  
-    console.log(this.user); 
-    // check if user already exist in user db search by email 
-    this.waiting= true;
-      this.userAPI.getUserbyEmail(this.user.email).subscribe((res)=>{
-        console.log(res); // here data comes without token .
-         this.waiting= false;
-        if(res.verified){
-          let profileImageUrl = this.user.imageUrl;
-          localStorage.setItem('ProfileImageUrl',profileImageUrl);
-          // this.GoogleuserLogin(res.email); // here with token data will go to home page
-          // return;  
-        }
-        // return;
-      });
-    // if no user found then only go below 
-    let profileImageUrl = this.user.imageUrl;
-    let UserName = this.user.givenName.concat(" ",this.user.familyName);
-    console.log('user-',this.user , "Name:- ",UserName , "Email : - ",this.user.email,"image url:-",profileImageUrl);
+    this.presentToast("User Data Not Fetched from GMAIL",1500,"top");}    
+  // }else{  
+  //   console.log(this.user); 
+  //   // check if user already exist in user db search by email 
+  //   debugger;
+  //   this.waiting= true;
+  //     this.userAPI.getUserbyEmail(this.user.email).subscribe((res)=>{
+  //       console.log(res); // here data comes without token .
+  //        this.waiting= false;
+  //       if(res.verified){
+  //         let profileImageUrl = this.user.imageUrl;
+  //         localStorage.setItem('ProfileImageUrl',profileImageUrl);
+  //         // this.GoogleuserLogin(res.email); // here with token data will go to home page
+  //         // return;  
+  //       }
+  //       // return;
+  //     });
+  //   // if no user found then only go below 
+  //   let profileImageUrl = this.user.imageUrl;
+  //   let UserName = this.user.givenName.concat(" ",this.user.familyName);
+  //   console.log('user-',this.user , "Name:- ",UserName , "Email : - ",this.user.email,"image url:-",profileImageUrl);
    
-  localStorage.setItem('ProfileImageUrl',profileImageUrl);
-  this.GmailDoesNotExistAddtoDBandSendToHome(this.user.email,UserName);
-  }
+  // localStorage.setItem('ProfileImageUrl',profileImageUrl);
+  // this.GmailDoesNotExistAddtoDBandSendToHome(this.user.email,UserName);
+  // }
   
 }
 
@@ -476,6 +491,35 @@ async googleSignOut(){
   this.user = null ;
 }
 
+
+async handleCredentialResponse(response:any) {
+  console.log(response);
+  this.userAPI.LoginWithGoogle(response).subscribe(
+    (x:any) => {  
+        // console.log(x.token);   
+        this.userAPI.setToken(x.token); // to save JWT token in local storage   
+        // console.log(this.service.getToken());         
+        let decodedToken = this.jwtService.DecodeToken(this.userAPI.getToken());
+        // console.log(decodedToken); 
+        // let user_id = decodedToken.valueOf()
+        localStorage.setItem('decodedJwt',JSON.stringify(decodedToken));
+        console.log(JSON.stringify(decodedToken));
+        this.storageService.store('decodedJwt',decodedToken);  
+        var jsonObject = JSON.parse(JSON.stringify(decodedToken));          
+         // store decoded token string  
+         this._ngZone.run(()=>{
+          // console.log("XXXXX-----SUCCESSFULL--LOGIN---XXXX");
+          // this.sendUsertoHome(jsonObject.email);
+          this.mobileisthere(jsonObject.userId,jsonObject.email);
+          // this.router.navigate(['/home']); // here nevigate to home page 
+          });
+               
+    },
+    (error:any) => {
+        console.log(error);
+      }
+    );  
+}
 
 async GmailDoesNotExistAddtoDBandSendToHome (email,name){
   this.waiting= true;
@@ -520,7 +564,7 @@ async GmailDoesNotExistAddtoDBandSendToHome (email,name){
           /**here can show present input alert and get mobile number as input , show backdrop dismiss flase
            * and then pass that input mobile number to user mobile.           
            */
-          this.mobileNumberInputAlert(name,email,'googleuserlogin');
+          // this.mobileNumberInputAlert(name,email,'googleuserlogin');
           
       }
     }
@@ -574,9 +618,24 @@ async presentToast(message_, duration_,position: 'top' | 'middle' | 'bottom') {
   }
 
 
-  // mobile number input alert 
+  // mobile number input alert only i fmobile is not tthere 
+  async mobileisthere(id,email){
+    this.userAPI.getUserbyEmail(email).subscribe({
+      next:res=>{
+        if(res.mobile){
+          return;
+        }
+        else{
+          this.mobileNumberInputAlert(id,email);
+        }
+      },
+      error:err=>{}
+    });
+  }
   // for member join gym alert to get verification code 
-  async mobileNumberInputAlert(name,email,password) {
+  async mobileNumberInputAlert(id,email) {
+    
+
     this.waiting = false;;
     const alert = await this.alertCtrl.create({
       mode:'ios',
@@ -589,7 +648,15 @@ async presentToast(message_, duration_,position: 'top' | 'middle' | 'bottom') {
                       const ent_mobile= alertData.code_entered;
                       console.log(ent_mobile);                     
                       this.entered_mobile = ent_mobile;
-                      this.GoogleRegistrationFirstTime(name,email,this.entered_mobile,password);
+                      this.userAPI.update(id,{"mobile":ent_mobile}).subscribe({
+                        next:res=>{
+                          this.sendUsertoHome(email);
+                        },
+                        error:err=>{
+
+                        }
+                      });
+                      // this.GoogleRegistrationFirstTime(name,email,this.entered_mobile,password);
                      },
                     }
             ],
