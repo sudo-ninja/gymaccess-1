@@ -8,10 +8,10 @@ const routes: Routes = [
     path: '',
     component: AttendancesPage
   },
-  {
-    path: 'holidays',
-    loadChildren: () => import('./holidays/holidays.module').then( m => m.HolidaysPageModule)
-  }
+  // {
+  //   path: 'holidays',
+  //   loadChildren: () => import('./holidays/holidays.module').then( m => m.HolidaysPageModule)
+  // }
 ];
 
 @NgModule({

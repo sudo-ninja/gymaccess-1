@@ -821,19 +821,57 @@ locks = [
       error:err=>{}
     });
 
+    let CurrentDate = new Date().toISOString();
+    const DateNow = CurrentDate.split(".");
+    let TimeNow = DateNow[0];
+
     let shift={ //dumyshift added firsttime
       "shiftname":this.gym_name_forLock,
       "gymid":this._gym_id,
       "gym_name":this.gym_name_forLock,
-      "shift_start_time":"0800",
-      "shift_end_time":"1800",
+      "shift_start_time": TimeNow,
+      "shift_end_time": TimeNow,
       "repeat":true,
+      // "working_days":[{
+      //   "day_number":0,
+      //   "punchIn":"1970-01-01T02:30:00",
+      //   "punchOut":"1970-01-01T02:30:00"
+      //   },
+      //   {
+      //   "day_number":1,
+      //   "punchIn":"1970-01-01T02:30:00",
+      //   "punchOut":"1970-01-01T02:30:00"
+      //   },
+      //   {
+      //     "day_number":2,
+      //     "punchIn":"1970-01-01T02:30:00",
+      //     "punchOut":"1970-01-01T02:30:00"
+      //     },
+      //     {
+      //       "day_number":3,
+      //       "punchIn":"1970-01-01T02:30:00",
+      //       "punchOut":"1970-01-01T02:30:00"
+      //       },{
+      //         "day_number":4,
+      //         "punchIn":"1970-01-01T02:30:00",
+      //         "punchOut":"1970-01-01T02:30:00"
+      //         },{
+      //           "day_number":5,
+      //           "punchIn":"1970-01-01T02:30:00",
+      //           "punchOut":"1970-01-01T02:30:00"
+      //           },{
+      //             "day_number":6,
+      //             "punchIn":"1970-01-01T02:30:00",
+      //             "punchOut":"1970-01-01T02:30:00"
+      //             },
+      // ]
     }
     if(event){
        this.isAttendanceOn = true;
     this.attendApi.addShift(shift).subscribe({
       next:res=>{
         console.log(res._id);
+        this.gym_attendance_id = res._id; // after trigger page wont load again so that we have to force this id here 
         this.gymApi.update(this._gym_id,{"gym_attendance_id":res._id}).subscribe({
           next:data=>{
             console.log(data);
@@ -863,6 +901,11 @@ locks = [
   async OpenAttendance(){
     // this.router.navigate(['/qrlabel/', this._gym_id]);
     this.router.navigate(['/attendances/',this.gym_attendance_id]);
+  }
+
+  async OpenHoliday(){
+    this.router.navigate(['/holidays']);
+    // this.router.navigate(['/attendances/',this.gym_attendance_id]);
   }
 
 }

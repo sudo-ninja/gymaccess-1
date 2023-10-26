@@ -188,10 +188,10 @@ export class MembercontrolPage implements OnInit {
         this.join_date = this.toISOStringWithTimezone(new Date(this.dbJoinDateUTC*1));
 
         this.isCalenderDate = true;
-        console.log(this.startDateValue);
-        console.log(this.intimeValue);
-        console.log(this.outtimeValue);
-        console.log(this.endDateValue);
+        // console.log(this.startDateValue);
+        // console.log(this.intimeValue);
+        // console.log(this.outtimeValue);
+        // console.log(this.endDateValue);
         // console.log(this.myDate);
         loading.dismiss();
       } catch (error) {
@@ -201,9 +201,9 @@ export class MembercontrolPage implements OnInit {
       }
     });
         
-    console.log(this.dbInTimeUTC);
-    console.log(this.startDateValue);
-    console.log(this.endDateValue);
+    // console.log(this.dbInTimeUTC);
+    // console.log(this.startDateValue);
+    // console.log(this.endDateValue);
   }
 
   onFormSubmit() {

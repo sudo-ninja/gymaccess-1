@@ -7,6 +7,7 @@ import { OverlayEventDetail } from '@ionic/core/components';
 // get service call 
 import { HolidayService } from 'src/app/services/holiday.service';
 import { StorageService } from 'src/app/services/storage.service';
+import { Holiday } from 'src/app/models/holiday';
 
 
 
@@ -41,32 +42,32 @@ export class HolidaysPage implements OnInit {
 
   ngOnInit() {
     // This holiday form will take data and update it
-    this.holidayForm = this.formBuilder.group({
-      gymid:[''],
-      gym_name:[''],
-      holidaylistname:[''],
-      h_name:[''],
-      h_startdate: [''],
-      h_enddate: [''],
-    });
+    // this.holidayForm = this.formBuilder.group({
+    //   gymid:[''],
+    //   gym_name:[''],
+    //   holidaylistname:[''],
+    //   h_name:[''],
+    //   h_startdate: [''],
+    //   h_enddate: [''],
+    // });
 
-    this.startDateValue = this.toISOStringWithTimezone(Date.now()); // set default Date value as of today 
-    this.endDateValue = this.toISOStringWithTimezone(Date.now()); // set default date value as of today 
-    this.holidayApi.queryHolidaylist({"gymid":"gymid"}).subscribe((res:any)=>{
-      console.log(res);
-      this.fullholiday_list = res;
-      this.holidays_db = res.holidays;
-    });
+    // this.startDateValue = this.toISOStringWithTimezone(Date.now()); // set default Date value as of today 
+    // this.endDateValue = this.toISOStringWithTimezone(Date.now()); // set default date value as of today 
+    // this.holidayApi.queryHolidaylist({"gymid":"gymid"}).subscribe((res:any)=>{
+    //   console.log(res);
+    //   this.fullholiday_list = res;
+    //   this.holidays_db = res.holidays;
+    // });
 
   }
 
   ionViewWillEnter(){
-    this.holidayApi.queryHolidaylist({"gymid":"gymid"}).subscribe((res:any)=>{
-      console.log(res);
-      this.fullholiday_list = res;
-            this.holidays_db = res.holidays;
+    // this.holidayApi.queryHolidaylist({"gymid":"gymid"}).subscribe((res:any)=>{
+    //   console.log(res);
+    //   this.fullholiday_list = res;
+    //         this.holidays_db = res.holidays;
 
-    });
+    // });
     
   }
 
@@ -238,6 +239,28 @@ export class HolidaysPage implements OnInit {
       ':' + pad(date.getSeconds()) +
       diff + pad(tzOffset / 60) +
       ':' + pad(tzOffset % 60);
+  };
+
+
+  async addNewHoliday(){
+
+  }
+
+
+  searchTerm: string = '';
+  filterHolidays: any[] = this.fullholiday_list;
+
+  searchItems() {
+    this.filterHolidays = this.fullholiday_list.filter(product => {
+      return product.name.toLowerCase().includes(this.searchTerm.toLowerCase());
+    });
+  }
+
+  handleRefresh(event) {
+    setTimeout(() => {
+      // this.getGyms(this.loggeduser._id);
+      event.target.complete();
+    }, 2000);
   };
 
 }

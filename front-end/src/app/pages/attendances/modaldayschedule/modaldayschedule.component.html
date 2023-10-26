@@ -1,0 +1,131 @@
+<!-- <ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Selected Day Name </ion-title>
+    <ion-buttons slot="end">
+      <ion-button >Confirm</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header> -->
+
+
+<ion-content class="ion-padding">
+  <ion-label class="ion-text-center"><h1>{{pageTitle}}</h1></ion-label>
+  <ion-item>     
+    <ion-toggle 
+    mode="ios"
+    [enableOnOffLabels]="true"
+    justify="space-between"
+    color="danger"                        
+    [ngModel]="isHolidaySet"
+    (ngModelChange)="holidayToggle($event)"> Set Holiday
+    </ion-toggle>    
+  </ion-item>
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <ion-list>
+    <ion-item>
+      <ion-grid>
+        <ion-row>
+          <!-- <ion-col size-md="6">
+           
+            <!-- formControlName="isHoliday"    --
+          </ion-col> -->
+          <ion-col size-md="6">
+          <ion-item  *ngIf="!isHolidaySet">
+            <ion-grid>
+              <ion-row>
+                <ion-col size-md="6">In Time</ion-col>
+                <ion-col size-md="6">Out Time</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size-md="6">
+                  <ion-label>
+                    <ion-datetime-button slot="end" datetime ="InTime" formControlName="punchIn" ngDefaultControl></ion-datetime-button>
+                  </ion-label>
+                  </ion-col>
+                <ion-col size-md="6">
+                  <ion-label>
+                   <ion-datetime-button slot="end" datetime ="PunchOutTime" formControlName="punchOut" ngDefaultControl></ion-datetime-button>
+                </ion-label>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          
+          </ion-item>
+          
+        </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime                  
+        [value]="intimeValue"
+        [showDefaultButtons]="true"
+        presentation="time" 
+        hourCycle="h24"
+        id="InTime" 
+        #InTime
+        (ionChange)="InTimeChange($event)"></ion-datetime>
+      </ng-template>
+      <!-- formControlName="punchIn", -->
+    </ion-modal>
+
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime        
+        [min]="intimeValue"
+        [value]="outtimeValue"
+        [showDefaultButtons]="true"
+        presentation="time"
+        hourCycle="h24" 
+        id="PunchOutTime" 
+        #PunchOutTime
+        (ionChange)="OutTimeChange($event)"></ion-datetime>
+      </ng-template>
+      <!-- formControlName="punchOut"  -->
+    </ion-modal>
+
+
+      <!-- <ion-item class="ion-text-center">
+        <!-- <ion-label position="floating">Select Time</ion-label> --
+        <ion-datetime
+        presentation="time" 
+        displayFormat="h:mm A" 
+        [(ngModel)]="selectedTime" 
+        pickerFormat="h mm A">
+      </ion-datetime>
+      </ion-item> -->
+
+      <div>
+        <ion-grid>
+          <ion-row>
+            <ion-col size-md="6"><ion-button (click)="presentPopover($event)" fill="outline" shape="round">Also Apply</ion-button></ion-col>
+            
+            <ion-popover #popover [isOpen]="isOpen" (didDismiss)="isOpen = false">
+              <ng-template>
+                <ion-content class="ion-padding">
+                  <ion-list>
+                    <ion-label>All Days</ion-label>
+                    <ion-label>Office Days(Mon-Fri)</ion-label>
+                    <ion-label>Factory Days(Mon-Sat)</ion-label>
+                  </ion-list></ion-content>
+              </ng-template>
+            </ion-popover>
+            
+            <ion-col size-md="6">
+              <ion-button shape="round" (click)="onSubmit()" [strong]="true" >Done</ion-button>
+          </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+     
+
+  </ion-list>
+</form>
+
+
+</ion-content>

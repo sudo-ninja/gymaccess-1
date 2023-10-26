@@ -1,5 +1,16 @@
- ion-fab {
-           
+ .col {
+  margin-top: 50px;
+ }
+
+ .black-fab {
+  --background: rgb(54, 54, 54);
+}
+
+.blue-fab {
+  --background: var(--ion-color-primary);
+}
+ 
+ ion-fab {           
   >ion-fab-button {
     width: 40px;
         height: 40px; 
@@ -9,64 +20,3 @@
   }
 }
 
-ion-grid {
-    padding-bottom: 5vh;
-  >ion-row {
-    >ion-col:nth-of-type(1) {
-      >ion-fab {
-        >ion-fab-button {
-          >ion-label {
-          }
-        }
-      }
-    }
-    >ion-col:nth-of-type(2) {
-      >ion-fab {
-        >ion-fab-button {
-          >ion-label {
-          }
-        }
-      }
-    }
-    >ion-col:nth-of-type(3) {
-      >ion-fab {
-        >ion-fab-button {
-          >ion-label {
-          }
-        }
-      }
-    }
-    >ion-col:nth-of-type(4) {
-      >ion-fab {
-        >ion-fab-button {
-          >ion-label {
-          }
-        }
-      }
-    }
-    >ion-col:nth-of-type(5) {
-      >ion-fab {
-        >ion-fab-button {
-          >ion-label {
-          }
-        }
-      }
-    }
-    >ion-col:nth-of-type(6) {
-      >ion-fab {
-        >ion-fab-button {
-          >ion-label {
-          }
-        }
-      }
-    }
-    >ion-col:nth-of-type(7) {
-      >ion-fab {
-        >ion-fab-button {
-          >ion-label {
-          }
-        }
-      }
-    }
-  }
-}

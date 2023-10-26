@@ -156,8 +156,13 @@ const routes: Routes = [
   },
   {
     path: 'attendances/:id',
-    loadChildren: () => import('./pages/attendances/attendances.module').then( m => m.AttendancesPageModule)
+    loadChildren: () => import('./pages/attendances/attendances.module').then( m => m.AttendancesPageModule),
+    canActivate: [AuthGuard]
   },
+  {
+    path: 'holidays',
+    loadChildren: () => import('./pages/holidays/holidays.module').then( m => m.HolidaysPageModule)
+  }
 
 
   

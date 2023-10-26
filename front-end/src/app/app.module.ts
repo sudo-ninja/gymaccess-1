@@ -38,6 +38,8 @@ import { CustomFilterPipe } from './custom-filter-pipe.pipe';
 //to kno wnetwork IP address and details
 //to know network ip 
 import { NetworkInterface } from '@awesome-cordova-plugins/network-interface/ngx';
+//for modal controller
+import { ModaldayscheduleComponent } from './pages/attendances/modaldayschedule/modaldayschedule.component';
  
 
 import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
@@ -45,7 +47,8 @@ import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
 @NgModule({
   declarations: [
     AppComponent, 
-    CustomFilterPipe
+    CustomFilterPipe,
+    ModaldayscheduleComponent
   ],
   imports: [BrowserModule, 
     IonicModule.forRoot(),

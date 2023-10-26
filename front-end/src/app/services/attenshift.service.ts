@@ -33,7 +33,7 @@ export class AttenshiftService {
   //read list by id 
   getShift(id: any): Observable<any> {
     console.log("i m in get holiday list by ID ");
-    return this.http.get(`${baseUrl}/?id=${id}`);
+    return this.http.get(`${baseUrl}/${id}`);
   }
 
   //forget to update holidatlist name -- make it
@@ -68,6 +68,15 @@ public queryShift(data:any): Observable<Attenshift[]>{
       catchError(this.errorMgmt));
       }
 
+  updateDay(shiftid:any,dayid:any,data:any):Observable<any> {
+    // console.log("i m in add holiday ");
+    // console.log(`${id}`);
+    console.log(`${baseUrl}/days?id=${shiftid}&working_days._id=${dayid}`);
+    return this.http.put(`${baseUrl}/days?id=${shiftid}&working_days._id=${dayid}`,data).pipe(tap((dat:any)=>console.log(`updated with day =${dayid}`)),
+    catchError(this.errorMgmt));
+    }
+
+
   removeHoliday(id:any,data:any):Observable<any> {
     console.log("i m in add holiday ");
     console.log(`${id}`);
@@ -85,6 +94,12 @@ public queryShift(data:any): Observable<Attenshift[]>{
       return this.http.delete<Attenshift[]>(url,data);
     }
 
+
+update(id: any, data: any): Observable<any> {
+    console.log("i m in Update by ID shift ID is ..",id);
+    return this.http.put(`${baseUrl}/update/${id}`,data).pipe(tap((data:any)=> console.log(data)),
+    catchError(this.errorMgmt));
+  }
     
 
 
