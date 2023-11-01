@@ -9,6 +9,10 @@
 .blue-fab {
   --background: var(--ion-color-primary);
 }
+
+.holiday-text{
+  --color: var(--ion-color-light);
+}
  
  ion-fab {           
   >ion-fab-button {

@@ -40,6 +40,8 @@ import { CustomFilterPipe } from './custom-filter-pipe.pipe';
 import { NetworkInterface } from '@awesome-cordova-plugins/network-interface/ngx';
 //for modal controller
 import { ModaldayscheduleComponent } from './pages/attendances/modaldayschedule/modaldayschedule.component';
+import { AddholidaymodalComponent } from './pages/holidays/addholidaymodal/addholidaymodal.component';
+import { UpdateholidaymodalComponent } from './pages/holidays/updateholidaymodal/updateholidaymodal.component';
  
 
 import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
@@ -48,7 +50,9 @@ import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
   declarations: [
     AppComponent, 
     CustomFilterPipe,
-    ModaldayscheduleComponent
+    ModaldayscheduleComponent,
+    AddholidaymodalComponent,
+    UpdateholidaymodalComponent,
   ],
   imports: [BrowserModule, 
     IonicModule.forRoot(),

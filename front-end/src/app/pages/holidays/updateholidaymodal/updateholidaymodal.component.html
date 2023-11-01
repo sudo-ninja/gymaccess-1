@@ -1,3 +1,73 @@
-<p>
-  updateholidaymodal works!
-</p>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-title class="ion-text-center">
+      {{pageTitle}}
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button fill="clear" 
+      (click)="cancel()"
+       >
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content  color="light"class="ion-padding">
+     
+  <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentSelcted($event)" [value] = "selectedSegment" mode="ios">
+    <ion-segment-button value="start_date">
+      <ion-label>Start Date</ion-label>
+    </ion-segment-button>
+
+    <ion-segment-button value="end_date" mode="ios">
+      <ion-label>End Date</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  
+ <div *ngIf="selectedSegment==='start_date'">
+    <ion-datetime
+    [value]="In_Time"
+    [max]="Out_Time" 
+    formControlName="holiday_start_date"
+    presentation="date"
+    (ionChange)="InTimeChange($event)"
+    id="ITime" 
+    #ITime
+  >
+  <!-- <span slot="title">Select a {{selectedSegment}}</span> -->
+</ion-datetime>
+</div>
+
+<div *ngIf="selectedSegment==='end_date'">
+  <ion-datetime
+  formControlName="holiday_end_date"  
+  [min]="In_Time"  
+  presentation="date"
+  (ionChange)="OutTimeChange($event)"
+  id="OTime" 
+  #OTime
+>
+<!-- <span slot="title">Select a {{selectedSegment}}</span> -->
+</ion-datetime>
+</div>
+
+<ion-item>
+  <ion-input label="Holiday Name" labelPlacement="floating" placeholder="Enter Holiday Name" formControlName="holiday_name" type="text"></ion-input>
+</ion-item>
+
+<ion-button type="submit"  expand="block" shape="round" [disabled]="!myForm.valid" (click)="onSubmit()" [strong]="true" >Done</ion-button>
+ 
+
+</form> 
+ 
+
+
+
+</ion-content>

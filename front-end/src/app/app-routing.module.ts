@@ -152,7 +152,8 @@ const routes: Routes = [
 
   {
     path: 'addlock',
-    loadChildren: () => import('./pages/addlock/addlock.module').then( m => m.AddlockPageModule)
+    loadChildren: () => import('./pages/addlock/addlock.module').then( m => m.AddlockPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'attendances/:id',
@@ -160,7 +161,7 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'holidays',
+    path: 'holidays/:id',
     loadChildren: () => import('./pages/holidays/holidays.module').then( m => m.HolidaysPageModule)
   }
 

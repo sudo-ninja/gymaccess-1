@@ -31,6 +31,7 @@ import { LockService } from 'src/app/services/lock.service';
 //for for builder
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AttenshiftService } from 'src/app/services/attenshift.service';
+import { HolidayService } from 'src/app/services/holiday.service';
 
 @Component({
   selector: 'app-infor',
@@ -58,6 +59,8 @@ lockForm!: FormGroup;
   isAttendanceOn: boolean;
   showAttenHoli: boolean = false;
   gym_attendance_id: any;
+  isHolidayOn: any;
+  gym_holidaylist_id: any;
 
 
   
@@ -117,6 +120,7 @@ lock_id: any;
     //lock service api
     private lockApi:LockService,
     private attendApi:AttenshiftService,
+    private holidayApi:HolidayService,
   ) {
     this.storageService.get('loggeduser_id').then((val) => {
       console.log("loged user ID from storage service",val);
@@ -176,6 +180,8 @@ lock_id: any;
       this.gym_name_forLock = res.gym_name;
       this.isAttendanceOn = res.gym_attendance;
       this.gym_attendance_id = res.gym_attendance_id;
+      this.gym_holidaylist_id = res.gym_holiday_id;
+      this.isHolidayOn = res.gym_isHoldaylistadded;
       // console.log("Gym Name XXXXX", this.gym_name_forLock);
     })
   }
@@ -903,8 +909,58 @@ locks = [
     this.router.navigate(['/attendances/',this.gym_attendance_id]);
   }
 
+
+  async holidayIsToggled(event){
+    if(event){
+      this.isHolidayOn = event;
+    }
+// set if holiday list is there or not
+    this.gymApi.update(this._gym_id,{"gym_isHoldaylistadded":event}).subscribe({
+      next:res=>{
+        this.isHolidayOn = event;
+      },
+      error:err=>{}
+    });
+
+   
+    let holidaylist={ //dumylist added firsttime
+      "holidaylistname":this.gym_name_forLock,
+      "gymid":this._gym_id,
+      "gym_name":this.gym_name_forLock,
+    }
+    if(event){
+       this.isHolidayOn = true;
+
+    this.holidayApi.addlistName(holidaylist).subscribe({
+      next:res=>{
+        console.log(res._id);
+        this.gym_holidaylist_id = res._id; // after trigger page wont load again so that we have to force this id here 
+        this.gymApi.update(this._gym_id,{"gym_holiday_id":res._id}).subscribe({ // updat holiday list id to main gym
+          next:data=>{
+            console.log(data);
+            this.gym_holidaylist_id = data._id;
+          },
+          error:err=>{},
+        });
+      },
+      error:err=>{},
+    })
+  }else{
+    this.holidayApi.deleteHolidaylist({_id:this.gym_holidaylist_id,gymid:this._gym_id}).subscribe({
+      next:res=>{
+        console.log(res);
+        this.gymApi.update(this._gym_id,{"gym_holiday_id":""}).subscribe({
+          next:res=>{
+            console.log(res);
+          }
+        });
+      }
+    });    
+  }
+  }
+
   async OpenHoliday(){
-    this.router.navigate(['/holidays']);
+    this.router.navigate(['/holidays/',this.gym_holidaylist_id]);
     // this.router.navigate(['/attendances/',this.gym_attendance_id]);
   }
 

@@ -52,7 +52,7 @@ export class HolidayService {
 //     return this.http.get<UserInformation>(url,{params:queryParams});
 // }
 public queryHolidaylist(data:any): Observable<Holiday[]>{
-  console.log(data);
+  // console.log(data);
   let url = `${baseUrl}/query`;
   let queryParams = data;
   return this.http.get<Holiday[]>(url,{params:queryParams})
@@ -67,6 +67,7 @@ public queryHolidaylist(data:any): Observable<Holiday[]>{
     catchError(this.errorMgmt));
     }
 
+    // to add holiday to holiday list
   updateHoliday(id:any,data:any):Observable<any> {
       console.log("i m in add holiday ");
       console.log(`${id}`);
@@ -74,12 +75,39 @@ public queryHolidaylist(data:any): Observable<Holiday[]>{
       return this.http.put(`${baseUrl}/holiday?id=${id}`,data).pipe(tap((dat:any)=>console.log(`updated with ID =${id}`)),
       catchError(this.errorMgmt));
       }
+  
+// to retrive holiday
+getSpecificHoliday(id:any):Observable<any> {
+  console.log("i m in get spefic holiday service ");
+  console.log(`${id}`);
+  // console.log(`${baseUrl}/holiday?id=${id}`);
+  return this.http.get(`${baseUrl}/holiday?dayid=${id}`).pipe(tap((dat:any)=>console.log(`retrieved =${id}`)),
+  catchError(this.errorMgmt));
+  }
 
-  removeHoliday(id:any,data:any):Observable<any> {
+  //modifyholiday data once entered
+     // to add holiday to holiday list
+     modifyHoliday(listid: string, holidayid: string, requestBody: any):Observable<any> {
+
+       // Construct the URL with query parameters
+    const url = `${baseUrl}/updateHoliday?id=${listid}&holidays._id=${holidayid}`;
+
+    // Set the request headers (optional)
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    // Send the HTTP PUT request with query parameters in the URL and JSON data in the request body
+    return this.http.put(url, requestBody, { headers }).pipe(tap((dat:any)=>console.log(dat)),
+    catchError(this.errorMgmt));;
+ 
+      // http://localhost:3000/api/v1/holidays/updateHoliday?id=653be1e064eb596e266c00dc&holidays._id=653e91c51bac2403ec4e46f4
+     
+      }
+
+  removeHoliday(id:any,holidayid:any):Observable<any> {
     console.log("i m in add holiday ");
     console.log(`${id}`);
-    console.log(`${baseUrl}/holiday?id=${id}`);
-    return this.http.put(`${baseUrl}/holiday?id=${id}`,data).pipe(tap((dat:any)=>console.log(`updated with ID =${id}`)),
+    // console.log(`${baseUrl}/holiday?id=${id}`);
+    return this.http.put(`${baseUrl}/removeHoliday?id=${id}`,holidayid).pipe(tap((dat:any)=>console.log(`updated with ID =${id}`)),
     catchError(this.errorMgmt));
     }
 

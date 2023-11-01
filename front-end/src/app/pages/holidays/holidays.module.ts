@@ -8,6 +8,8 @@ import { HolidaysPageRoutingModule } from './holidays-routing.module';
 
 import { HolidaysPage } from './holidays.page';
 
+// import { AddholidaymodalComponent } from './addholidaymodal/addholidaymodal.component';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -16,6 +18,8 @@ import { HolidaysPage } from './holidays.page';
     IonicModule,
     HolidaysPageRoutingModule
   ],
-  declarations: [HolidaysPage]
+  declarations: [HolidaysPage,
+  // AddholidaymodalComponent
+]
 })
 export class HolidaysPageModule {}

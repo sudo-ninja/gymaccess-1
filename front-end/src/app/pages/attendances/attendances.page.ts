@@ -52,10 +52,7 @@ export class AttendancesPage implements OnInit {
     private attendanceApi:AttenshiftService,
     private dataTransferservice:DatatransferService
   ) {
-    // this.modalCtrl.dismiss().then(() => {
-    //   // Perform the page refresh or any other actions here
-    //   location.reload(); // This will force a full page refresh
-    // });
+    
    }
 
   ngOnInit() {
@@ -77,7 +74,31 @@ export class AttendancesPage implements OnInit {
 
   ionViewWillEnter(){
     this.getMember(this.AttendaceId);
-    // this.weekdays = 
+    console.log(this.checkValidity());
+  }
+
+  //check if end time is always more than start time
+  async checkValidity(){
+    
+    // Set up custom validation for birthDate < expiryDate
+    this.memberForm.get('shift_start_time').valueChanges.subscribe(() => {
+      this.memberForm.get('shift_end_time').updateValueAndValidity();
+    });
+
+    this.memberForm.get('shift_end_time').setValidators((control) => {
+      if (
+        this.memberForm.get('shift_start_time').value &&
+        this.memberForm.get('shift_end_time').value
+      ) {
+        const shift_start_time = new Date(this.memberForm.get('shift_start_time').value);
+        const shift_end_time = new Date(this.memberForm.get('shift_end_time').value);
+
+        if (shift_start_time >= shift_end_time) {
+          return { endTimeInvalid: true }; // this will return invalid end time true;
+        }
+      }
+      return null;
+    });
   }
 
   async getMember(id: any) {  

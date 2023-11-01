@@ -10,5 +10,6 @@ export class Gym {
     gym_lockId?:string;
     gym_attendance?:boolean;
     gym_attendance_id?:any;
+    gym_isHoldaylistadded?:boolean;
     gym_holiday_id?:any; //Holiday Id 
 }

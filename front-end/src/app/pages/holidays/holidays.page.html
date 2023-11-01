@@ -36,8 +36,8 @@
 </ion-refresher>
 
 
-<ion-list [inset]="true">
-  <ion-item-sliding>
+<ion-list [inset]="true" *ngFor="let h of holidayslist">
+  <ion-item-sliding #itemSliding>
     <!-- <ion-item [button]="true">
       <ion-avatar aria-hidden="true" slot="start">
         <img alt="" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
@@ -51,25 +51,27 @@
         <div class="unread-indicator"></div>
       </div>
       <ion-label>
-        <strong>Holiday Name</strong>
+        <strong>{{h.holiday_name}}</strong>
         <!-- <ion-text>Game Store Sale</ion-text><br /> -->
         <ion-note color="medium" class="ion-text-wrap">
-          01-01-2023 ~ 01-01-2023
+          {{h.holiday_start_date | date}} ~ {{h.holiday_end_date| date}}
         </ion-note>
       </ion-label>
-      <!-- <div class="metadata-end-wrapper" slot="end">
-        <ion-note color="medium">Yesterday</ion-note>
-        <ion-icon color="medium" name="chevron-forward"></ion-icon>
-      </div> -->
+      <div class="metadata-end-wrapper" slot="end">
+        <ion-note color="medium">{{ getDurationInDays(h.holiday_start_date, h.holiday_end_date) }} Days</ion-note>
+        <!-- <ion-icon color="medium" name="chevron-forward"></ion-icon> -->
+      </div>
     </ion-item>
 
     <ion-item-options slot="end">
+
       <ion-item-option color="tertiary">
-        <ion-icon slot="icon-only" name="share"></ion-icon>
+        <ion-icon (click)="updateHolidayModal(h._id,itemSliding)" slot="icon-only" name="share"></ion-icon>
       </ion-item-option>
       <ion-item-option color="danger" expandable="true">
-        <ion-icon slot="icon-only" name="trash"></ion-icon>
+        <ion-icon (click)="deleteHoliday(h._id,itemSliding)" slot="icon-only" name="trash"></ion-icon>
       </ion-item-option>
+
     </ion-item-options>
   </ion-item-sliding>
 
@@ -81,7 +83,7 @@
 
 
   <ion-fab  vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button fill="outline"  color="primary" (click)="addNewHoliday()"> 
+    <ion-fab-button fill="outline"  color="primary" (click)="addHolidayModal({})"> 
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

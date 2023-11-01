@@ -51,12 +51,17 @@ export class ModaldayscheduleComponent  implements OnInit {
     this.getDay(this.id);
 
     this.myForm = this.formBuilder.group({
-      punchIn: [''],
-      punchOut: [''],
+      punchIn: ['',Validators.required],
+      punchOut: ['',Validators.required],
       isHoliday: [''],
 
     });
      
+  }
+
+  ionViewWillEnter(){
+    this.getDay(this.id);
+    this.checkValidity();
   }
 
   //get day data
@@ -71,10 +76,15 @@ export class ModaldayscheduleComponent  implements OnInit {
           this.intimeValue = this.foundObject.punchIn;
           this.selectedDayid = this.foundObject._id;
 
+          //
+          this.In_Time = this.intimeValue;
+          this.Out_Time = this.outtimeValue;
+
+
           this.myForm.patchValue({         
             isHoliday:this.foundObject.isHoliday,
-            // punchIn:[this.intimeValue, Validators.required],
-            // punchOut:[this.outtimeValue, Validators.required],
+            punchIn:[this.intimeValue, Validators.required],
+            punchOut:[this.outtimeValue, Validators.required],
            });
       },
       error:err=>{}
@@ -85,15 +95,6 @@ export class ModaldayscheduleComponent  implements OnInit {
   holidayToggle(event){
     // console.log("Toggled: "+ this.isHolidaySet,"Passage Mode is ..", event);    
       this.isHolidaySet = event;   
-      // this.attendanceApi.updateDay(this.id,this.selectedDayid,{"isHoliday":event}).subscribe({
-      //   next:res=>{
-      //     console.log(res);
-      //   },
-      //   error:err=>{
-      //     console.log(err);
-      //   },
-      // });
-
   }
 
   cancel() {
@@ -186,5 +187,130 @@ export class ModaldayscheduleComponent  implements OnInit {
 
   }
 
+
+  //check if end time is always more than start time
+  async checkValidity(){    
+    // Set up custom validation for birthDate < expiryDate
+    this.myForm.get('punchIn').valueChanges.subscribe(() => {
+      this.myForm.get('punchOut').updateValueAndValidity();
+    });
+
+    this.myForm.get('punchOut').setValidators((control) => {
+      if (
+        this.myForm.get('punchIn').value &&
+        this.myForm.get('punchOut').value
+      ) {
+        const punchIn = new Date(this.myForm.get('punchIn').value);
+        const punchOut = new Date(this.myForm.get('punchOut').value);
+
+        if (punchIn >= punchOut) {
+          return { endTimeInvalid: true }; // this will return invalid end time true;
+        }
+      }
+      return null;
+    });
+  }
+
+
+  async allday(){
+    //set same date time for all days.    
+    const punchIn = this.In_Time;
+    const punchOut = this.Out_Time;
+    console.log(punchIn,punchOut);
+    this.Days.forEach(day => {
+      day.punchIn = punchIn;
+      day.punchOut = punchOut;
+      day.isHoliday = this.isHolidaySet;      
+    });
+    this.attendanceApi.update(this.id,{"working_days":this.Days})
+    .subscribe({
+      next:res=>{
+        console.log(res);
+        this.attendanceApi.getShift(this.id).subscribe({
+          next:res=>{
+            this.DayChanged = res.working_days;
+            console.log(this.DayChanged);
+            this.isOpen = false; // to close popover 
+            return this.modalCtrl.dismiss(this.DayChanged, 'confirm');//to close modal and transfer data to main page
+          }
+        });
+      },
+      error:err=>{
+        console.log(err);
+      },
+    });
+
+  }
+
+  async officeday(){
+    //set same date time for MON to FRI and set SAT and SUN holiday days.
+     //set same date time for all days.    
+     const punchIn = this.In_Time;
+     const punchOut = this.Out_Time;
+     console.log(punchIn,punchOut);
+     this.Days.forEach(day => {
+      for (let i = 1; i < 6; i++) {
+        if(day.day_number === i){
+          day.punchIn = punchIn;
+          day.punchOut = punchOut;
+          day.isHoliday = this.isHolidaySet; 
+        }
+      }
+            
+     });
+     this.attendanceApi.update(this.id,{"working_days":this.Days})
+     .subscribe({
+       next:res=>{
+         console.log(res);
+         this.attendanceApi.getShift(this.id).subscribe({
+           next:res=>{
+             this.DayChanged = res.working_days;
+             console.log(this.DayChanged);
+             this.isOpen = false; // to close popover 
+             return this.modalCtrl.dismiss(this.DayChanged, 'confirm');//to close modal and transfer data to main page
+           }
+         });
+       },
+       error:err=>{
+         console.log(err);
+       },
+     });
+ 
+  }
+
+  async factroyday(){
+    //set same date time for MON to STA and set SUN holiday days.
+    const punchIn = this.In_Time;
+     const punchOut = this.Out_Time;
+     console.log(punchIn,punchOut);
+     this.Days.forEach(day => {
+      for (let i = 1; i < 7; i++) { // for 6 days same settings
+        if(day.day_number === i){
+          day.punchIn = punchIn;
+          day.punchOut = punchOut;
+          day.isHoliday = this.isHolidaySet; 
+        }
+      }
+            
+     });
+     this.attendanceApi.update(this.id,{"working_days":this.Days})
+     .subscribe({
+       next:res=>{
+         console.log(res);
+         this.attendanceApi.getShift(this.id).subscribe({
+           next:res=>{
+             this.DayChanged = res.working_days;
+             console.log(this.DayChanged);
+             this.isOpen = false; // to close popover 
+             return this.modalCtrl.dismiss(this.DayChanged, 'confirm');//to close modal and transfer data to main page
+           }
+         });
+       },
+       error:err=>{
+         console.log(err);
+       },
+     });
+ 
+  }
 
 }
