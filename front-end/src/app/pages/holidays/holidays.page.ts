@@ -25,23 +25,17 @@ export class HolidaysPage implements OnInit {
   @ViewChild(IonModal) modal: IonModal;
   @ViewChild('itemSliding', { static: true }) itemSliding: IonItemSliding;
 
-  isShowList:boolean=false;
-  holidayForm!: FormGroup;
-
-  startDateValue: any;
-  endDateValue: any;
-  join_date:any;
-  gym_id:any="gymid";
-  gym_name_existing:any="gym_name_existing";
+  isShowList:boolean=false;   
+ 
+  
   holidayListid: any;
-  holidaylist_name_added: any;
+ 
   fullholiday_list:any =[];
-  holidays_db:any=[];
-  HolidaylistID: any;
 
 
   holidays: any;
   holidayslist: any = [];
+  pageTitle: any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -59,8 +53,8 @@ export class HolidaysPage implements OnInit {
   }
 
   ngOnInit() {
-    this.holidayListid = this.route.snapshot.paramMap.get('id');
-    this.getHolidays(this.holidayListid);
+    // this.holidayListid = this.route.snapshot.paramMap.get('id');
+    // this.getHolidays(this.holidayListid);
   }
 
   ionViewWillEnter(){
@@ -70,6 +64,7 @@ export class HolidaysPage implements OnInit {
   async getHolidays(id:any){
     this.holidayApi.getHolidaylist(id).subscribe({
       next:data=>{
+        this.pageTitle = data.gym_name;
         this.holidayslist = data.holidays;
       },
       error:err=>{}
@@ -77,46 +72,54 @@ export class HolidaysPage implements OnInit {
 
   }
 
+  @ViewChild('popover') popover;
+  isOpen:boolean =false;
 
-  Start_Date:any;
-  Start_Date_UTC: any;
-  isButtonSubmit:boolean = true;
-  async StartDateChange(event) {
-    console.log("start date",event.detail.value);
-    console.log('sdate event trigger when touch', event);
-    if(event.detail.value){
-      this.Start_Date_UTC = Date.parse(event.detail.value);
-    }else{
-      console.log("Start Date not touch ");
-    }  
-    this.Start_Date = this.toISOStringWithTimezone(new Date(this.Start_Date_UTC)); 
-    this.isButtonSubmit = false;
+  presentPopover(e: Event) {
+    this.popover.event = e;
+    this.isOpen = true;
   }
 
-  End_Date: any;
-  End_Date_UTC:any;
-  async EndDateChange(event) {
-        console.log("end date",event.detail.value);
-    this.End_Date_UTC = Date.parse(event.detail.value);
-    console.log("end date",this.End_Date_UTC);
-    this.End_Date = this.toISOStringWithTimezone(new Date(this.End_Date_UTC))
-  }
+
+  // Start_Date:any;
+  // Start_Date_UTC: any;
+  // isButtonSubmit:boolean = true;
+  // async StartDateChange(event) {
+  //   console.log("start date",event.detail.value);
+  //   console.log('sdate event trigger when touch', event);
+  //   if(event.detail.value){
+  //     this.Start_Date_UTC = Date.parse(event.detail.value);
+  //   }else{
+  //     console.log("Start Date not touch ");
+  //   }  
+  //   this.Start_Date = this.toISOStringWithTimezone(new Date(this.Start_Date_UTC)); 
+  //   this.isButtonSubmit = false;
+  // }
+
+  // End_Date: any;
+  // End_Date_UTC:any;
+  // async EndDateChange(event) {
+  //       console.log("end date",event.detail.value);
+  //   this.End_Date_UTC = Date.parse(event.detail.value);
+  //   console.log("end date",this.End_Date_UTC);
+  //   this.End_Date = this.toISOStringWithTimezone(new Date(this.End_Date_UTC))
+  // }
 
  
-   toISOStringWithTimezone(date)
-   {
-    const tzOffset = -date.getTimezoneOffset();
-    const diff = tzOffset >= 0 ? '+' : '-';
-    const pad = n => `${Math.floor(Math.abs(n))}`.padStart(2, '0');
-    return date.getFullYear() +
-      '-' + pad(date.getMonth() + 1) +
-      '-' + pad(date.getDate()) +
-      'T' + pad(date.getHours()) +
-      ':' + pad(date.getMinutes()) +
-      ':' + pad(date.getSeconds()) +
-      diff + pad(tzOffset / 60) +
-      ':' + pad(tzOffset % 60);
-  };
+  //  toISOStringWithTimezone(date)
+  //  {
+  //   const tzOffset = -date.getTimezoneOffset();
+  //   const diff = tzOffset >= 0 ? '+' : '-';
+  //   const pad = n => `${Math.floor(Math.abs(n))}`.padStart(2, '0');
+  //   return date.getFullYear() +
+  //     '-' + pad(date.getMonth() + 1) +
+  //     '-' + pad(date.getDate()) +
+  //     'T' + pad(date.getHours()) +
+  //     ':' + pad(date.getMinutes()) +
+  //     ':' + pad(date.getSeconds()) +
+  //     diff + pad(tzOffset / 60) +
+  //     ':' + pad(tzOffset % 60);
+  // };
 
 
   // async addNewHoliday(){
@@ -159,7 +162,8 @@ export class HolidaysPage implements OnInit {
     if (role === 'confirm') {
       console.log(data);
       // location.reload(); // this will force refresh page.
-      this.holidays = data;  // as soon as holiday added bring entire array here so that same can be updated  
+      this.holidayslist = data;  // as soon as holiday added bring entire array here so that same can be updated  
+      this.getHolidays(this.holidayListid); 
     }
 
     // when close model it will change the page also
@@ -195,7 +199,8 @@ export class HolidaysPage implements OnInit {
    if (role === 'confirm') {
      console.log(data);
      // location.reload(); // this will force refresh page.
-     this.holidays = data;  // as soon as holiday added bring entire array here so that same can be updated  
+     this.holidayslist = data;  // as soon as holiday added bring entire array here so that same can be updated  
+     this.getHolidays(this.holidayListid); 
    }
 
    // when close model it will change the page also
@@ -212,11 +217,13 @@ export class HolidaysPage implements OnInit {
     this.holidayApi.removeHoliday(this.holidayListid,{"_id":holidayid}).subscribe({
       next:res=>{
         console.log(res);
+        this.getHolidays(this.holidayListid); 
       },
       error:err=>{}
     });
    }
 
+   //to force close item slide using view child
    closeItem(item: IonItemSliding) {
     item.close();
   }

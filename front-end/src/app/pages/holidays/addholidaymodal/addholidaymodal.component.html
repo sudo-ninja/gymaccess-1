@@ -17,7 +17,7 @@
 </ion-header>
 
 
-<ion-content  color="light" class="ion-padding">
+<ion-content  color="light">
   <ion-list [inset]="true">
    
   <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentSelcted($event)" [value] = "selectedSegment" mode="ios">
@@ -31,41 +31,37 @@
   </ion-segment>
 
 
-  <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="myForm">
   
- <div *ngIf="selectedSegment==='start_date'">
-    <ion-datetime
-    formControlName="holiday_start_date"
-    presentation="date"
-    (ionChange)="InTimeChange($event)"
-    id="ITime" 
-    #ITime
-  >
-  <!-- <span slot="title">Select a {{selectedSegment}}</span> -->
-</ion-datetime>
-</div>
-
-<div *ngIf="selectedSegment==='end_date'">
-  <ion-datetime
-  formControlName="holiday_end_date"
-  [min]="In_Time"  
-  presentation="date"
-  (ionChange)="OutTimeChange($event)"
-  id="OTime" 
-  #OTime
->
-<!-- <span slot="title">Select a {{selectedSegment}}</span> -->
-</ion-datetime>
-</div>
-
-<ion-item >
-  <ion-input label="Holiday Name" labelPlacement="floating" placeholder="Enter Holiday Name" formControlName="holiday_name" type="text"></ion-input>
-</ion-item>
-
-<ion-button type="submit"  expand="block" shape="round" [disabled]="!myForm.valid" (click)="onSubmit()" [strong]="true" >Done</ion-button>
- 
-
-</form>
+    <div *ngIf="selectedSegment==='start_date'">
+      <ion-datetime formControlName="holiday_start_date" presentation="date" (ionChange)="InTimeChange($event)" id="ITime"
+        #ITime>
+        <!-- <span slot="title">Select a {{selectedSegment}}</span> -->
+      </ion-datetime>
+    </div>
+  
+    <div *ngIf="selectedSegment==='end_date'">
+      <ion-datetime formControlName="holiday_end_date" [min]="In_Time" presentation="date"
+        (ionChange)="OutTimeChange($event)" id="OTime" #OTime>
+        <!-- <span slot="title">Select a {{selectedSegment}}</span> -->
+      </ion-datetime>
+    </div>
+  
+    <ion-item>
+      <ion-input label="Holiday Name" labelPlacement="floating" placeholder="Enter Holiday Name"
+        formControlName="holiday_name" type="text"></ion-input>
+    </ion-item>
+  
+    <ion-button 
+    type="submit" 
+    expand="block" 
+    shape="round" 
+    [disabled]="!myForm.valid" 
+    (click)="onSubmit()"
+      [strong]="true">Done</ion-button>
+  
+  
+  </form>
 
 
 </ion-list>

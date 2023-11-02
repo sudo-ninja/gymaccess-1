@@ -168,7 +168,7 @@ export class UpdateholidaymodalComponent  implements OnInit {
     .modifyHoliday(this.list_id,this.id,this.myForm.value)
     .subscribe((res: any) => {     
         console.log(res);
-        return this.modalCtrl.dismiss(res, 'confirm');
+        return this.modalCtrl.dismiss(res.holidays, 'confirm');
         this.isLoadingResults = false;
       }, (err: any) => {
         console.log(err);

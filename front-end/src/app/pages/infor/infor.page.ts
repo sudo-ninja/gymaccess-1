@@ -33,6 +33,10 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AttenshiftService } from 'src/app/services/attenshift.service';
 import { HolidayService } from 'src/app/services/holiday.service';
 
+
+import { of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+
 @Component({
   selector: 'app-infor',
   templateUrl: './infor.page.html',
@@ -61,6 +65,7 @@ lockForm!: FormGroup;
   gym_attendance_id: any;
   isHolidayOn: any;
   gym_holidaylist_id: any;
+  dataRetrieved: import("c:/Users/user/Desktop/gymaccess/front-end/src/app/models/lock").Lock;
 
 
   
@@ -169,59 +174,48 @@ lock_id: any;
   }
 
   ngOnInit() {
-    this.getMembersData();
-    
+    this.getMembersData();    
 
     this.compareWith = this.compareWithFn;
     this.compareWithl = this.compareWithlock;
     // this.DefaultLockValue = "1";
+    this.getGym(this._gym_id);
+    this.getLockbyGymid(this._gym_id);
 
-    this.gymApi.getGym(this._gym_id).subscribe(res=>{
-      this.gym_name_forLock = res.gym_name;
-      this.isAttendanceOn = res.gym_attendance;
-      this.gym_attendance_id = res.gym_attendance_id;
-      this.gym_holidaylist_id = res.gym_holiday_id;
-      this.isHolidayOn = res.gym_isHoldaylistadded;
-      // console.log("Gym Name XXXXX", this.gym_name_forLock);
-    })
+  //   this.lockApi.getLockByGymId(this._gym_id).subscribe(
+  //     {
+  //       next:(res)=>{
+  //           console.log(res.lock_type);
+  //           this.showLockSelection = true;
+  //           this.res_lock_type = res.lock_type;
+  //           console.log(this.res_lock_type.id);
+  //           this.DefaultLockValue = this.res_lock_type.id;
+  //           this.lockRelayId = res.lock_relayId; // from here this id will come only after relay id is added.
+  //           this.lock_id_db = res._id;
+  //           this.closingDelay = res.lock_closing_delay;
+  //           this.isToggled = res.lock_passage_mode;
+  //           // this.currentLock = res.lock_type;
+  //           this.showPassageMode(this.DefaultLockValue);
+  //           this.showLockRelayId = true; // means relay already added            
+  //         },
+  //       error:err=>{
+  //         console.log(err.error.message.includes("no data retrieved with this gym id"));
+  //         if(err.error.message.includes("no data retrieved with this gym id")){
+  //           this.showAssignLock = true;
+  //         }
+
+  //       }
+  // }
+  // )
   }
 
   ionViewWillEnter() {
     console.log("infor page ion view will enter");
     this.mainLockForm();
-    this.gymApi.getGym(this._gym_id).subscribe(res=>{
-      this.gym_name_forLock = res.gym_name;
-      console.log("Gym Name XXXXX", this.gym_name_forLock);
-    })
+    this.getGym(this._gym_id);
     this.getMembersData();
     // this.mainLockForm();
-    this.lockApi.getLockByGymId(this._gym_id).subscribe(
-      {
-        next:(res)=>{
-            console.log(res.lock_type);
-            this.showLockSelection = true;
-            this.res_lock_type = res.lock_type;
-            console.log(this.res_lock_type.id);
-            this.DefaultLockValue = this.res_lock_type.id;
-            this.lockRelayId = res.lock_relayId; // from here this id will come only after relay id is added.
-            this.lock_id_db = res._id;
-            this.closingDelay = res.lock_closing_delay;
-            this.isToggled = res.lock_passage_mode;
-            // this.currentLock = res.lock_type;
-            this.showPassageMode(this.DefaultLockValue);
-            this.showLockRelayId = true; // means relay already added
-
-            
-          },
-        error:err=>{
-          console.log(err.error.message.includes("no data retrieved with this gym id"));
-          if(err.error.message.includes("no data retrieved with this gym id")){
-            this.showAssignLock = true;
-          }
-
-        }
-  }
-  )
+  this.getLockbyGymid(this._gym_id);
   
   this.showRangeValue(this.isToggled);
   }
@@ -232,13 +226,62 @@ lock_id: any;
     this.logs.unshift(msg);
   }
 
+  async getGym(id){
+    this.gymApi.getGym(id).subscribe(res=>{
+      this.gym_name_forLock = res.gym_name;
+
+      this.isAttendanceOn = res.gym_attendance;
+      this.gym_attendance_id = res.gym_attendance_id;
+      this.gym_holidaylist_id = res.gym_holiday_id;
+      this.isHolidayOn = res.gym_isHoldaylistadded;
+      // console.log("Gym Name XXXXX", this.gym_name_forLock);
+    });
+  }
+
+  async getLockbyGymid(gymid:any){
+    console.log(gymid);
+    this.lockApi.getLockByGymId(gymid)
+     .subscribe(
+      {
+        next:(res)=>{          
+          this.showAssignLock = false;
+          this.showLockSelection = true;
+            this.res_lock_type = res.lock_type;
+            console.log(this.res_lock_type.id);
+            this.DefaultLockValue = this.res_lock_type.id;
+            this.lockRelayId = res.lock_relayId; // from here this id will come only after relay id is added.
+            this.lock_id_db = res._id;
+            this.closingDelay = res.lock_closing_delay;
+            this.isToggled = res.lock_passage_mode;
+            // this.currentLock = res.lock_type;
+            this.showPassageMode(this.DefaultLockValue);
+            this.showLockRelayId = true; // means relay already added            
+          },
+        error:err=>{
+          console.log(err.status);
+          // error.message.includes("no data found with this ID")
+          if(err.status === 500){
+            this.showAssignLock = true;
+            this.showLockSelection = false; // to hide lock selection
+            this.showLockRelayId = false; // to hide lock relay id
+          }
+
+        }
+  }
+  )
+
+  }
+
   selecthandleChange(ev) {
     this.currentGym = ev.target.value;
     this.MyDefaultGymValue = ev.target.value;
     // console.log(this.currentGym);
     this._gym_id = this.currentGym;
     // console.log(this._gym_id);
-    this.getMembersData();
+    this.getMembersData(); // this is responsible to change dynamically data as soon as selectio changed
+    this.getGym(this._gym_id);
+    this.getLockbyGymid(this._gym_id);
+
     this.compareWithFn(this._gym_id, ev.target.value);
     // if GYM id change then change Lock Division also for that entire lock setup must be driven by GYM iD.
   }
@@ -259,7 +302,7 @@ lock_id: any;
     this.memberApi
       .getMemberType(this._gym_id, 'free')
       .subscribe((data) => {
-        console.log(this._gym_id);
+        // console.log(this._gym_id);
         this.freeMemberResults = data;
         this.freeMembers = this.freeMemberResults.length;
         loading.dismiss();
@@ -271,7 +314,7 @@ lock_id: any;
         this.paidMemberResults = data;
         this.paidMembers = this.paidMemberResults.length;
         this.totalMembers = this.freeMembers + this.paidMembers;
-        console.log(data);
+        // console.log(data);
         loading.dismiss();
       });
 
@@ -620,7 +663,7 @@ locks = [
   showPassage:boolean = false;
   showOpeningRange:boolean=false;
   showLockSelection:boolean = false;
-  showAssignLock:boolean = false;
+  showAssignLock:boolean = true;
   showLockRelayId:boolean = false;
 
   // if this lock ID is = 1 or 2 then hide closing delay , hide passage mode .
@@ -713,10 +756,10 @@ locks = [
   confirm() {
     this.modal.dismiss(this.lockRelayId, 'confirm');
     // console.log("value after lock data to db confirm add",this.lockForm.valid);
-    console.log("gym name",this.gym_name_forLock);
-    console.log("gym id",this._gym_id);
+    // console.log("gym name",this.gym_name_forLock);
+    // console.log("gym id",this._gym_id);
     // console.log("this lock type",this.lock_type.type);
-    console.log("lock relay id",this.lockRelayId);
+    // console.log("lock relay id",this.lockRelayId);
     // console.log(this.lockForm.getRawValue());
     this.ifLockIsThere(this._gym_id);
     this.showAssignLock = false;
@@ -747,7 +790,8 @@ locks = [
       },
       error:err=>{
         console.log(err); 
-        if(err.error.message.includes("no data retrieved with this gym id")){                  
+        // .error.message.includes("no data retrieved with this gym id");
+        if(err.status === 500){                  
         this.lockApi.addLock(this.lockForm.value).subscribe(
           {
               next:(res)=>{

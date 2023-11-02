@@ -154,59 +154,6 @@ class="ion-no-border"
   </div>
 
   <div class="div-0">
-    <ion-label color="dark"><h2><strong>Update</strong></h2></ion-label>    
-      <ion-list>
-<!--                        
-        <ion-item>
-          <!-- <ion-label color="dark"><h2></h2> </ion-label> --
-              <ion-toggle 
-              justify="space-between"
-              aria-label="Primary toggle" 
-              color="primary" 
-              [disabled]="lockIDtoggleTrigger" 
-              [checked]="lockIDtoggleTrigger" 
-              (ionChange)="lockIdToggle($event)">Update Lock ID?</ion-toggle>
-        </ion-item> -->
-
-        <ion-item detail="true" (click)="gymUpdate()">
-          <ion-label color="dark"><h2>Update Gym Details</h2> </ion-label>
-           
-        </ion-item>
-
-        <ion-item detail="true" (click)="QrCodeDownLoad()">
-            <ion-label color="dark" ><h2>Download QR code </h2></ion-label>
-        </ion-item>
-      </ion-list>  
-  </div>
-  
-  <div class="div-0">
-    <ion-label color="dark"><h2><strong>Gym Setup</strong></h2></ion-label>
-    <ion-list>
-          <ion-item detail="true" (click)="addmoregym()" >
-            <ion-label color="dark"> <h2 >Add More Gym. </h2> </ion-label>
-          </ion-item>
-
-          <ion-item detail="true" (click)="removeGym()">      
-            <ion-label color="dark"><h2>Remove Gym.</h2></ion-label>
-          </ion-item>
-
-          <!-- <ion-item> 
-             <ion-toggle aria-label="Primary toggle" color="primary" [checked]="false">Enable Gift Points</ion-toggle>
-          </ion-item> -->
-
-          <!-- if recharge by points allowed then ask per day consumption of point and set warning end date 
-          wil be calculated based on points only for all users ..not manually 
-        or ask if points are gift points, if gift points then add in the end date by caluclting days.
-       if here gift point allowed then in Validity page add one more input filed to enter gift point 
-      and based on those points increase end date in DB. -->
-
-          <!-- <ion-item detail="true">
-            <ion-label color="dark"><h2>Invite Additional Admin</h2></ion-label>
-          </ion-item> -->
-    </ion-list>
-  </div>
-
-  <div class="div-0">
     <ion-label color="dark"><h2><strong>Attendance Setup</strong></h2></ion-label>
     <ion-list>
             <ion-item>     
@@ -241,6 +188,61 @@ class="ion-no-border"
 
          
     </ion-list>
+  </div>
+
+  
+  
+  <div class="div-0">
+    <ion-label color="dark"><h2><strong>Gym Setup</strong></h2></ion-label>
+    <ion-list>
+          <ion-item detail="true" (click)="addmoregym()" >
+            <ion-label color="dark"> <h2 >Add More Gym. </h2> </ion-label>
+          </ion-item>
+
+          <ion-item detail="true" (click)="removeGym()">      
+            <ion-label color="dark"><h2>Remove Gym.</h2></ion-label>
+          </ion-item>
+
+          <!-- <ion-item> 
+             <ion-toggle aria-label="Primary toggle" color="primary" [checked]="false">Enable Gift Points</ion-toggle>
+          </ion-item> -->
+
+          <!-- if recharge by points allowed then ask per day consumption of point and set warning end date 
+          wil be calculated based on points only for all users ..not manually 
+        or ask if points are gift points, if gift points then add in the end date by caluclting days.
+       if here gift point allowed then in Validity page add one more input filed to enter gift point 
+      and based on those points increase end date in DB. -->
+
+          <!-- <ion-item detail="true">
+            <ion-label color="dark"><h2>Invite Additional Admin</h2></ion-label>
+          </ion-item> -->
+    </ion-list>
+  </div>
+
+  <div class="div-0">
+    <ion-label color="dark"><h2><strong>Update</strong></h2></ion-label>    
+      <ion-list>
+<!--                        
+        <ion-item>
+          <!-- <ion-label color="dark"><h2></h2> </ion-label> --
+              <ion-toggle 
+              justify="space-between"
+              aria-label="Primary toggle" 
+              color="primary" 
+              [disabled]="lockIDtoggleTrigger" 
+              [checked]="lockIDtoggleTrigger" 
+              (ionChange)="lockIdToggle($event)">Update Lock ID?</ion-toggle>
+        </ion-item> -->
+
+        <ion-item detail="true" (click)="gymUpdate()">
+          <ion-label color="dark"><h2>Update Gym Details</h2> </ion-label>
+           
+        </ion-item>
+
+        <ion-item detail="true" (click)="QrCodeDownLoad()">
+            <ion-label color="dark" ><h2>Download QR code </h2></ion-label>
+        </ion-item>
+      </ion-list>  
   </div>
 
 
