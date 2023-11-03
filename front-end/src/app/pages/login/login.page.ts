@@ -623,7 +623,7 @@ async presentToast(message_, duration_,position: 'top' | 'middle' | 'bottom') {
     this.userAPI.getUserbyEmail(email).subscribe({
       next:res=>{
         if(res.mobile){
-          return;
+          this.sendUsertoHome(email); //
         }
         else{
           this.mobileNumberInputAlert(id,email);
