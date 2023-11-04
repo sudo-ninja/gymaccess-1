@@ -35,6 +35,7 @@ import { environment } from 'src/environments/environment.prod';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { StorageService } from 'src/app/services/storage.service';
 import { McontrolService } from 'src/app/services/mcontrol.service';
+import { JwtService } from 'src/app/services/jwt.service';
 
 
 @Component({
@@ -123,7 +124,7 @@ export class MemberActionPage implements OnInit {
     private attenApi:AttendanceService,
     private formBuilder: FormBuilder,
     private alertCtrl: AlertController, 
-    private _user:UserService,
+  
     private memberApi:MemberserviceService,
     private lockApi:MqttService,
     private gymApi:GymService,
@@ -131,30 +132,35 @@ export class MemberActionPage implements OnInit {
     public loadingController:LoadingController,
     // banner service api
     private bannerApi:BannerService,
+   
 //user api
       private userApi:UserService,
+      private jwtService:JwtService,
       // member control service to check if user is invited or not
       private memberControlApi: McontrolService,
 
   private storageService :StorageService, // storage service is used insted of get set method
 
   ) {
-      // to know the status of logged user if he is member or admin
-      this.userProfileImage = localStorage.getItem('ProfileImageUrl');
-      console.log(this.userProfileImage);
-      const user = localStorage.getItem('User')
-      this.loggeduser=JSON.parse(user);
-      this.loggedUserEmail = this.loggeduser.email;
-      console.log(this.loggedUserEmail);
-     
+    let decodedToken = this.jwtService.DecodeToken(this.userApi.getToken());
+    decodedToken = JSON.stringify(decodedToken);
+    console.log(decodedToken);
+    // Parse the JSON string into a JavaScript object
+    this.user = JSON.parse(decodedToken);
 
-      this.loggedUserName = this.loggeduser.username;
+      const user = localStorage.getItem('User')
+      this.loggeduser=JSON.parse(decodedToken);
+      this.loggedUserEmail = this.loggeduser.email;
+      // console.log(this.loggedUserEmail);
+      // this.loggedUserName = this.loggeduser.username;
       //this block is used if user deleted by himself or by gym admin then go back to home page
-      this._user.getUserbyEmail(this.loggedUserEmail).subscribe(
+      this.userApi.getUserbyEmail(this.loggedUserEmail).subscribe(
         res=>{
           // this.addName(res),
           console.log(res);
           this.isloggedUserMember = res.isMember;
+          this.loggedUserName = res.username;
+          this.userProfileImage = res.profile_image;
           this.memberApi.getMemberByEmail(this.loggedUserEmail).subscribe({
             next:res=>{
               if(!res){
@@ -217,10 +223,7 @@ export class MemberActionPage implements OnInit {
     this.getMembers();
     // to get default data in ion select 
     this.compareWith = this.compareWithFn;
-
     // this.getMemberofGymId(this.defaultGymId_store);
-
-
     // slide show ..
     this.bannerApi.getImageByGymId(this.gymId).subscribe({
       next:res=>{
@@ -262,18 +265,19 @@ export class MemberActionPage implements OnInit {
       this.dateTime = new Date().toISOString();
     });
 
-    //  to make sure only user can see this page by login so this is done 
-    const user = localStorage.getItem('User')
-    // this.addName(user);
-    console.log(user); // here user info is being display after login successfull
+    // const token = localStorage.getItem('token');
+    // //  to make sure only user can see this page by login so this is done 
+    // const user = localStorage.getItem('User')
+    // // this.addName(user);
+    // console.log(user); // here user info is being display after login successfull
    
-    if(user==null){
-      this.router.navigateByUrl('/login',{replaceUrl:true}) // here URL by replace so that user can not back and go to come again here without login
-    }else{
-      console.log(JSON.parse(user!)); // convert back user info into object so that we can use this info
-      this.loggeduser=JSON.parse(user);
-      console.log(this.loggeduser._id);
-    }
+    // if(token==null){
+    //   this.router.navigateByUrl('/login',{replaceUrl:true}) // here URL by replace so that user can not back and go to come again here without login
+    // }else{
+    //   // console.log(JSON.parse(user!)); // convert back user info into object so that we can use this info
+    //   this.loggeduser=JSON.parse(user);
+    //   console.log(this.loggeduser._id);
+    // }
   }
 
   async checkPermission() {
@@ -292,20 +296,18 @@ export class MemberActionPage implements OnInit {
 
   ngAfterViewInit(){
     // BarcodeScanner.prepare(); // this iwll startcamea as soon as page open so dont use this
-
   }
 
   ionViewWillEnter(){
      console.log("Ion View Will Enter");
      this.getMembers();
-     this.getGyms();
-    
+     this.getGyms();    
   }
 
   async getGyms(){
     this.memberApi.getMemberByEmail(this.loggeduser.email).subscribe( // search member by email ID
       (data:any)=>{
-        console.log(data.slice());
+        // console.log(data.slice());
         this.joinedGyms = data.slice(); // from here passing data to gym selector  for list of gyms   
     }
     );    
@@ -321,12 +323,11 @@ export class MemberActionPage implements OnInit {
     }
 
   async getMemberbyGymIdandEmail(gymid,email){
-    console.log("🚀 ~ file: member-action.page.ts:281 ~ MemberActionPage ~ getMemberbyGym̥IdandEmail ~ getMemberbyGym̥IdandEmail:")
-    //set default GYM id from here to be used on other pages 
-    console.log("GYM ID in side GetMemberby Gym ID and Email 283- ",gymid,"Email:-",email);
-     
+    // console.log("🚀 ~ file: member-action.page.ts:281 ~ MemberActionPage ~ getMemberbyGym̥IdandEmail ~ getMemberbyGym̥IdandEmail:")
+    // //set default GYM id from here to be used on other pages 
+    // console.log("GYM ID in side GetMemberby Gym ID and Email 283- ",gymid,"Email:-",email);     
       this.memberApi.getMemberByEmailOfGymId(email,gymid).subscribe((data)=>{
-      console.log(data);
+      // console.log(data);
       this.memberId = data._id;
       this.memberEndDate = Number(data.m_enddate); // in Unix millisecond formate
       this.memberOutTime = Number(data.m_outtime);// in Unix milisecond
@@ -350,8 +351,7 @@ export class MemberActionPage implements OnInit {
   });
 }
 
-  async startScan() {
-    
+  async startScan() {    
     try {
       const permission = await this.checkPermission();
       if(!permission) {
@@ -366,23 +366,23 @@ export class MemberActionPage implements OnInit {
       this.content_visibility = 'hidden';
       this.ishidden = false;
       const result = await BarcodeScanner.startScan();
-      console.log(result);
+      // console.log(result);
       BarcodeScanner.showBackground();
       document.querySelector('body').classList.remove('scanner-active');
       this.content_visibility = '';
       if(result?.hasContent) {
-        console.log(result.content);
+        // console.log(result.content);
         this.scannedResult = result.content;
         this.scanActive = false;
         /***** here below code working for attendance */
         if(this.scannedResult.includes(this.gymId)){
           this.attendance();//*call attendance */ */
         }else{
-          console.log("not valid qr code");
+          // console.log("not valid qr code");
           this.presentAlert("Warning !","Not a Valid QR Code" , "Try with valid QR code")
           // here make alert showing that not a valid qr code ..
         }
-        console.log(this.scannedResult);
+        // console.log(this.scannedResult);
       }
     } catch(e) {
       console.log(e);
@@ -393,7 +393,7 @@ export class MemberActionPage implements OnInit {
  
 
   stopScan() {
-    console.log("in stop scan");
+    // console.log("in stop scan");
     BarcodeScanner.showBackground();
     BarcodeScanner.stopScan();
     document.querySelector('body').classList.remove('scanner-active');
@@ -437,9 +437,9 @@ export class MemberActionPage implements OnInit {
 
 async fetchLocation(){
     const _geoLocation = Geolocation.getCurrentPosition();
-    console.log('current location =', _geoLocation);
+    // console.log('current location =', _geoLocation);
     const coordinates = await Geolocation.getCurrentPosition();    
-    console.log('Current position:--', coordinates.coords.latitude,coordinates.coords.longitude);
+    // console.log('Current position:--', coordinates.coords.latitude,coordinates.coords.longitude);
     this.attendance_lat=coordinates.coords.latitude;
     this.attendance_lon=coordinates.coords.longitude;
 }
@@ -464,15 +464,14 @@ async validAttendance(current_date:any,current_time:any,email:any)
                       if(!this.firstAttendance)
                       {
                         console.log("First Attendance");                        
-                        this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
-                          console.log(res); 
+                        this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{                      // console.log(res); 
                               
                           this.openLock(email); // iff attendance saved then only open the lock
                             });
                             this.firstAttendance = true;
                             // once first attendenace made member updated as attended and every time it will b check
                            this.memberApi.update(this.memberId,{"isAttended":true}).subscribe((res:any)=>{
-                            console.log(res);
+                            // console.log(res);
                             
                            });
                       }else{
@@ -482,28 +481,24 @@ async validAttendance(current_date:any,current_time:any,email:any)
                         // if check it date same as today 
                         // update the data
                         // else add attendnace 
-                        this.attenApi.getMemberAttendance(this.memberId).subscribe((res)=>{
-                          console.log(res);
-                            
-                        })
+                        // this.attenApi.getMemberAttendance(this.memberId).subscribe((res)=>{
+                        //   console.log(res);                            
+                        // })
                         this.attenApi.getMemberAttendance(this.memberId).subscribe((data:any)=>{
                           this.lastAttendance = data[data.length-1].checkin_date;
                           // get date in last attendance 
                           this.lastAttendance = new Date(this.lastAttendance*1).getDate();
                           // compare that day with today 
                             if(this.lastAttendance === new Date(Date.now()).getDate()){
-
                                   console.log("Today again attendnace ");
                                     this.todayAttendance = true;
                                     // console.log(data[data.length-1]._id);
                                     this.todaySecondAttendance(data[data.length-1]._id,email);
                             } 
                             else{
-                              
                               this.attenApi.addAttendance(this.attendanceForm.value).subscribe((res:any)=>{
                               console.log(res);      
-                              this.openLock(email); // iff attendance saved then only open the lock
-                              
+                              this.openLock(email); // iff attendance saved then only open the lock                              
                               });
                             }
                       
@@ -566,10 +561,6 @@ openLock(email:any){
           );
           console.log("Lock succesfull open");
           this.successAlert("ACCESS ALLOWED","Welcome","");
-  
-  
-  
-
 // need to pass unique Lock ID -- to pass unique lock is , use gym pi query using member email, and get lock ID assign that to unique lock id
 // unique lock ID will be saved along with Gym Detail
 // unique lock ID will be topic for that lock 
@@ -626,7 +617,6 @@ async getmemberbyEmail(email){
 // now pass this lock ID to scanned result to check is its same or not. 
     }
   });
-
 }
 
 balanceDaysLeft(){
@@ -841,7 +831,7 @@ selecthandleChange(ev){
 
   // route to person information page 
   personalInformation(){
-    console.log("this.memberId",this.memberId); // show personal information based on member ID 
+    // console.log("this.memberId",this.memberId); // show personal information based on member ID 
     this.router.navigateByUrl('/personalinformation');
   }
 
@@ -872,8 +862,7 @@ selecthandleChange(ev){
     console.log("join more ");
     this.fetchLocation(); // to fetch approx current location
     //present alert telling to join scan the QR code of Owner Property.
-    this.presentJoinAlert("Joining New Property ","Select Method of Joining","");
-     
+    this.presentJoinAlert("Joining New Property ","Select Method of Joining","");     
      this.popover.dismiss();
   }
 
@@ -936,6 +925,8 @@ selecthandleChange(ev){
           this.scannedResult = result.content;
           this.scanActive = false;
            /** use this scanned result and pass add to by gym id */
+
+
           console.log(this.scannedResult);
           this.checkGymId(this.scannedResult);
         }
@@ -964,7 +955,7 @@ selecthandleChange(ev){
 
   //add member using gymID
   async addMebyGymId(gymid){
-    this._user.getUserbyEmail(this.loggedUserEmail).subscribe((res)=>{
+    this.userApi.getUserbyEmail(this.loggedUserEmail).subscribe((res)=>{
       this.userMobile = res.mobile;
     });
     //get gym name
@@ -973,7 +964,6 @@ selecthandleChange(ev){
     });
     //to get mobile number either ask user to enter or get from previous joined information 
     //here using from previus joined gym and member id 
-
     this.memberForm = this.formBuilder.group({
       'gym_id' : [gymid, Validators.required],
       'gym_name':[this.joiningGymName],
@@ -992,7 +982,7 @@ selecthandleChange(ev){
         'm_validdays':['0'],
         'm_intime':[Date.now()],
         'm_outtime':[Date.now()],
-        'isInviteAccepted':['No'],
+        'isInviteAccepted':['No'], // here make it YES once Owner accepted it. 
          //date time all saved in Unix form in DB uniformaly accorss project 
          // as per need reverse calculation done 
     });

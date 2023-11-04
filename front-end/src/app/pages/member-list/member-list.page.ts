@@ -62,8 +62,6 @@ import { MemberAddPage } from '../member-add/member-add.page';
   selector: 'app-member-list',
   templateUrl: './member-list.page.html',
   styleUrls: ['./member-list.page.scss'],
-
-
 })
 
 
@@ -72,7 +70,6 @@ export class MemberListPage  {
   @ViewChild(IonSelect) select:IonSelect;
   //for countdown time
   private subscription: Subscription;
-
   @ViewChild(IonDatetime) datetime:IonDatetime;
   @ViewChild(IonModal) modal: IonModal;
 
@@ -189,9 +186,7 @@ export class MemberListPage  {
     private attendApi:AttendanceService,
 
     //call mqtt api
-    private mqttApi:MqttService,
-
-     
+    private mqttApi:MqttService,     
 
     // to store data
     private storageService :StorageService, // storage service is used insted of get set method
@@ -199,8 +194,7 @@ export class MemberListPage  {
     // to get native element 
     private elementRef:ElementRef,
     // banner service api
-    private bannerApi:BannerService,
-    
+    private bannerApi:BannerService,   
 
   ) { 
     // const defaultGym = localStorage.getItem('DefaultGym'); // got default GYM value from Gym list page
@@ -413,10 +407,12 @@ async getMembers(){
 
   }
  
-  addProduct() {
-    // this.router.navigate(['/member-add']);
-    this.navCtrl.navigateForward('/member-add');
-  }
+  // addProduct() {
+  //   // this.router.navigate(['/member-add']);
+  //   this.navCtrl.navigateForward('/member-add');
+  // }
+
+ 
 
   ///////////////////for animation ///////////////
   async presentModal(mid:string) {
@@ -476,6 +472,17 @@ async addMember(){
     }
   );  
   await modal.present();
+  const { data, role } = await modal.onWillDismiss();
+  if (role === 'confirm') {
+    console.log(data);
+    this.getMembers();
+  }
+
+  // when close model it will change the page also
+  if(!window.history.state.modal){
+    const modalState = {modal:true};
+    history.pushState(modalState,null);
+    }
 }
 
 
@@ -487,12 +494,15 @@ async addMember(){
       componentProps:{id:mid},
       breakpoints: [0, 0.5, 0.8],
       initialBreakpoint: 0.8, 
-      showBackdrop: false,
-           
+      showBackdrop: false,           
       }
     );
-    console.log(res => {
-      this.memberApi.getMember(res.id);});
+    // console.log(res => {
+    //   this.memberApi.getMember(res.id);});
+      modal.onDidDismiss().then(data => {
+        this.getMembers();
+        console.log('Update Member control Modal Is Closed', data)
+      });
     await modal.present();
   }
 
@@ -531,6 +541,10 @@ async seeAttendance(uid:string) {
 // this.memberApi.getMember(uid).subscribe((res)=>{
 //   console.log(res);
 // });
+modal.onDidDismiss().then(data => {
+    this.getMembers();
+    // console.log('Update Member control Modal Is Closed', data);
+});
 await modal.present();
 // this.isButtonSubmit=false;
 }

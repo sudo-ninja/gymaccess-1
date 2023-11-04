@@ -613,7 +613,6 @@ async presentToast(message_, duration_,position: 'top' | 'middle' | 'bottom') {
       duration: duration_,
       position: position,
     });
-
     await toast.present();
   }
 

@@ -1,6 +1,6 @@
 import { Component,OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { Input, Output, EventEmitter } from '@angular/core';
 
 import { Member } from 'src/app/models/member.model';
@@ -8,6 +8,7 @@ import { MemberserviceService } from 'src/app/services/memberservice.service';
 import { UserService } from 'src/app/services/user.service';
 import { AttendanceService } from 'src/app/services/attendance.service';
 import { McontrolService } from 'src/app/services/mcontrol.service';
+import { MemberAddPage } from '../member-add/member-add.page';
 
 @Component({
   selector: 'app-member-details',
@@ -44,6 +45,7 @@ isLoadingResults = false;
   constructor(
     public loadingController:LoadingController,
     public alertController :AlertController,
+    private modalCtrl: ModalController,
     public router :Router,
     public route :ActivatedRoute,
     public memberApi:MemberserviceService,
@@ -54,10 +56,10 @@ isLoadingResults = false;
   ) { }
 
   ngOnInit() {
-    this.getMembers();
+    this.getMember();
   }
 
-  async getMembers(){
+  async getMember(){
     const loading = await this.loadingController.create({
       message: 'Loading....'
     });
@@ -181,8 +183,29 @@ async presentAlertDelete(msg:string, id:any){
     this.router.navigate(['/gymtabs/member-list'],{replaceUrl:true});
   }
 
-  AddMore(){
-    this.router.navigate(['/member-add'],{replaceUrl:true});
+  // AddMore(){
+  //   this.router.navigate(['/member-add'],{replaceUrl:true});
+  // }
+  async AddMore(){
+    const modal = await this.modalCtrl.create({
+      component: MemberAddPage,     
+      breakpoints: [0, 0.5, 0.8],
+      initialBreakpoint: 0.8, 
+      showBackdrop: false,         
+      }
+    );  
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    if (role === 'confirm') {
+      console.log(data);
+      this.getMember();
+    }
+  
+    // when close model it will change the page also
+    if(!window.history.state.modal){
+      const modalState = {modal:true};
+      history.pushState(modalState,null);
+      }
   }
 
 }

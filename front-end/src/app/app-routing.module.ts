@@ -162,8 +162,15 @@ const routes: Routes = [
   },
   {
     path: 'holidays/:id',
-    loadChildren: () => import('./pages/holidays/holidays.module').then( m => m.HolidaysPageModule)
+    loadChildren: () => import('./pages/holidays/holidays.module').then( m => m.HolidaysPageModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'logs',
+    loadChildren: () => import('./pages/logs/logs.module').then( m => m.LogsPageModule),
+    canActivate: [AuthGuard]
   }
+
 
 
   

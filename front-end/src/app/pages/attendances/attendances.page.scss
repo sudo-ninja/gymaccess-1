@@ -14,13 +14,102 @@
   --color: var(--ion-color-light);
 }
  
- ion-fab {           
-  >ion-fab-button {
-    width: 40px;
-        height: 40px; 
-    >ion-label {
-        font-size: 12px;
+//  ion-fab {           
+//   >ion-fab-button {
+//     width: 40px;
+//         height: 40px; 
+//     >ion-label {
+//         font-size: 12px;
+//     }
+//   }
+// }
+
+ion-content {
+  >form {
+    >div {
+      >ion-list {
+        >ion-item:nth-of-type(1) {
+          >ion-label {
+            >ion-input {
+            }
+          }
+        }
+        >ion-item:nth-of-type(2) {
+          >ion-grid {
+            >ion-row {
+              >ion-col:nth-of-type(1) {
+                text-align: center;
+                >ion-label {
+                  >h2 {
+                    // margin-left: 40%;
+                  }
+                  >ion-datetime-button {
+                    // margin-left: 20%;
+                  }
+                }
+              }
+              >ion-col:nth-of-type(2) {
+                text-align: center; 
+                >ion-label {
+                  >h2 {
+                    // margin-left: 40%;
+                  }
+                  >ion-datetime-button {
+                    // margin-left: 20%;
+                  }
+                }
+                >ion-text {
+                }
+              }
+            }
+          }
+        }
+        >ion-modal {
+          >ng-template {
+            >ion-datetime#Itime {
+            }
+          }
+        }
+      }
+    }
+    >ion-modal {
+      >ng-template {
+        >ion-datetime#Otime {
+        }
+      }
     }
   }
+  >ion-item {
+    >ion-toggle {
+    }
+  }
+  >div {
+    >ion-grid {
+      >ion-row:nth-of-type(1) {
+        >ion-col {
+          // text-align: center; 
+          ion-fab {           
+            >ion-fab-button {
+              width: 40px;
+              height: 40px; 
+              >ion-label {
+                  font-size: 12px;
+              }
+            }
+          }
+        }
+      }
+      >ion-row{
+        >ion-col {
+          // text-align: center; 
+          >ion-label {
+          font-size: 15px;
+          }
+        }
+      }
+      
+    }
+  }
+  >ion-button {
+  }
 }
-

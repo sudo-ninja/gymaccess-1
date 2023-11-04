@@ -1,17 +1,5 @@
-<!-- <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
-    </ion-buttons>
-    <ion-title>Selected Day Name </ion-title>
-    <ion-buttons slot="end">
-      <ion-button >Confirm</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header> -->
 
-
-<ion-content class="ion-padding">
+<ion-content color="light">
   <ion-label class="ion-text-center"><h1>{{pageTitle}}</h1></ion-label>
   <ion-item>     
     <ion-toggle 
@@ -94,22 +82,11 @@
       <!-- formControlName="punchOut"  -->
     </ion-modal>
 
-
-      <!-- <ion-item class="ion-text-center">
-        <!-- <ion-label position="floating">Select Time</ion-label> --
-        <ion-datetime
-        presentation="time" 
-        displayFormat="h:mm A" 
-        [(ngModel)]="selectedTime" 
-        pickerFormat="h mm A">
-      </ion-datetime>
-      </ion-item> -->
-
       <div>
         <ion-grid>
           <ion-row>
             <ion-col size-md="6">
-              <ion-button (click)="presentPopover($event)" fill="outline" shape="round">Also Apply</ion-button></ion-col>
+              <ion-button (click)="presentPopover($event)" fill="outline" shape="round">Also Apply...</ion-button></ion-col>
             
             <ion-popover 
             #popover 

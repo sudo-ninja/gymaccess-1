@@ -85,6 +85,7 @@ export class MemberAddPage {
     public memberApi:MemberserviceService,
     private navCtrl : NavController,
     private gymApi:GymService,
+    private modalCtrl: ModalController,
    
   ) {
     // get gym id from sesson storage here 
@@ -216,7 +217,8 @@ export class MemberAddPage {
                 this.isLoadingResults = false;
                 // this.navCtrl.pop();
                 // this.router.navigate(['/member/', id],{replaceUrl:true});
-                this.router.navigateByUrl('/gymtabs/member-list');
+                // this.router.navigateByUrl('/gymtabs/member-list');
+                return this.modalCtrl.dismiss(res, 'confirm');
               }, 
               error:(err) => {
                 console.log(err);

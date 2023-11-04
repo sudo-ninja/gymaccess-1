@@ -80,7 +80,7 @@
 
   <!-- [style.visibility]="content_visibility" -->
 
-  <ion-content overflow-scroll="true" class="ion-padding"  [style.--background]="scanActive ? '#00000000':'#fff' ">
+  <ion-content color="light" overflow-scroll="true" class="ion-padding"  [style.--background]="scanActive ? '#00000000':'#fff' ">
     <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>

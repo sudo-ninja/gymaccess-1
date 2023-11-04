@@ -1008,4 +1008,10 @@ locks = [
     // this.router.navigate(['/attendances/',this.gym_attendance_id]);
   }
 
+  async Openlog(){
+    this.router.navigate(['/logs/']);
+    // this.router.navigate(['/attendances/',this.gym_attendance_id]);
+  }
+
+
 }
