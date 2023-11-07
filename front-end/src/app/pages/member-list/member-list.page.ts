@@ -1061,6 +1061,21 @@ getInitials(firstName:string) {
       toast.onDidDismiss();
       await toast.present();
     }
+
+
+    rejectAppication($event){
+      // set if approval is rejected then send message in message to user that reject by gym name ...
+    }
+
+    acceptApplication(){
+      console.log("application accepted");
+      // if accepted send inviation accepted = true, so that vailidity button is visible and 
+      // hide this entire division of button .
+      // this division is visible only when m.aadhar = 456 is true and invitaion accepted is false;
+      // if this division is visioble then hide othe division.
+
+
+    }
 }
 
 
