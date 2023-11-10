@@ -359,7 +359,7 @@ export class MemberActionPage implements OnInit {
       }
       await BarcodeScanner.hideBackground();// make background of WebView transparent
       this.ishidden = false;
-      this.scanActive = true;
+      this.scanActive = true; // this will impose new item as over page
       this.storageService.store("scanActive","true");
 
       document.querySelector('body').classList.add('scanner-active');

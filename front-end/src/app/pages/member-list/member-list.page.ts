@@ -593,6 +593,9 @@ await modal.present();
     await alert.present();
   }
 
+  //generate invitation code and 
+  //instead genrating code here let genrate code at back end save that and then send here. 
+  
   async CodeAlert(uid:any,header:string,message:string){
     console.log("In Code Alert Function .....")
     //first check is isInviteAccepted == Not , for that call member API with uid 

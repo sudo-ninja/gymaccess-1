@@ -139,7 +139,7 @@ export class HolidaysPage implements OnInit {
 
   handleRefresh(event) {
     setTimeout(() => {
-      // this.getGyms(this.loggeduser._id);
+      this.getHolidays(this.holidayListid); 
       event.target.complete();
     }, 2000);
   };
