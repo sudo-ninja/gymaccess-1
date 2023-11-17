@@ -58,8 +58,8 @@ export class McontrolService {
   }
 
   delete(id: any): Observable<any> {
-    console.log(id);
-    console.log(`${baseUrl}/${id}`);
+    // console.log(id);
+    // console.log(`${baseUrl}/${id}`);
     return this.http.delete(`${baseUrl}/${id}`).pipe(catchError(this.errorMgmt));
   }
 
@@ -67,9 +67,9 @@ export class McontrolService {
   //   return this.http.delete(baseUrl).pipe(catchError(this.errorMgmt));
   // }
 
-  wildSearch(mobile: any): Observable<Mcontrol[]> {
+  getByEmail(email: any): Observable<Mcontrol[]> {
     console.log("i m in wild search loop");
-    return this.http.get<Mcontrol[]>(`${searchUrl}=${mobile}`).pipe(catchError(this.errorMgmt));
+    return this.http.get<Mcontrol[]>(`${baseUrl}/find/email?email=${email}`).pipe(catchError(this.errorMgmt));
   }
 
   // Error handling

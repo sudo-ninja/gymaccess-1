@@ -21,7 +21,7 @@ export class AboutPage implements OnInit {
     private alertCtrl: AlertController,
     private router :Router,
   ) { 
-    
+    this.getAppVersion();
   }
 
   ngOnInit() {
@@ -43,7 +43,7 @@ export class AboutPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header:header,
       subHeader: subheader,
-      message:"App Version :    , SDK Version:   , Client ID:     , User Account:      ",
+      message:"App Version :     , SDK Version:   , Client ID:     , User Account:      ",
       buttons: [
         {
           text: 'Cancel',
@@ -66,6 +66,17 @@ export class AboutPage implements OnInit {
   backToSettings(){
     // navigate back to setting .
     this.router.navigateByUrl('/settings',{replaceUrl:true});
+  }
+
+  appVersion: string;
+
+  async getAppVersion() {
+    try {
+      const result = await App.getInfo();
+      this.appVersion = result.version;
+    } catch (error) {
+      console.error('Error getting app version:', error);
+    }
   }
 
 }

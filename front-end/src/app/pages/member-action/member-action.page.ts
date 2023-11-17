@@ -14,7 +14,7 @@ import { Member } from 'src/app/models/member.model';
 import {MemberserviceService} from 'src/app/services/memberservice.service';
 
 import {AttendanceService} from 'src/app/services/attendance.service';
-import { AlertController, LoadingController, ModalController, PopoverController } from '@ionic/angular';
+import { AlertController, IonModal, LoadingController, ModalController, PopoverController } from '@ionic/angular';
 // call service for lock open 
 import { MqttService } from 'src/app/services/mqtt.service';
 // call service of gym for gym lock id
@@ -36,6 +36,9 @@ import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { StorageService } from 'src/app/services/storage.service';
 import { McontrolService } from 'src/app/services/mcontrol.service';
 import { JwtService } from 'src/app/services/jwt.service';
+
+// for overlay display when modal is dismissed
+import { OverlayEventDetail } from '@ionic/core/components';
 
 
 @Component({
@@ -115,6 +118,10 @@ export class MemberActionPage implements OnInit {
   joiningGymName: string;
   firstMemberId: any;
   firstJoinedGym:Gym[];
+
+  // ion modal data
+  enteredCode: string;
+  InvitationCodes:any;
 
   // install https://github.com/capacitor-community/barcode-scanner plugin 
 
@@ -846,7 +853,7 @@ selecthandleChange(ev){
         // this.joinedGyms.push(
           this.gymApi.getGym(res[i].gym_id).subscribe((data)=>{
             if(!this.joinedGyms.includes(data)){
-              console.log("DATA FROM SAVED JOINED GYM ******",data);
+              // console.log("DATA FROM SAVED JOINED GYM ******",data);
               this.joinedGyms.push(data); 
             } return;
                
@@ -1020,8 +1027,23 @@ selecthandleChange(ev){
               this.presentAlert("No Invitation Found!","Please ask property owner to Invite to Join property","")
               return;
             }else{
-              console.log("Please Enter Invitaion Code"); 
-                this.joinGymAlert();
+              // if same joined gym invitaion code is there check that .
+              if(res.member_id === this.memberId){
+                //already member of this gym so dont take any action 
+                // means same gym invite code still ther in DB remove this from DB 
+                //but before that check if member is isInviteAccepted is Yes or not , if yes then delet the code
+                //
+
+              }
+              console.log("Please Enter Invitaion Code");
+              this.memberControlApi.getByEmail(this.loggedUserEmail).subscribe({
+                next:res=>{
+                  this.InvitationCodes = res;
+                },
+                error:err=>{}
+              })
+              this.isModalOpen = true; 
+                // this.joinGymAlert();
             } },
        error:(err: any) => {
               console.log(err.error.message);
@@ -1130,6 +1152,76 @@ selecthandleChange(ev){
     this.popover.dismiss();
   }
 
+
+  @ViewChild(IonModal) modal: IonModal;
+  isModalOpen = false;
+
+  cancel() {
+    this.modal.dismiss(null, 'cancel');
+  }
+
+  async confirm() {
+    console.log(this.enteredCode);
+    if(this.CodeVerification(this.RetrievedMemberCodeId,this.enteredCode)){
+      //also show toast "successfull verification"
+      //also update member status as invitaion code accepetd yes. 
+      this.memberApi.update(this.RetrievedMember_Id,{"isInviteAccepted":"Yes"}).subscribe({
+        next:res=>{
+          this.memberControlApi.delete(this.RetrievedMemberCodeId);
+          this.getGyms(); 
+        },
+        error:err=>{}
+      });
+      this.modal.dismiss(this.enteredCode, 'confirm');
+      this.isModalOpen = false;
+    }else{
+      //show toast "try again wrong code entered"
+    }
+    
+    
+  }
+
+  onWillDismiss(event: Event) {
+    this.isModalOpen = false;
+    const ev = event as CustomEvent<OverlayEventDetail<string>>;
+    if (ev.detail.role === 'confirm') {
+      // this.message = `Hello, ${ev.detail.data}!`;
+    }
+  }
+
+
+  // Function to handle ionChange event
+  ShowInputBlock: boolean = false;
+  RetrievedMemberCodeId:any;
+  RetrievedMember_Id:any;
+  openInput(event: any,data:any) {
+    if (event.detail.checked) {
+      this.RetrievedMember_Id = data.member_id;
+      this.RetrievedMemberCodeId = data._id;
+      this.ShowInputBlock = true;
+      // If checkbox is checked, navigate to the new page
+      // this.navCtrl.navigateForward('/new-page'); // Replace '/new-page' with your actual route
+    } else {
+      this.ShowInputBlock = false;
+      // Handle other conditions or actions when the checkbox is unchecked
+    }
+  }
+
+  async CodeVerification(mem_id:any,UserEnteredcode:any){
+    this.memberControlApi.getMcontrol(mem_id).subscribe({
+      next:res=>{
+        if(res.inviteCode === UserEnteredcode.trim()){
+            return true;
+        } else return false;
+      },
+      error:err=>{
+        return false;
+      }
+    });
+
+
+
+  }
 
 
 }

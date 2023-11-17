@@ -150,6 +150,46 @@
      
       <div class="scan-box" *ngIf="scanActive"> 
       </div>
+
+      <!-- to open modal when extra gym to be added by invitaion code -->
+      <ion-modal [isOpen]="isModalOpen" (willDismiss)="onWillDismiss($event)">
+        <ng-template>
+          <ion-header>
+            <ion-toolbar>
+              <ion-buttons slot="start">
+                <ion-button (click)="cancel()">Cancel</ion-button>
+              </ion-buttons>
+              <ion-title>Available Property</ion-title>
+              <ion-buttons slot="end">
+                <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="ion-padding">
+
+            <ion-list *ngFor="let c of InvitationCodes">
+              <ion-item>
+                <ion-checkbox 
+                labelPlacement="start" 
+                (ionChange)="openInput($event,c)">{{c.gym_name}}</ion-checkbox>
+             </ion-item>
+ 
+             <ion-item *ngIf="ShowInputBlock">
+               <ion-input
+                 label="Enter Invitation Code"
+                 labelPlacement="stacked"
+                 type="text"
+                 placeholder="Invitation Code"
+                 [(ngModel)]="enteredCode"
+               ></ion-input>
+             </ion-item>
+            </ion-list>
+
+            
+
+          </ion-content>
+        </ng-template>
+      </ion-modal>
   </ion-content>
 
 
