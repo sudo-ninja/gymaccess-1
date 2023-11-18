@@ -3,6 +3,9 @@ import { ActionSheetController, AlertController } from '@ionic/angular';
 //for app version
 import { App } from '@capacitor/app';
 import { Router } from '@angular/router';
+import { MemberserviceService } from 'src/app/services/memberservice.service';
+import { UserService } from 'src/app/services/user.service';
+import { JwtService } from 'src/app/services/jwt.service';
 
 @Component({
   selector: 'app-about',
@@ -15,13 +18,43 @@ export class AboutPage implements OnInit {
     
   appInfo:any;
   keys:string[] = [];
+  clientId: any;
+  MemberId: any;
+  user: any;
+  loggeduser: any;
+  loggedUserEmail: any;
 
 
   constructor(
     private alertCtrl: AlertController,
     private router :Router,
+    private memberApi :MemberserviceService,
+    private userApi :UserService,
+    private jwtService:JwtService,
   ) { 
     this.getAppVersion();
+
+    let decodedToken = this.jwtService.DecodeToken(this.userApi.getToken());
+    decodedToken = JSON.stringify(decodedToken);
+    console.log(decodedToken);
+    // Parse the JSON string into a JavaScript object
+    this.user = JSON.parse(decodedToken);
+
+      // const user = localStorage.getItem('User')
+      this.loggeduser=JSON.parse(decodedToken);
+      this.loggedUserEmail = this.loggeduser.email;
+    this.userApi.getUserbyEmail(this.loggedUserEmail).subscribe({
+      next:res=>{
+        this.clientId = res._id;
+      },
+      error:err=>{}
+    })
+    this.memberApi.getMemberByEmail(this.loggedUserEmail).subscribe({
+      next:res=>{
+
+      },
+      error:err=>{}
+    })
   }
 
   ngOnInit() {
@@ -43,7 +76,7 @@ export class AboutPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header:header,
       subHeader: subheader,
-      message:"App Version :     , SDK Version:   , Client ID:     , User Account:      ",
+      message:`App Version : ${this.appVersion}, Client ID: ${this.clientId},`,
       buttons: [
         {
           text: 'Cancel',

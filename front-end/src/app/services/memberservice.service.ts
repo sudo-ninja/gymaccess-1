@@ -17,7 +17,6 @@ export class MemberserviceService {
 
   private allMembers$ = new BehaviorSubject<Member[]>(undefined);
 
-
   // baseUri :string = 'http://localhost:3000/api/v1';
 
   baseUri : string = environment.SERVER;

@@ -40,6 +40,9 @@ import { JwtService } from 'src/app/services/jwt.service';
 // for overlay display when modal is dismissed
 import { OverlayEventDetail } from '@ionic/core/components';
 
+//for log 
+import {LogsService} from 'src/app/services/logs.service'
+
 
 @Component({
   selector: 'app-member-action',
@@ -139,6 +142,8 @@ export class MemberActionPage implements OnInit {
     public loadingController:LoadingController,
     // banner service api
     private bannerApi:BannerService,
+    //log serice
+    private logService:LogsService,
    
 //user api
       private userApi:UserService,
@@ -293,6 +298,17 @@ export class MemberActionPage implements OnInit {
       const status = await BarcodeScanner.checkPermission({force: true });
       if (status.granted) {
       //   // the user granted permission
+      const event = {
+        "email":this.loggedUserEmail,
+        "type":"Camera Permission",
+        "timestamp":new Date().toISOString(),
+        "details":"Camera Permission for Barcode Scan"
+      }
+       
+      this.logService.logEvent(event).subscribe({
+              next:response => console.log('Event logged successfully:', response),
+              error:error => console.error('Error logging event:', error)
+        });
         return true;
       }
       return false;
