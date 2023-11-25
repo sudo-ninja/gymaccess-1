@@ -99,10 +99,12 @@ export class AddholidaymodalComponent implements OnInit {
     };
   }
 
-  //   ionViewWillEnter(){
-  //   // this.selectDateBasedOnSegment(this.selectedSegment,this.In_Time2);
+    ionViewWillEnter(){
+      this.In_Time2 = new Date().toISOString();
+      console.log(this.In_Time2);
+      this.selectDateBasedOnSegment(this.selectedSegment,this.In_Time2);
 
-  // }
+  }
 
   segmentSelcted(e) {
     this.selectedSegment = e.detail.value;

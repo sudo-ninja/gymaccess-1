@@ -28,14 +28,17 @@
     </ion-segment-button>
   </ion-segment>
 
+  <!--  -->
+  
+  <!--   -->
 
   <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
   
  <div *ngIf="selectedSegment==='start_date'">
     <ion-datetime
-    [value]="In_Time"
-    [max]="Out_Time" 
     formControlName="holiday_start_date"
+    [value]="In_Time"
+    [max]="Out_Time"    
     presentation="date"
     (ionChange)="InTimeChange($event)"
     id="ITime" 

@@ -35,6 +35,7 @@ export class UpdateholidaymodalComponent  implements OnInit {
   list_id: any;
   inTimeTouched: boolean;
   outTimeTouched: boolean;
+  defaultRes: any;
 
   constructor(
     private alertCtrl: AlertController,    
@@ -47,14 +48,19 @@ export class UpdateholidaymodalComponent  implements OnInit {
   ) { 
     this.dataFromPage = this.dataTransferservice.getHoliday();
     console.log(this.dataFromPage);
-    this.list_id = this.dataFromPage.list_id;
+    this.list_id = this.dataFromPage.list_id; // this is holiday list id
     // this.dayNumber = this.dataFromPage.day.day_number;
-    this.id = this.dataFromPage.id
-    this.getHoliday(this.id);
+    this.id = this.dataFromPage.id // this is holiday id 
     
+    // this.In_Time2 = this.In_Time;
+    // this.getHoliday(this.id);
+    // this.selectDateBasedOnSegment(this.selectedSegment,this.In_Time2);
   }
-
+  // ngOnChange() {
+  //   this.getHoliday(this.id);
+  // }
   ngOnInit() {
+   
     this.myForm = this.formBuilder.group({
       'holiday_name': ['',Validators.required],
       'holiday_start_date': ['',Validators.required],
@@ -66,21 +72,29 @@ export class UpdateholidaymodalComponent  implements OnInit {
     }
     );
     console.log(this.selectedSegment);
-    this.selectDateBasedOnSegment(this.selectedSegment,this.In_Time2);
+    // this.selectDateBasedOnSegment(this.selectedSegment,this.In_Time);
+     this.getHoliday(this.id);
   }
+
+ 
 
   async getHoliday(id){
     this.holidayApi.getSpecificHoliday(id).subscribe({
       next:res=>{
         console.log(res);
+        this.defaultRes=res; // same page closed
         this.In_Time = res.holiday_start_date;
+        // this.In_Time = '2023-11-25T14:57:14'
         this.Out_Time = res.holiday_end_date;
         this.pageTitle = res.holiday_name;
         this.myForm.setValue({
           holiday_name:res.holiday_name,
           holiday_start_date:res.holiday_start_date,
           holiday_end_date:res.holiday_end_date,
-        })
+        });
+        console.log(this.In_Time);
+        // this.selectDateBasedOnSegment(this.selectedSegment,new Date(this.In_Time).toISOString());
+        // why firts time code running perfect but next time not ??
       },
       error:err=>{}
     });
@@ -106,7 +120,8 @@ export class UpdateholidaymodalComponent  implements OnInit {
   }
 
   ionViewWillEnter(){
-    this.selectDateBasedOnSegment(this.selectedSegment,this.In_Time2);
+    // this.getHoliday(this.id);
+    // this.selectDateBasedOnSegment(this.selectedSegment,this.In_Time2);
    
   }
   
@@ -127,9 +142,6 @@ export class UpdateholidaymodalComponent  implements OnInit {
 
     In_Time:any
   In_Time_UTC: any;
-  
-
-
   InTimeChange(event){
     this.inTimeTouched = true; // to know if its event got changed or not
     console.log(event.detail.value);
@@ -150,26 +162,23 @@ export class UpdateholidaymodalComponent  implements OnInit {
   
 
   cancel() {
-    return this.modalCtrl.dismiss(null, 'cancel');
+    return this.modalCtrl.dismiss(this.defaultRes, 'cancel');
   }
 
   onSubmit() {
     const formData = this.myForm.value;
-    console.log(formData.holiday_name);    
-    
-    this.isLoadingResults = true;
-  
-    console.log(this.myForm.value);
-
+    // console.log(formData.holiday_name);    
+    this.isLoadingResults = true;  
+    // console.log(this.myForm.value);
     // check form validity also 
     if(this.myForm.valid){
       this.isButtonSubmit = true;
       this.holidayApi
     .modifyHoliday(this.list_id,this.id,this.myForm.value)
     .subscribe((res: any) => {     
-        console.log(res);
-        return this.modalCtrl.dismiss(res.holidays, 'confirm');
+        // console.log(res);
         this.isLoadingResults = false;
+        return this.modalCtrl.dismiss(res.holidays, 'confirm');
       }, (err: any) => {
         console.log(err);
         this.isLoadingResults = false;

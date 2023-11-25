@@ -949,14 +949,17 @@ locks = [
   }
 
   async OpenAttendance(){
-    // this.router.navigate(['/qrlabel/', this._gym_id]);
-    this.router.navigate(['/attendances/',this.gym_attendance_id]);
+      this.router.navigate(['/attendances/',this.gym_attendance_id]);
   }
 
 
   async holidayIsToggled(event){
+
+    // set Alert "Do You Really Want to Delete Holiday List"
+    // if click Yes then Only Proceed below code .. use flage boolean 
     if(event){
       this.isHolidayOn = event;
+      this.getGym(this._gym_id);
     }
 // set if holiday list is there or not
     this.gymApi.update(this._gym_id,{"gym_isHoldaylistadded":event}).subscribe({
@@ -1004,6 +1007,7 @@ locks = [
   }
 
   async OpenHoliday(){
+    console.log(this.gym_holidaylist_id);
     this.router.navigate(['/holidays/',this.gym_holidaylist_id]);
     // this.router.navigate(['/attendances/',this.gym_attendance_id]);
   }

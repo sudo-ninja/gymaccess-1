@@ -104,10 +104,10 @@ getSpecificHoliday(id:any):Observable<any> {
       }
 
   removeHoliday(id:any,holidayid:any):Observable<any> {
-    console.log("i m in add holiday ");
-    console.log(`${id}`);
+    // console.log("i m in add holiday ");
+    // console.log(`${id}`);
     // console.log(`${baseUrl}/holiday?id=${id}`);
-    return this.http.put(`${baseUrl}/removeHoliday?id=${id}`,holidayid).pipe(tap((dat:any)=>console.log(`updated with ID =${id}`)),
+    return this.http.put(`${baseUrl}/removeHoliday?id=${id}`,holidayid).pipe(tap((dat:any)=>console.log(`updated with ID =${dat._id}`)),
     catchError(this.errorMgmt));
     }
 

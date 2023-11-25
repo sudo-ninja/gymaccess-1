@@ -163,7 +163,7 @@ export class HolidaysPage implements OnInit {
       console.log(data);
       // location.reload(); // this will force refresh page.
       this.holidayslist = data;  // as soon as holiday added bring entire array here so that same can be updated  
-      this.getHolidays(this.holidayListid); 
+      // this.getHolidays(this.holidayListid); 
     }
 
     // when close model it will change the page also
@@ -178,7 +178,7 @@ export class HolidaysPage implements OnInit {
       const start = new Date(startDate);
       const end = new Date(endDate);
       const timeDifference = end.getTime() - start.getTime();
-      return timeDifference / (1000 * 60 * 60 * 24)+1; // Convert milliseconds to days
+      return Math.ceil(timeDifference / (1000 * 60 * 60 * 24)+1); // Convert milliseconds to days
     }
 
 
@@ -194,14 +194,19 @@ export class HolidaysPage implements OnInit {
        breakpoints: [0, 0.5, 0.8],
        initialBreakpoint: 0.8,      
      });
-     await modal.present();
+     console.log(modal);
+     await modal.present();     
      const { data, role } = await modal.onWillDismiss();
-   if (role === 'confirm') {
      console.log(data);
+   if (role === 'confirm') {
+    //  console.log(data);
      // location.reload(); // this will force refresh page.
      this.holidayslist = data;  // as soon as holiday added bring entire array here so that same can be updated  
      this.getHolidays(this.holidayListid); 
+   } else{
+      this.getHolidays(this.holidayListid);
    }
+ 
 
    // when close model it will change the page also
    if(!window.history.state.modal){
@@ -212,12 +217,13 @@ export class HolidaysPage implements OnInit {
 
 
    async deleteHoliday(holidayid,item: IonItemSliding){
-    this.closeItem(item);
-    console.log(holidayid);
+    
+    console.log(this.holidayListid,holidayid);
     this.holidayApi.removeHoliday(this.holidayListid,{"_id":holidayid}).subscribe({
       next:res=>{
         console.log(res);
-        this.getHolidays(this.holidayListid); 
+        this.getHolidays(this.holidayListid);
+        this.closeItem(item);
       },
       error:err=>{}
     });
