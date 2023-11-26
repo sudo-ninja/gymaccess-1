@@ -303,8 +303,7 @@ export class AttendancesPage implements OnInit {
   public isToggled: boolean ;
   notifyAndUpdateIsToggled(event){
     // console.log("Toggled: "+ this.isToggled,"Passage Mode is ..", event);    
-      this.isToggled = event;
-    
+      this.isToggled = event;    
     this.attendanceApi.update(this.AttendaceId,{"repeat":!event}).subscribe(res=>{
       console.log(res);
       if(res.repeat == true){
@@ -313,8 +312,7 @@ export class AttendancesPage implements OnInit {
         this.showDays = true;}
         // console.log("🚀 ~ file: addlock.page.ts:153 ~ AddlockPage ~ toggleButton ~ el̥se:",(this.showOpeningRange && this.showPassage));
         }
-       );    
-
+       );
   }
 
   // open modal to update day timingg schedule

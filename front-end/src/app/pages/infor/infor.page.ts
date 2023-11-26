@@ -882,39 +882,39 @@ locks = [
       "shift_start_time": TimeNow,
       "shift_end_time": TimeNow,
       "repeat":true,
-      // "working_days":[{
-      //   "day_number":0,
-      //   "punchIn":"1970-01-01T02:30:00",
-      //   "punchOut":"1970-01-01T02:30:00"
-      //   },
-      //   {
-      //   "day_number":1,
-      //   "punchIn":"1970-01-01T02:30:00",
-      //   "punchOut":"1970-01-01T02:30:00"
-      //   },
-      //   {
-      //     "day_number":2,
-      //     "punchIn":"1970-01-01T02:30:00",
-      //     "punchOut":"1970-01-01T02:30:00"
-      //     },
-      //     {
-      //       "day_number":3,
-      //       "punchIn":"1970-01-01T02:30:00",
-      //       "punchOut":"1970-01-01T02:30:00"
-      //       },{
-      //         "day_number":4,
-      //         "punchIn":"1970-01-01T02:30:00",
-      //         "punchOut":"1970-01-01T02:30:00"
-      //         },{
-      //           "day_number":5,
-      //           "punchIn":"1970-01-01T02:30:00",
-      //           "punchOut":"1970-01-01T02:30:00"
-      //           },{
-      //             "day_number":6,
-      //             "punchIn":"1970-01-01T02:30:00",
-      //             "punchOut":"1970-01-01T02:30:00"
-      //             },
-      // ]
+      "working_days":[{
+        "day_number":0,
+        "punchIn":TimeNow,
+        "punchOut":TimeNow
+        },
+        {
+        "day_number":1,
+        "punchIn":TimeNow,
+        "punchOut":TimeNow
+        },
+        {
+          "day_number":2,
+          "punchIn":TimeNow,
+          "punchOut":"1970-01-01T02:30:00"
+          },
+          {
+            "day_number":3,
+            "punchIn":TimeNow,
+            "punchOut":TimeNow
+            },{
+              "day_number":4,
+              "punchIn":TimeNow,
+              "punchOut":TimeNow
+              },{
+                "day_number":5,
+                "punchIn":TimeNow,
+                "punchOut":TimeNow
+                },{
+                  "day_number":6,
+                  "punchIn":TimeNow,
+                  "punchOut":TimeNow
+                  },
+      ]
     }
     if(event){
        this.isAttendanceOn = true;

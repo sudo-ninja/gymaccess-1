@@ -55,10 +55,18 @@
 
         </ion-item>
 
+         
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
-            <ion-datetime formControlName="shift_start_time" [value]="intimeValue" [showDefaultButtons]="true"
-              presentation="time" hourCycle="h24" id="Itime" #Itime (ionChange)="InTimeChange($event)"></ion-datetime>
+            <ion-datetime 
+            formControlName="shift_start_time" 
+            [value]="intimeValue"
+             [showDefaultButtons]="true"
+              presentation="time" 
+              hourCycle="h24" 
+              id="Itime" 
+              #Itime 
+              (ionChange)="InTimeChange($event)"></ion-datetime>
           </ng-template>
         </ion-modal>
       </ion-list>
@@ -69,8 +77,15 @@
 
     <ion-modal [keepContentsMounted]="true">
       <ng-template>
-        <ion-datetime formControlName="shift_end_time" [min]="intimeValue" [value]="outtimeValue"
-          [showDefaultButtons]="true" presentation="time" hourCycle="h24" id="Otime" #Otime
+        <ion-datetime 
+        formControlName="shift_end_time" 
+        [min]="intimeValue" 
+        [value]="outtimeValue"
+          [showDefaultButtons]="true" 
+          presentation="time" 
+          hourCycle="h24" 
+          id="Otime" 
+          #Otime
           (ionChange)="OutTimeChange($event)"></ion-datetime>
       </ng-template>
     </ion-modal>
@@ -79,16 +94,20 @@
   </form>
 
   <ion-item>
-    <ion-toggle mode="ios" [enableOnOffLabels]="true" justify="space-between" color="danger" [ngModel]="isToggled"
+    <ion-toggle
+     mode="ios" 
+     [enableOnOffLabels]="true" 
+     justify="space-between" 
+     color="danger" 
+     [ngModel]="isToggled"
       (ngModelChange)="notifyAndUpdateIsToggled($event)"><strong>Custom Schedule</strong>
     </ion-toggle>
   </ion-item>
 
 
 
-  <div *ngIf="isToggled">
+  <div *ngIf="isToggled" >
     <ion-grid>
-
       <ion-row>
         <ion-col *ngFor="let day of weekdays ">
           <ion-fab>
@@ -102,14 +121,14 @@
 
       <ion-row class="col">
         <ion-col *ngFor="let day of weekdays ">
-          <ion-label (click)="customTiming(day)" [ngClass]="{'holiday-text': day.isHoliday}">{{day.punchIn |
-            date:'HH:MM'}}</ion-label>
+          <!-- <ion-label (click)="customTiming(day)" [ngClass]="{'holiday-text': day.isHoliday}">{{day.punchIn |
+            date:'HH:MM'}}</ion-label> -->
         </ion-col>
       </ion-row>
 
       <ion-row>
         <ion-col *ngFor="let day of weekdays ">
-          <ion-label (click)="customTiming(day)">{{day.punchOut | date:'HH:MM'}}</ion-label>
+          <!-- <ion-label (click)="customTiming(day)">{{day.punchOut | date:'HH:MM'}}</ion-label> -->
         </ion-col>
       </ion-row>
     </ion-grid>

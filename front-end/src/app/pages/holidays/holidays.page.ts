@@ -163,7 +163,7 @@ export class HolidaysPage implements OnInit {
       console.log(data);
       // location.reload(); // this will force refresh page.
       this.holidayslist = data;  // as soon as holiday added bring entire array here so that same can be updated  
-      // this.getHolidays(this.holidayListid); 
+      this.getHolidays(this.holidayListid); 
     }
 
     // when close model it will change the page also
